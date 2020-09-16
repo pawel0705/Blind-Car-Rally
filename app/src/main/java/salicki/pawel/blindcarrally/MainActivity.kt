@@ -1,19 +1,34 @@
 package salicki.pawel.blindcarrally
 
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
-import android.view.Window
-import android.view.WindowManager
-import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
-import salicki.pawel.blindcarrally.scenemanager.StateMachine
+import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
+import salicki.pawel.blindcarrally.scenemanager.LevelManager
 
 class MainActivity : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContentView(StateMachine(this));
+
+
+        val displayMetrics = resources.displayMetrics
+        Settings.SCREEN_HEIGHT = displayMetrics.heightPixels
+        Settings.SCREEN_WIDTH = displayMetrics.widthPixels
+        Settings.CONTEXT = this
+
+        TextToSpeechManager.setLanguage(LanguageTTS.ENGLISH)
+
+        setContentView(LevelManager);
+    }
+
+    override fun onPause() {
+        LevelManager.pause()
+        
+        super.onPause()
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {

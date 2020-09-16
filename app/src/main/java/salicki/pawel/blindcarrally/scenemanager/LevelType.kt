@@ -1,5 +1,5 @@
 package salicki.pawel.blindcarrally.scenemanager
 
-enum class Scene {
+enum class LevelType {
     SPLASH, MENU, GAME
 }

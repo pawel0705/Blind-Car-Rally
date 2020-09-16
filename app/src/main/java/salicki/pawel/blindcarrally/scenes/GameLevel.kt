@@ -1,4 +1,4 @@
-package salicki.pawel.blindcarrally
+package salicki.pawel.blindcarrally.scenes
 
 import android.R
 import android.content.Context
@@ -7,9 +7,11 @@ import android.graphics.Paint
 import android.view.MotionEvent
 import android.view.SurfaceView
 import androidx.core.content.ContextCompat
-import salicki.pawel.blindcarrally.scenemanager.IState
+import salicki.pawel.blindcarrally.MovementManager
+import salicki.pawel.blindcarrally.TextToSpeechManager
+import salicki.pawel.blindcarrally.scenemanager.ILevel
 
-class GameScene(context: Context) : SurfaceView(context), IState {
+class GameLevel(context: Context) : SurfaceView(context), ILevel {
 
     private val movementManager: MovementManager = MovementManager(context)
 
@@ -17,6 +19,8 @@ class GameScene(context: Context) : SurfaceView(context), IState {
         movementManager.register()
 
         isFocusable = true
+
+
     }
 
     private fun drawCoordinates(canvas: Canvas){
@@ -33,6 +37,7 @@ class GameScene(context: Context) : SurfaceView(context), IState {
             canvas.drawText("orientation 3: $test3", 100F, 500F, paint)
         }
     }
+
 
     override fun updateState() {
 
