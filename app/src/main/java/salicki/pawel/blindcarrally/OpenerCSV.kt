@@ -23,7 +23,7 @@ object OpenerCSV {
         line = reader.readLine()
 
         while (line != null) {
-            val tokens = line.split(",")
+            val tokens = line.split(";")
             if (tokens.isNotEmpty()) {
 
                 if(languageTTS == LanguageTTS.ENGLISH){

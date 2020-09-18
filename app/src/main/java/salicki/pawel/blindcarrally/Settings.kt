@@ -7,4 +7,6 @@ object Settings {
     var SCREEN_HEIGHT : Int = 0
 
     var CONTEXT : Context? = null
+
+    var languageTTS: LanguageTTS = LanguageTTS.ENGLISH
 }

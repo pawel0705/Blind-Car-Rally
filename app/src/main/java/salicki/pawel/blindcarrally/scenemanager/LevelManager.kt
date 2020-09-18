@@ -1,6 +1,5 @@
 package salicki.pawel.blindcarrally.scenemanager
 
-import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.view.MotionEvent
@@ -11,10 +10,12 @@ import salicki.pawel.blindcarrally.GameLoop
 import salicki.pawel.blindcarrally.R
 import salicki.pawel.blindcarrally.Settings
 import salicki.pawel.blindcarrally.scenes.GameLevel
+import salicki.pawel.blindcarrally.scenes.LanguageSettingsLevel
+import salicki.pawel.blindcarrally.scenes.MenuLevel
 import salicki.pawel.blindcarrally.scenes.SplashLevel
 
 
-object LevelManager : SurfaceView(Settings.CONTEXT), SurfaceHolder.Callback, ILevel {
+object LevelManager : SurfaceView(Settings.CONTEXT), SurfaceHolder.Callback {
 
     private val scenes : HashMap<LevelType, ILevel> = HashMap()
     private var activeLevelType : LevelType = LevelType.SPLASH
@@ -22,33 +23,41 @@ object LevelManager : SurfaceView(Settings.CONTEXT), SurfaceHolder.Callback, ILe
     private var gameLoop: GameLoop
 
     init {
-        scenes[LevelType.SPLASH] = SplashLevel(context, this)
-        scenes[LevelType.GAME] = GameLevel(context)
+        scenes[LevelType.SPLASH] = SplashLevel()
+        scenes[LevelType.LANGUAGE] = LanguageSettingsLevel()
+        scenes[LevelType.MENU] = MenuLevel()
+        scenes[LevelType.GAME] = GameLevel()
 
         val surfaceHolder = holder
         surfaceHolder.addCallback(this)
 
-        gameLoop = GameLoop(this, surfaceHolder)
+        gameLoop = GameLoop( surfaceHolder)
     }
 
     fun changeLevel(level: LevelType){
         this.activeLevelType = level
+        this.scenes[activeLevelType]?.initState()
+
     }
 
 
-    override fun updateState() {
+    fun updateState() {
         this.scenes[activeLevelType]?.updateState()
     }
 
-    override fun destroyState() {
+    fun destroyState() {
         this.scenes[activeLevelType]?.destroyState()
     }
 
-    override fun respondTouchState(motionEvent: MotionEvent) {
+    private fun initState(){
+        this.scenes[activeLevelType]?.initState()
+    }
+
+    private fun respondTouchState(motionEvent: MotionEvent) {
         this.scenes[activeLevelType]?.respondTouchState(motionEvent)
     }
 
-    override fun redrawState(canvas: Canvas) {
+    fun redrawState(canvas: Canvas) {
         super.draw(canvas)
 
         this.drawUPS(canvas)
@@ -71,7 +80,7 @@ object LevelManager : SurfaceView(Settings.CONTEXT), SurfaceHolder.Callback, ILe
         val paint = Paint()
         val color = ContextCompat.getColor(context, R.color.colorPrimary)
         paint.color = color
-        paint.textSize = 50F
+        paint.textSize = resources.getDimensionPixelSize(R.dimen.fontSize).toFloat();
         canvas.drawText("FPS: $averageFPS", 100F, 200F, paint)
     }
 
@@ -81,7 +90,7 @@ object LevelManager : SurfaceView(Settings.CONTEXT), SurfaceHolder.Callback, ILe
 
     override fun surfaceCreated(holder: SurfaceHolder) {
         if (gameLoop.state == Thread.State.TERMINATED) {
-            gameLoop = GameLoop(this, holder)
+            gameLoop = GameLoop(holder)
         }
         gameLoop.startLoop()
     }

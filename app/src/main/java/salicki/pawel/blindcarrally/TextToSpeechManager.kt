@@ -9,14 +9,14 @@ import java.util.*
 object TextToSpeechManager {
     private  var textToSpeech: TextToSpeech? = null
 
-    init {
+    fun initTextToSpeech(){
         textToSpeech = TextToSpeech(Settings.CONTEXT) { status ->
             if (status != TextToSpeech.ERROR) {
                 textToSpeech?.language = Locale.ENGLISH
             }
         }
     }
-    
+
     fun setPitch(pitch : Float) {
         if(textToSpeech != null) {
             textToSpeech?.setPitch(pitch)
@@ -50,13 +50,18 @@ object TextToSpeechManager {
         }
     }
 
-    fun speak(text: String) {
-        Log.d("JESTEM", "JESTEM")
+    fun speakQueue(text: String) {
+        if(textToSpeech != null) {
+            textToSpeech?.speak(text, TextToSpeech.QUEUE_ADD,null,null)
+        }
+    }
+
+    fun speakNow(text: String) {
+
+        Log.d("SPEAK", text)
 
         if(textToSpeech != null) {
-            textToSpeech?.speak(text, TextToSpeech.QUEUE_FLUSH,null,null);
-
-            Log.d("W IFIE", "W IFIE")
+            textToSpeech?.speak(text, TextToSpeech.QUEUE_FLUSH,null,null)
         }
     }
 }

@@ -4,8 +4,7 @@ import android.graphics.Canvas
 import android.view.SurfaceHolder
 import salicki.pawel.blindcarrally.scenemanager.LevelManager
 
-class GameLoop(levelManager: LevelManager, surfaceHolder: SurfaceHolder) : Thread() {
-    private val levelManager: LevelManager = levelManager
+class GameLoop(surfaceHolder: SurfaceHolder) : Thread() {
     private val surfaceHolder: SurfaceHolder = surfaceHolder
     private var isRunning = false
 
@@ -39,9 +38,9 @@ class GameLoop(levelManager: LevelManager, surfaceHolder: SurfaceHolder) : Threa
             try {
                 canvas = surfaceHolder.lockCanvas()
                 synchronized(surfaceHolder) {
-                    levelManager.updateState()
+                    LevelManager.updateState()
                     updateCount++
-                    levelManager.redrawState(canvas)
+                    LevelManager.redrawState(canvas)
                 }
             } catch (e: IllegalArgumentException) {
                 e.printStackTrace()
@@ -69,7 +68,7 @@ class GameLoop(levelManager: LevelManager, surfaceHolder: SurfaceHolder) : Threa
 
             // Skip frames to keep up with target UPS
             while (sleepTime < 0 && updateCount < MAX_UPS - 1) {
-                levelManager.updateState()
+                LevelManager.updateState()
                 updateCount++
                 elapsedTime = System.currentTimeMillis() - startTime
                 sleepTime = (updateCount * UPS_PERIOD - elapsedTime).toLong()

@@ -8,10 +8,11 @@ import android.view.MotionEvent
 import android.view.SurfaceView
 import androidx.core.content.ContextCompat
 import salicki.pawel.blindcarrally.MovementManager
+import salicki.pawel.blindcarrally.Settings
 import salicki.pawel.blindcarrally.TextToSpeechManager
 import salicki.pawel.blindcarrally.scenemanager.ILevel
 
-class GameLevel(context: Context) : SurfaceView(context), ILevel {
+class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
 
     private val movementManager: MovementManager = MovementManager(context)
 
@@ -36,6 +37,10 @@ class GameLevel(context: Context) : SurfaceView(context), ILevel {
             canvas.drawText("orientation 2: $test2", 100F, 400F, paint)
             canvas.drawText("orientation 3: $test3", 100F, 500F, paint)
         }
+    }
+
+    override fun initState() {
+
     }
 
 
