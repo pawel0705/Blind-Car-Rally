@@ -1,7 +1,8 @@
 package salicki.pawel.blindcarrally.scenes
 
-import android.graphics.BitmapFactory
+import android.content.pm.ActivityInfo
 import android.graphics.Canvas
+import android.speech.tts.TextToSpeech
 import android.util.Log
 import android.view.MotionEvent
 import android.view.SurfaceView
@@ -9,16 +10,13 @@ import salicki.pawel.blindcarrally.*
 import salicki.pawel.blindcarrally.scenemanager.ILevel
 import salicki.pawel.blindcarrally.scenemanager.LevelManager
 import salicki.pawel.blindcarrally.scenemanager.LevelType
-import java.util.*
-import kotlin.collections.HashMap
 import kotlin.math.abs
 
-class MenuLevel : SurfaceView(Settings.CONTEXT), ILevel {
+class LanguageLevel : SurfaceView(Settings.CONTEXT), ILevel {
 
-    private var texts : HashMap<String, String> = HashMap()
-
-    private var menuSelectionDataData = arrayListOf<MenuSelectionData>()
-    private var menuIterator: Int = 0
+    private var languageSelectionData : LinkedHashMap<LanguageTTS, LanguageSelectionData> = LinkedHashMap()
+    private var languageTypeData = arrayListOf<LanguageTTS>(LanguageTTS.ENGLISH, LanguageTTS.POLISH)
+    private var languageIterator: Int = 0
 
     // swipe
     private var x1 = 0f
@@ -34,25 +32,18 @@ class MenuLevel : SurfaceView(Settings.CONTEXT), ILevel {
     init {
         isFocusable = true
 
-        menuSelectionDataData.add(MenuSelectionData(LevelType.GAME, "MENU_PLAY"))
-        menuSelectionDataData.add(MenuSelectionData(LevelType.SETTINGS, "MENU_SETTINGS"))
-        menuSelectionDataData.add(MenuSelectionData(LevelType.LANGUAGE, "MENU_LANGUAGE"))
-        menuSelectionDataData.add(MenuSelectionData(LevelType.CREDITS, "MENU_CREDITS"))
-        menuSelectionDataData.add(MenuSelectionData(LevelType.QUIT, "MENU_QUIT"))
+        languageSelectionData[LanguageTTS.ENGLISH] = (LanguageSelectionData(OpenerCSV.readData(R.raw.language_tts, LanguageTTS.ENGLISH)))
+        languageSelectionData[LanguageTTS.POLISH] = (LanguageSelectionData(OpenerCSV.readData(R.raw.language_tts, LanguageTTS.POLISH)))
     }
 
     override fun initState() {
-        texts.putAll(OpenerCSV.readData(R.raw.menu_tts, Settings.languageTTS))
-        TextToSpeechManager.speakNow(texts["MENU_TUTORIAL"].toString())
-        TextToSpeechManager.speakQueue(texts["MENU_PLAY"].toString())
-    }
-
-    override fun updateState() {
-
-    }
-
-    override fun destroyState() {
-
+        languageSelectionData[Settings.languageTTS]?.texts?.get("LANGUAGE_TUTORIAL")?.let {
+            TextToSpeechManager.speakQueue(
+                it
+            )
+        }
+        languageSelectionData[Settings.languageTTS]?.texts?.get("SELECTED_LANGUAGE")
+            ?.let { TextToSpeechManager.speakQueue(it) }
     }
 
     override fun respondTouchState(event: MotionEvent) {
@@ -70,24 +61,25 @@ class MenuLevel : SurfaceView(Settings.CONTEXT), ILevel {
 
                     SoundManager.playSound(R.raw.swoosh)
 
-                    if (x2 < x1) {
-                        menuIterator++
+                    // Left to Right swipe action
+                    if (x2 > x1) {
+                        languageIterator++
 
-                        if(menuIterator >= menuSelectionDataData.size){
-                            menuIterator = 0
+                        if(languageIterator >= languageTypeData.size){
+                            languageIterator = 0
                         }
                     } else {
-                        menuIterator--
-                        if(menuIterator < 0) {
-                            menuIterator = menuSelectionDataData.size - 1
+                        languageIterator--
+                        if(languageIterator < 0) {
+                            languageIterator = languageTypeData.size - 1
                         }
-                    }
 
-                    texts[menuSelectionDataData[menuIterator].textKey]?.let {
-                        TextToSpeechManager.speakNow(
-                            it
-                        )
                     }
+                    //TextToSpeechManager.setLanguage(languageTypeData[languageIterator])
+                    TextToSpeechManager.stop()
+                    Settings.languageTTS = languageTypeData[languageIterator]
+                    languageSelectionData[languageTypeData[languageIterator]]?.texts?.get("SELECTED_LANGUAGE")
+                        ?.let { TextToSpeechManager.speakNow(it) }
 
                     duration = 0
                 } else {
@@ -111,7 +103,7 @@ class MenuLevel : SurfaceView(Settings.CONTEXT), ILevel {
                     if (clickCount >= 2) {
                         if (duration <= MAX_DURATION) {
                             SoundManager.playSound(R.raw.accept)
-                            LevelManager.changeLevel(menuSelectionDataData[menuIterator].levelType)
+                            LevelManager.changeLevel(LevelType.MENU)
                         }
                         clickCount = 0
                         duration = 0
@@ -122,6 +114,14 @@ class MenuLevel : SurfaceView(Settings.CONTEXT), ILevel {
             clickCount = 0
             duration = 0
         }
+    }
+
+    override fun updateState() {
+
+    }
+
+    override fun destroyState() {
+
     }
 
     override fun redrawState(canvas: Canvas) {

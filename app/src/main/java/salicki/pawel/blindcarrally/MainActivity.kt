@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import salicki.pawel.blindcarrally.scenemanager.LevelManager
+import kotlin.system.exitProcess
 
 
 class MainActivity : AppCompatActivity() {
@@ -21,7 +22,15 @@ class MainActivity : AppCompatActivity() {
         TextToSpeechManager.initTextToSpeech()
         SoundManager.initSoundManager()
 
+
+
         setContentView(LevelManager);
+    }
+
+    fun exit()
+    {
+        finishAffinity()
+        exitProcess(0)
     }
 
     override fun onPause() {

@@ -1,0 +1,11 @@
+TEXT_KEY;ENGLISH;POLISH
+SETTINGS_TUTORIAL;You are in the settings menu.;Znajdujesz się w menu ustawień.
+SETTINGS_VIBRATION_ON;Selected option: Activate vibrations.;Zaznaczona opcja: Aktywuj wibracje.
+SETTINGS_VIBRATION_OFF;Selected option: Deactivate vibrations.;Zaznaczona opcja: Dezaktywuj wibracje.
+SETTINGS_DISPLAY_ON;Selected option: Activate screen display.;Zaznaczona opcja: Aktywuj wyświetlanie ekranu.
+SETTINGS_DISPLAY_OFF;Selected option: Deactivate screen display.;Zaznaczona opcja: Dezaktywuj wyświetlanie ekranu.
+SETTINGS_TTS;Selected option: Speaker volume.;Zaznaczona opcja: Głośność lektora.
+SETTINGS_TTS_VOLUME;Speaker volume;Głośność lektora
+SETTINGS_SOUNDS;Selected option: Sounds volume.;Zaznaczona opcja: Głośność dźwięków.
+SETTINGS_SOUNDS_VOLUME;Sounds volume;Głośność dźwięków
+SETTINGS_EXIT;Return to the main menu.;Powrót do menu głównego.

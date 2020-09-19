@@ -1,21 +1,23 @@
 package salicki.pawel.blindcarrally.scenes
 
-import android.content.pm.ActivityInfo
+import android.app.Activity
+import android.app.PendingIntent.getActivity
 import android.graphics.Canvas
 import android.util.Log
 import android.view.MotionEvent
 import android.view.SurfaceView
+import androidx.core.app.ActivityCompat.finishAffinity
 import salicki.pawel.blindcarrally.*
 import salicki.pawel.blindcarrally.scenemanager.ILevel
 import salicki.pawel.blindcarrally.scenemanager.LevelManager
 import salicki.pawel.blindcarrally.scenemanager.LevelType
+import java.lang.System.exit
 import kotlin.math.abs
 
-class LanguageSettingsLevel : SurfaceView(Settings.CONTEXT), ILevel {
+class QuitLevel : SurfaceView(Settings.CONTEXT), ILevel {
 
-    private var languageSelectionData : LinkedHashMap<LanguageTTS, LanguageSelectionData> = LinkedHashMap()
-    private var languageTypeData = arrayListOf<LanguageTTS>(LanguageTTS.ENGLISH, LanguageTTS.POLISH)
-    private var languageIterator: Int = 0
+    private var texts : HashMap<String, String> = HashMap()
+    private var exit : Boolean = true
 
     // swipe
     private var x1 = 0f
@@ -28,19 +30,18 @@ class LanguageSettingsLevel : SurfaceView(Settings.CONTEXT), ILevel {
     private var duration: Long = 0
     private val MAX_DURATION = 200
 
-    init {
-        isFocusable = true
-
-        languageSelectionData[LanguageTTS.ENGLISH] = (LanguageSelectionData(OpenerCSV.readData(R.raw.language_tts, LanguageTTS.ENGLISH)))
-        languageSelectionData[LanguageTTS.POLISH] = (LanguageSelectionData(OpenerCSV.readData(R.raw.language_tts, LanguageTTS.POLISH)))
+    override fun initState() {
+        texts.putAll(OpenerCSV.readData(R.raw.quit_tss, Settings.languageTTS))
+        TextToSpeechManager.speakNow(texts["QUIT_TUTORIAL"].toString())
+        TextToSpeechManager.speakQueue(texts["QUIT_YES"].toString())
     }
 
-    override fun initState() {
-        languageSelectionData[LanguageTTS.ENGLISH]?.texts?.get("LANGUAGE_TUTORIAL")?.let {
-            TextToSpeechManager.speakQueue(
-                it
-            )
-        }
+    override fun updateState() {
+
+    }
+
+    override fun destroyState() {
+
     }
 
     override fun respondTouchState(event: MotionEvent) {
@@ -58,23 +59,14 @@ class LanguageSettingsLevel : SurfaceView(Settings.CONTEXT), ILevel {
 
                     SoundManager.playSound(R.raw.swoosh)
 
-                    // Left to Right swipe action
-                    if (x2 > x1) {
-                        languageIterator++
+                    exit = !exit
 
-                        if(languageIterator >= languageTypeData.size){
-                            languageIterator = 0
-                        }
-                    } else {
-                        languageIterator--
-                        if(languageIterator < 0) {
-                            languageIterator = languageTypeData.size - 1
-                        }
-
+                    if(exit){
+                        texts["QUIT_YES"]?.let { TextToSpeechManager.speakNow(it) }
                     }
-                    TextToSpeechManager.setLanguage(languageTypeData[languageIterator])
-                    languageSelectionData[languageTypeData[languageIterator]]?.texts?.get("SELECTED_LANGUAGE")
-                        ?.let { TextToSpeechManager.speakNow(it) }
+                    else {
+                        texts["QUIT_NO"]?.let { TextToSpeechManager.speakNow(it) }
+                    }
 
                     duration = 0
                 } else {
@@ -98,7 +90,13 @@ class LanguageSettingsLevel : SurfaceView(Settings.CONTEXT), ILevel {
                     if (clickCount >= 2) {
                         if (duration <= MAX_DURATION) {
                             SoundManager.playSound(R.raw.accept)
-                            LevelManager.changeLevel(LevelType.GAME)
+
+                            if(!exit){
+                                LevelManager.changeLevel(LevelType.MENU)
+                            }
+                            else {
+                                (Settings.CONTEXT as MainActivity).exit()
+                            }
                         }
                         clickCount = 0
                         duration = 0
@@ -110,15 +108,6 @@ class LanguageSettingsLevel : SurfaceView(Settings.CONTEXT), ILevel {
             duration = 0
         }
     }
-
-    override fun updateState() {
-
-    }
-
-    override fun destroyState() {
-
-    }
-
 
     override fun redrawState(canvas: Canvas) {
 

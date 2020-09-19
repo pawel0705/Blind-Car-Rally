@@ -9,10 +9,7 @@ import androidx.core.content.ContextCompat
 import salicki.pawel.blindcarrally.GameLoop
 import salicki.pawel.blindcarrally.R
 import salicki.pawel.blindcarrally.Settings
-import salicki.pawel.blindcarrally.scenes.GameLevel
-import salicki.pawel.blindcarrally.scenes.LanguageSettingsLevel
-import salicki.pawel.blindcarrally.scenes.MenuLevel
-import salicki.pawel.blindcarrally.scenes.SplashLevel
+import salicki.pawel.blindcarrally.scenes.*
 
 
 object LevelManager : SurfaceView(Settings.CONTEXT), SurfaceHolder.Callback {
@@ -24,9 +21,12 @@ object LevelManager : SurfaceView(Settings.CONTEXT), SurfaceHolder.Callback {
 
     init {
         scenes[LevelType.SPLASH] = SplashLevel()
-        scenes[LevelType.LANGUAGE] = LanguageSettingsLevel()
+        scenes[LevelType.LANGUAGE] = LanguageLevel()
         scenes[LevelType.MENU] = MenuLevel()
+        scenes[LevelType.QUIT] = QuitLevel()
         scenes[LevelType.GAME] = GameLevel()
+        scenes[LevelType.SETTINGS] = SettingsLevel()
+        scenes[LevelType.CREDITS] = CreditsLevel()
 
         val surfaceHolder = holder
         surfaceHolder.addCallback(this)

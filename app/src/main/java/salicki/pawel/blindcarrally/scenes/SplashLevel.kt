@@ -3,7 +3,6 @@ package salicki.pawel.blindcarrally.scenes
 import android.graphics.*
 import android.view.MotionEvent
 import android.view.SurfaceView
-import android.widget.Toast
 import salicki.pawel.blindcarrally.*
 import salicki.pawel.blindcarrally.scenemanager.ILevel
 import salicki.pawel.blindcarrally.scenemanager.LevelManager
@@ -18,6 +17,8 @@ class SplashLevel() : SurfaceView(Settings.CONTEXT), ILevel {
     private lateinit var logoRectangle : Rect
     private var logoImage : Bitmap
 
+    private var logoTimer = Timer()
+
     // double tap
     private var clickCount = 0
     private var startTime: Long = 0
@@ -28,22 +29,19 @@ class SplashLevel() : SurfaceView(Settings.CONTEXT), ILevel {
         isFocusable = true
 
         texts.putAll(OpenerCSV.readData(R.raw.splash_tts, LanguageTTS.ENGLISH))
-        logoImage = BitmapFactory.decodeResource(context.resources, R.drawable.test)
+        logoImage = BitmapFactory.decodeResource(context.resources, R.drawable.splash)
 
-        TextToSpeechManager.setLanguage(LanguageTTS.ENGLISH)
+       // TextToSpeechManager.setLanguage(LanguageTTS.ENGLISH)
 
-        Timer().schedule(object : TimerTask() {
+        logoTimer.schedule(object : TimerTask() {
             override fun run() {
                 LevelManager.changeLevel(LevelType.LANGUAGE)
             }
         }, 5000)
-
-
-        TextToSpeechManager.speakQueue(texts["SPLASH_LOGO"].toString())
     }
 
     override fun initState() {
-
+        TextToSpeechManager.speakQueue(texts["SPLASH_LOGO"].toString())
     }
 
     override fun updateState() {
@@ -64,6 +62,7 @@ class SplashLevel() : SurfaceView(Settings.CONTEXT), ILevel {
                 duration += time
                 if (clickCount === 2) {
                     if (duration <= MAX_DURATION) {
+                        logoTimer.cancel()
                         LevelManager.changeLevel(LevelType.LANGUAGE)
                     }
                     clickCount = 0

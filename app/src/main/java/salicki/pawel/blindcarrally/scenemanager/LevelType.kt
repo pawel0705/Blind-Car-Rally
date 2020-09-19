@@ -1,5 +1,5 @@
 package salicki.pawel.blindcarrally.scenemanager
 
 enum class LevelType {
-    SPLASH, LANGUAGE, MENU, GAME
+    SPLASH, LANGUAGE, MENU, GAME, SETTINGS, CREDITS, QUIT
 }
