@@ -1,7 +1,9 @@
 package salicki.pawel.blindcarrally
 
+import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
+import android.os.Vibrator
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -22,8 +24,6 @@ class MainActivity : AppCompatActivity() {
         TextToSpeechManager.initTextToSpeech()
         SoundManager.initSoundManager()
 
-
-
         setContentView(LevelManager);
     }
 
@@ -31,6 +31,10 @@ class MainActivity : AppCompatActivity() {
     {
         finishAffinity()
         exitProcess(0)
+    }
+
+    fun vibratorService() : Vibrator {
+        return getSystemService(VIBRATOR_SERVICE) as Vibrator
     }
 
     override fun onPause() {

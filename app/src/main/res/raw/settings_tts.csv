@@ -9,3 +9,13 @@ SETTINGS_TTS_VOLUME;Speaker volume;Głośność lektora
 SETTINGS_SOUNDS;Selected option: Sounds volume.;Zaznaczona opcja: Głośność dźwięków.
 SETTINGS_SOUNDS_VOLUME;Sounds volume;Głośność dźwięków
 SETTINGS_EXIT;Return to the main menu.;Powrót do menu głównego.
+SETTINGS_VOLUME_10; ten percent.; dziesięć procent.
+SETTINGS_VOLUME_20; twenty percent.; dwadzieścia procent.
+SETTINGS_VOLUME_30; thirty percent.; trzydzieści procent.
+SETTINGS_VOLUME_40; forty percent.; czterdzieśći procent.
+SETTINGS_VOLUME_50; fifty percent.; pięćdziesiąt procent.
+SETTINGS_VOLUME_60; sixty percent.; sześćdziesiąt procent.
+SETTINGS_VOLUME_70; seventy percent.; siememdziesiąt procent.
+SETTINGS_VOLUME_80; eighty percent.; osiemdziesiąt procent.
+SETTINGS_VOLUME_90; ninety percent.; dziewięćdziesiąt procent.
+SETTINGS_VOLUME_100; one hundred percent.; sto procent.
