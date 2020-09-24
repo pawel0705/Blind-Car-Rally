@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="fontSize">20sp</dimen>
+    <dimen name="screenSize">400sp</dimen>
 </resources>

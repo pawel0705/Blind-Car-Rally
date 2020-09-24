@@ -29,7 +29,7 @@ class SplashLevel() : SurfaceView(Settings.CONTEXT), ILevel {
         isFocusable = true
 
         texts.putAll(OpenerCSV.readData(R.raw.splash_tts, LanguageTTS.ENGLISH))
-        logoImage = BitmapFactory.decodeResource(context.resources, R.drawable.splash)
+        logoImage = BitmapFactory.decodeResource(context.resources, R.drawable.logo)
 
        // TextToSpeechManager.setLanguage(LanguageTTS.ENGLISH)
 
@@ -37,7 +37,7 @@ class SplashLevel() : SurfaceView(Settings.CONTEXT), ILevel {
             override fun run() {
                 LevelManager.changeLevel(LevelType.LANGUAGE)
             }
-        }, 5000)
+        }, 15000)
     }
 
     override fun initState() {
@@ -79,7 +79,19 @@ class SplashLevel() : SurfaceView(Settings.CONTEXT), ILevel {
     private fun drawSplashScreen(canvas: Canvas) {
 
         logoRectangle = Rect()
-        logoRectangle.set(0, 0, Settings.SCREEN_WIDTH, Settings.SCREEN_HEIGHT)
+
+         var point = Point(Settings.SCREEN_WIDTH / 2, Settings.SCREEN_HEIGHT / 2)
+
+        logoRectangle.set(0 ,0, resources.getDimensionPixelSize(R.dimen.screenSize), resources.getDimensionPixelSize(R.dimen.screenSize))
+
+        logoRectangle.set(
+            point.x - logoRectangle.width() / 2,
+            point.y - logoRectangle.height() / 2,
+            point.x + logoRectangle.width() / 2,
+            point.y + logoRectangle.height() / 2
+        )
+
+        //logoRectangle.set(0, 0, Settings.SCREEN_WIDTH, Settings.SCREEN_HEIGHT / 2)
 
         val whRatio: Float =
             logoImage.width.toFloat()  / logoImage.height

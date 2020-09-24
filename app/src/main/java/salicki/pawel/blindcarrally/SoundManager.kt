@@ -8,7 +8,7 @@ import android.os.Build
 
 object SoundManager {
     private var soundPool: SoundPool? = null
-    private val MAX_STREAMS = 2
+    private const val MAX_STREAMS = 2
 
     private var sound1: Int = 0
     private var sound2: Int = 0
@@ -34,10 +34,10 @@ object SoundManager {
     fun playSound(soundId: Int){
         when (soundId) {
             R.raw.swoosh -> {
-                soundPool!!.play(sound1, 1f, 1f, 0, 0, 1f)
+                soundPool!!.play(sound1, Settings.sounds*0.1f, Settings.sounds*0.1f, 0, 0, 1f)
             }
             R.raw.accept -> {
-                soundPool!!.play(sound2, 1f, 1f, 0, 0, 1f)
+                soundPool!!.play(sound2, Settings.sounds*0.1f, Settings.sounds*0.1f, 0, 0, 1f)
             }
 
         }

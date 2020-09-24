@@ -3,27 +3,43 @@ package salicki.pawel.blindcarrally.scenes
 import android.graphics.Canvas
 import android.view.MotionEvent
 import android.view.SurfaceView
-import salicki.pawel.blindcarrally.Settings
+import salicki.pawel.blindcarrally.*
 import salicki.pawel.blindcarrally.scenemanager.ILevel
+import salicki.pawel.blindcarrally.scenemanager.LevelManager
+import salicki.pawel.blindcarrally.scenemanager.LevelType
 
 class CreditsLevel : SurfaceView(Settings.CONTEXT), ILevel {
+
+    private var texts : HashMap<String, String> = HashMap()
+
+    init {
+        isFocusable = true
+    }
+
     override fun initState() {
-        TODO("Not yet implemented")
+        texts.putAll(OpenerCSV.readData(R.raw.credits_tts, Settings.languageTTS))
+        TextToSpeechManager.speakNow(texts["CREDITS_AUTHOR"].toString())
+        TextToSpeechManager.speakQueue(texts["CREDITS_BACK"].toString())
     }
 
     override fun updateState() {
-        TODO("Not yet implemented")
+
     }
 
     override fun destroyState() {
-        TODO("Not yet implemented")
+
     }
 
-    override fun respondTouchState(motionEvent: MotionEvent) {
-        TODO("Not yet implemented")
+    override fun respondTouchState(event: MotionEvent) {
+        when(GestureManager.gestureDetect(event)){
+            GestureType.DOUBLE_TAP->{
+                SoundManager.playSound(R.raw.accept)
+                LevelManager.changeLevel(LevelType.MENU)
+            }
+        }
     }
 
     override fun redrawState(canvas: Canvas) {
-        TODO("Not yet implemented")
+
     }
 }

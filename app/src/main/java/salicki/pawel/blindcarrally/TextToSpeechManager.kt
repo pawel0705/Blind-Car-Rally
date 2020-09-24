@@ -1,9 +1,9 @@
 package salicki.pawel.blindcarrally
 
-import android.content.Context
-import android.os.Build
 import android.speech.tts.TextToSpeech
+import android.speech.tts.Voice
 import android.util.Log
+import androidx.core.os.bundleOf
 import java.util.*
 
 object TextToSpeechManager {
@@ -20,6 +20,9 @@ object TextToSpeechManager {
         textToSpeechPolish = TextToSpeech(Settings.CONTEXT) { status ->
             if (status != TextToSpeech.ERROR) {
                 textToSpeechPolish?.language = Locale(LanguageTTS.POLISH.locale)
+                var a: Set<String> = hashSetOf("male")
+                val v = Voice("pl-pl-x-bmg-local", Locale("pl", "PL"), 400, 200, false, a)
+                textToSpeechPolish?.voice = v
             }
         }
     }
@@ -98,6 +101,8 @@ object TextToSpeechManager {
 
         Log.d("QUEUE", Settings.languageTTS.toString())
 
+        val params = bundleOf(TextToSpeech.Engine.KEY_PARAM_VOLUME to (Settings.lector * 0.1F))
+
         if (Settings.languageTTS == LanguageTTS.ENGLISH) {
             if (textToSpeechEnglish != null) {
                 textToSpeechEnglish?.speak(text, TextToSpeech.QUEUE_ADD, null, null)
@@ -112,19 +117,28 @@ object TextToSpeechManager {
     fun speakNow(text: String) {
         Log.d("NOW", Settings.languageTTS.toString())
 
+        /*
+        for(test in textToSpeechPolish?.voices?.toList()!!){
+            Log.d("TEST", test.toString())
+        }
+*/
+        val params = bundleOf(TextToSpeech.Engine.KEY_PARAM_VOLUME to (Settings.lector * 0.1F))
+
         if (Settings.languageTTS == LanguageTTS.ENGLISH) {
 
             Log.d("NOW", "W ANGIELSKIM")
 
             if (textToSpeechEnglish != null) {
-                textToSpeechEnglish?.speak(text, TextToSpeech.QUEUE_FLUSH, null, null)
+                textToSpeechEnglish?.speak(text, TextToSpeech.QUEUE_FLUSH, params, null)
             }
         }else {
             Log.d("NOW", "W POLSKIM")
 
             if (textToSpeechPolish != null) {
-                textToSpeechPolish?.speak(text, TextToSpeech.QUEUE_FLUSH, null, null)
+                textToSpeechPolish?.speak(text, TextToSpeech.QUEUE_FLUSH, params, null)
             }
         }
+
+
     }
 }

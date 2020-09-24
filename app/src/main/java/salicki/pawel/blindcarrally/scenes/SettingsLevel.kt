@@ -5,6 +5,8 @@ import android.view.MotionEvent
 import android.view.SurfaceView
 import salicki.pawel.blindcarrally.*
 import salicki.pawel.blindcarrally.scenemanager.ILevel
+import salicki.pawel.blindcarrally.scenemanager.LevelManager
+import salicki.pawel.blindcarrally.scenemanager.LevelType
 
 class SettingsLevel : SurfaceView(Settings.CONTEXT), ILevel {
 
@@ -21,6 +23,11 @@ class SettingsLevel : SurfaceView(Settings.CONTEXT), ILevel {
     override fun initState() {
         texts.putAll(OpenerCSV.readData(R.raw.settings_tts, Settings.languageTTS))
         TextToSpeechManager.speakNow(texts["SETTINGS_TUTORIAL"].toString())
+        if (Settings.vibrations) {
+            TextToSpeechManager.speakQueue(texts["SETTINGS_VIBRATION_ON"].toString())
+        } else {
+            TextToSpeechManager.speakQueue(texts["SETTINGS_VIBRATION_OFF"].toString())
+        }
     }
 
     override fun updateState() {
@@ -47,6 +54,9 @@ class SettingsLevel : SurfaceView(Settings.CONTEXT), ILevel {
                 3->{
                     TextToSpeechManager.speakNow(texts["SETTINGS_SOUNDS"].toString())
                 }
+                4->{
+                    TextToSpeechManager.speakNow(texts["SETTINGS_EXIT"].toString())
+                }
             }
         }
     }
@@ -62,7 +72,7 @@ class SettingsLevel : SurfaceView(Settings.CONTEXT), ILevel {
                 SoundManager.playSound(R.raw.swoosh)
                 settingsIterator++
 
-                if(settingsIterator > 3){
+                if(settingsIterator > 4){
                     settingsIterator = 0
                 }
 
@@ -72,7 +82,7 @@ class SettingsLevel : SurfaceView(Settings.CONTEXT), ILevel {
                 SoundManager.playSound(R.raw.swoosh)
                 settingsIterator--
                 if(settingsIterator < 0) {
-                    settingsIterator = 3
+                    settingsIterator = 4
                 }
 
                 swipe = true
@@ -100,10 +110,13 @@ class SettingsLevel : SurfaceView(Settings.CONTEXT), ILevel {
                         }
                     }
                     2->{
-
+                        LevelManager.changeLevel(LevelType.VOLUME_TTS)
                     }
                     3->{
-
+                        LevelManager.changeLevel(LevelType.VOLUME_SOUNDS)
+                    }
+                    4->{
+                        LevelManager.changeLevel(LevelType.MENU)
                     }
                 }
             }

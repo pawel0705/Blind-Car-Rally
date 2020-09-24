@@ -27,6 +27,8 @@ object LevelManager : SurfaceView(Settings.CONTEXT), SurfaceHolder.Callback {
         scenes[LevelType.GAME] = GameLevel()
         scenes[LevelType.SETTINGS] = SettingsLevel()
         scenes[LevelType.CREDITS] = CreditsLevel()
+        scenes[LevelType.VOLUME_TTS] = VolumeTTSLevel()
+        scenes[LevelType.VOLUME_SOUNDS] = VolumeSoundsLevel()
 
         val surfaceHolder = holder
         surfaceHolder.addCallback(this)

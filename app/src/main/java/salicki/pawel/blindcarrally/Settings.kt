@@ -12,6 +12,6 @@ object Settings {
 
     var vibrations: Boolean = true
     var display: Boolean = true
-    var lector: Float = 1F
-    var sounds: Float = 1F
+    var lector: Int = 10
+    var sounds: Int = 10
 }
