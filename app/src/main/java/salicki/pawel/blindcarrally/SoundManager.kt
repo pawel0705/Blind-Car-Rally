@@ -8,12 +8,13 @@ import android.os.Build
 
 object SoundManager {
     private var soundPool: SoundPool? = null
-    private const val MAX_STREAMS = 2
+    private const val MAX_STREAMS = 3
 
     private var sound1: Int = 0
     private var sound2: Int = 0
+    private var sound3: Int = 0
 
-    fun initSoundManager(){
+    fun initSoundManager() {
         soundPool = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             val audioAttributes = AudioAttributes.Builder()
                 .setUsage(AudioAttributes.USAGE_ASSISTANCE_ACCESSIBILITY)
@@ -27,24 +28,27 @@ object SoundManager {
             SoundPool(MAX_STREAMS, AudioManager.STREAM_ACCESSIBILITY, 0)
         }
 
-        sound1  = soundPool?.load(Settings.CONTEXT, R.raw.swoosh, 1)!!
-        sound2  = soundPool?.load(Settings.CONTEXT, R.raw.accept, 1)!!
+        sound1 = soundPool?.load(Settings.CONTEXT, R.raw.swoosh, 1)!!
+        sound2 = soundPool?.load(Settings.CONTEXT, R.raw.accept, 1)!!
+        sound3 = soundPool?.load(Settings.CONTEXT, R.raw.beep, 1)!!
     }
 
-    fun playSound(soundId: Int){
+    fun playSound(soundId: Int) {
         when (soundId) {
             R.raw.swoosh -> {
-                soundPool!!.play(sound1, Settings.sounds*0.1f, Settings.sounds*0.1f, 0, 0, 1f)
+                soundPool!!.play(sound1, Settings.sounds * 0.1f, Settings.sounds * 0.1f, 0, 0, 1f)
             }
             R.raw.accept -> {
-                soundPool!!.play(sound2, Settings.sounds*0.1f, Settings.sounds*0.1f, 0, 0, 1f)
+                soundPool!!.play(sound2, Settings.sounds * 0.1f, Settings.sounds * 0.1f, 0, 0, 1f)
             }
-
+            R.raw.beep -> {
+                soundPool!!.play(sound3, Settings.sounds * 0.1f, Settings.sounds * 0.1f, 0, 0, 1f)
+            }
         }
     }
 
-    fun destroy(){
-        if(soundPool != null){
+    fun destroy() {
+        if (soundPool != null) {
             soundPool?.release()
             soundPool = null
         }

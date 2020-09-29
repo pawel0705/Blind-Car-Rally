@@ -55,7 +55,6 @@ object TextToSpeechManager {
     }
 */
 
-
     fun isSpeaking(): Boolean {
         if (Settings.languageTTS == LanguageTTS.ENGLISH) {
             if (textToSpeechEnglish != null) {
@@ -82,7 +81,6 @@ object TextToSpeechManager {
                 textToSpeechPolish?.shutdown()
             }
         }
-
     }
 
     fun stop() {
@@ -98,10 +96,7 @@ object TextToSpeechManager {
     }
 
     fun speakQueue(text: String) {
-
-        Log.d("QUEUE", Settings.languageTTS.toString())
-
-        val params = bundleOf(TextToSpeech.Engine.KEY_PARAM_VOLUME to (Settings.lector * 0.1F))
+        val params = bundleOf(TextToSpeech.Engine.KEY_PARAM_VOLUME to (Settings.reader * 0.1F))
 
         if (Settings.languageTTS == LanguageTTS.ENGLISH) {
             if (textToSpeechEnglish != null) {
@@ -115,30 +110,16 @@ object TextToSpeechManager {
     }
 
     fun speakNow(text: String) {
-        Log.d("NOW", Settings.languageTTS.toString())
-
-        /*
-        for(test in textToSpeechPolish?.voices?.toList()!!){
-            Log.d("TEST", test.toString())
-        }
-*/
-        val params = bundleOf(TextToSpeech.Engine.KEY_PARAM_VOLUME to (Settings.lector * 0.1F))
+        val params = bundleOf(TextToSpeech.Engine.KEY_PARAM_VOLUME to (Settings.reader * 0.1F))
 
         if (Settings.languageTTS == LanguageTTS.ENGLISH) {
-
-            Log.d("NOW", "W ANGIELSKIM")
-
             if (textToSpeechEnglish != null) {
                 textToSpeechEnglish?.speak(text, TextToSpeech.QUEUE_FLUSH, params, null)
             }
-        }else {
-            Log.d("NOW", "W POLSKIM")
-
+        } else {
             if (textToSpeechPolish != null) {
                 textToSpeechPolish?.speak(text, TextToSpeech.QUEUE_FLUSH, params, null)
             }
         }
-
-
     }
 }

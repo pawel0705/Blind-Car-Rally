@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<track>
+    <roads>
+        <road name="test.xml"/>
+        <road name="test2.xml"/>
+    </roads>
+</track>

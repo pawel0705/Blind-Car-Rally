@@ -6,7 +6,7 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 
-class MovementManager(context: Context) : SensorEventListener{
+class MovementManager(context: Context) : SensorEventListener {
     private var manager: SensorManager? = null
     private var accelerometer: Sensor? = null
     private var magnetometer: Sensor? = null
@@ -48,9 +48,12 @@ class MovementManager(context: Context) : SensorEventListener{
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
 
     override fun onSensorChanged(event: SensorEvent) {
-        if (event.sensor.type == Sensor.TYPE_ACCELEROMETER) accelOutput =
-            event.values else if (event.sensor.type == Sensor.TYPE_MAGNETIC_FIELD) magOutput =
-            event.values
+        if (event.sensor.type == Sensor.TYPE_ACCELEROMETER) {
+            accelOutput = event.values
+        } else if (event.sensor.type == Sensor.TYPE_MAGNETIC_FIELD) {
+            magOutput = event.values
+        }
+
         if (accelOutput != null && magOutput != null) {
             val R = FloatArray(9)
             val I = FloatArray(9)

@@ -10,10 +10,10 @@ object OpenerCSV {
     private const val ENGLISH_KEY = 1
     private const val POLISH_KEY = 2
 
-    fun readData(resource: Int, languageTTS: LanguageTTS) : HashMap<String, String> {
+    fun readData(resource: Int, languageTTS: LanguageTTS): HashMap<String, String> {
         var line: String?
 
-        var texts : HashMap<String, String> = HashMap()
+        var texts: HashMap<String, String> = HashMap()
 
         val inputStream: InputStream? = Settings.CONTEXT?.resources?.openRawResource(resource)
         val reader = BufferedReader(InputStreamReader(inputStream, Charset.forName("UTF-8")))
@@ -26,10 +26,9 @@ object OpenerCSV {
             val tokens = line.split(";")
             if (tokens.isNotEmpty()) {
 
-                if(languageTTS == LanguageTTS.ENGLISH){
+                if (languageTTS == LanguageTTS.ENGLISH) {
                     texts[tokens[TEXT_KEY]] = tokens[ENGLISH_KEY]
-                }
-                else{
+                } else {
                     texts[tokens[TEXT_KEY]] = tokens[POLISH_KEY]
                 }
             }

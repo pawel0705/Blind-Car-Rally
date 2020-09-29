@@ -1,6 +1,7 @@
 package salicki.pawel.blindcarrally
 
 import android.graphics.Canvas
+import android.util.Log
 import android.view.SurfaceHolder
 import salicki.pawel.blindcarrally.scenemanager.LevelManager
 
@@ -40,7 +41,11 @@ class GameLoop(surfaceHolder: SurfaceHolder) : Thread() {
                 synchronized(surfaceHolder) {
                     LevelManager.updateState()
                     updateCount++
-                    LevelManager.redrawState(canvas)
+
+                    Log.d("MPO", Settings.display.toString())
+                    if(Settings.display){
+                        LevelManager.redrawState(canvas)
+                    }
                 }
             } catch (e: IllegalArgumentException) {
                 e.printStackTrace()

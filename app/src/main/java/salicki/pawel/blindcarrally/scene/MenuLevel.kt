@@ -1,9 +1,10 @@
-package salicki.pawel.blindcarrally.scenes
+package salicki.pawel.blindcarrally.scene
 
 import android.graphics.Canvas
 import android.view.MotionEvent
 import android.view.SurfaceView
 import salicki.pawel.blindcarrally.*
+import salicki.pawel.blindcarrally.data.MenuSelectionData
 import salicki.pawel.blindcarrally.scenemanager.ILevel
 import salicki.pawel.blindcarrally.scenemanager.LevelManager
 import salicki.pawel.blindcarrally.scenemanager.LevelType
@@ -11,7 +12,7 @@ import kotlin.collections.HashMap
 
 class MenuLevel : SurfaceView(Settings.CONTEXT), ILevel {
 
-    private var texts : HashMap<String, String> = HashMap()
+    private var texts: HashMap<String, String> = HashMap()
 
     private var menuSelectionDataData = arrayListOf<MenuSelectionData>()
     private var menuIterator: Int = 0
@@ -35,7 +36,7 @@ class MenuLevel : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun updateState() {
-        if(swipe){
+        if (swipe) {
             texts[menuSelectionDataData[menuIterator].textKey]?.let {
                 TextToSpeechManager.speakNow(
                     it
@@ -51,27 +52,27 @@ class MenuLevel : SurfaceView(Settings.CONTEXT), ILevel {
 
     override fun respondTouchState(event: MotionEvent) {
 
-        when(GestureManager.gestureDetect(event)){
-            GestureType.SWIPE_LEFT->{
+        when (GestureManager.gestureDetect(event)) {
+            GestureType.SWIPE_LEFT -> {
                 SoundManager.playSound(R.raw.swoosh)
                 menuIterator++
 
-                if(menuIterator >= menuSelectionDataData.size){
+                if (menuIterator >= menuSelectionDataData.size) {
                     menuIterator = 0
                 }
 
                 swipe = true
             }
-            GestureType.SWIPE_RIGHT->{
+            GestureType.SWIPE_RIGHT -> {
                 SoundManager.playSound(R.raw.swoosh)
                 menuIterator--
-                if(menuIterator < 0) {
+                if (menuIterator < 0) {
                     menuIterator = menuSelectionDataData.size - 1
                 }
 
                 swipe = true
             }
-            GestureType.DOUBLE_TAP->{
+            GestureType.DOUBLE_TAP -> {
                 SoundManager.playSound(R.raw.accept)
                 LevelManager.changeLevel(menuSelectionDataData[menuIterator].levelType)
             }

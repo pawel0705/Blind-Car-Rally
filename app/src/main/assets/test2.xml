@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<track>
+    <left>    </left>
+        <point x="0" y="0"/>
+        <point x="0" y="100"/>
+        <point x="20" y="150"/>
+
+    <right>    </right>
+        <point x="30" y="0"/>
+        <point x="35" y="100"/>
+        <point x="50" y="150"/>
+
+</track>

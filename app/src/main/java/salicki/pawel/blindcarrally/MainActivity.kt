@@ -1,6 +1,5 @@
 package salicki.pawel.blindcarrally
 
-import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
 import android.os.Vibrator
@@ -27,13 +26,12 @@ class MainActivity : AppCompatActivity() {
         setContentView(LevelManager);
     }
 
-    fun exit()
-    {
+    fun exit() {
         finishAffinity()
         exitProcess(0)
     }
 
-    fun vibratorService() : Vibrator {
+    fun vibratorService(): Vibrator {
         return getSystemService(VIBRATOR_SERVICE) as Vibrator
     }
 

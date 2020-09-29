@@ -9,13 +9,13 @@ import androidx.core.content.ContextCompat
 import salicki.pawel.blindcarrally.GameLoop
 import salicki.pawel.blindcarrally.R
 import salicki.pawel.blindcarrally.Settings
-import salicki.pawel.blindcarrally.scenes.*
+import salicki.pawel.blindcarrally.scene.*
 
 
 object LevelManager : SurfaceView(Settings.CONTEXT), SurfaceHolder.Callback {
 
-    private val scenes : HashMap<LevelType, ILevel> = HashMap()
-    private var activeLevelType : LevelType = LevelType.SPLASH
+    private val scenes: HashMap<LevelType, ILevel> = HashMap()
+    private var activeLevelType: LevelType = LevelType.SPLASH
 
     private var gameLoop: GameLoop
 
@@ -33,15 +33,14 @@ object LevelManager : SurfaceView(Settings.CONTEXT), SurfaceHolder.Callback {
         val surfaceHolder = holder
         surfaceHolder.addCallback(this)
 
-        gameLoop = GameLoop( surfaceHolder)
+        gameLoop = GameLoop(surfaceHolder)
     }
 
-    fun changeLevel(level: LevelType){
+    fun changeLevel(level: LevelType) {
         this.activeLevelType = level
         this.scenes[activeLevelType]?.initState()
 
     }
-
 
     fun updateState() {
         this.scenes[activeLevelType]?.updateState()
@@ -51,7 +50,7 @@ object LevelManager : SurfaceView(Settings.CONTEXT), SurfaceHolder.Callback {
         this.scenes[activeLevelType]?.destroyState()
     }
 
-    private fun initState(){
+    private fun initState() {
         this.scenes[activeLevelType]?.initState()
     }
 
@@ -86,7 +85,7 @@ object LevelManager : SurfaceView(Settings.CONTEXT), SurfaceHolder.Callback {
         canvas.drawText("FPS: $averageFPS", 100F, 200F, paint)
     }
 
-    fun pause(){
+    fun pause() {
         gameLoop.stopLoop()
     }
 

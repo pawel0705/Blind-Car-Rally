@@ -1,4 +1,4 @@
-package salicki.pawel.blindcarrally.scenes
+package salicki.pawel.blindcarrally.scene
 
 import android.graphics.Canvas
 import android.view.MotionEvent
@@ -10,7 +10,7 @@ import salicki.pawel.blindcarrally.scenemanager.LevelType
 
 class CreditsLevel : SurfaceView(Settings.CONTEXT), ILevel {
 
-    private var texts : HashMap<String, String> = HashMap()
+    private var texts: HashMap<String, String> = HashMap()
 
     init {
         isFocusable = true
@@ -18,6 +18,7 @@ class CreditsLevel : SurfaceView(Settings.CONTEXT), ILevel {
 
     override fun initState() {
         texts.putAll(OpenerCSV.readData(R.raw.credits_tts, Settings.languageTTS))
+
         TextToSpeechManager.speakNow(texts["CREDITS_AUTHOR"].toString())
         TextToSpeechManager.speakQueue(texts["CREDITS_BACK"].toString())
     }
@@ -31,8 +32,8 @@ class CreditsLevel : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun respondTouchState(event: MotionEvent) {
-        when(GestureManager.gestureDetect(event)){
-            GestureType.DOUBLE_TAP->{
+        when (GestureManager.gestureDetect(event)) {
+            GestureType.DOUBLE_TAP -> {
                 SoundManager.playSound(R.raw.accept)
                 LevelManager.changeLevel(LevelType.MENU)
             }

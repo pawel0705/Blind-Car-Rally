@@ -20,7 +20,7 @@ object GestureManager {
     private var duration: Long = 0
     private const val MAX_DURATION = 200
 
-    fun gestureDetect(event: MotionEvent) : GestureType{
+    fun gestureDetect(event: MotionEvent): GestureType {
         swipe = false
 
         when (event.action) {
@@ -50,9 +50,9 @@ object GestureManager {
                     abs(deltaY) > MIN_DISTANCE -> {
                         swipe = true
 
-                        return if(y2>y1){
+                        return if (y2 > y1) {
                             GestureType.SWIPE_DOWN
-                        } else{
+                        } else {
                             GestureType.SWIPE_UP
                         }
                     }
@@ -63,7 +63,7 @@ object GestureManager {
             }
         }
 
-        if(!swipe){
+        if (!swipe) {
             when (event.action and MotionEvent.ACTION_MASK) {
                 MotionEvent.ACTION_DOWN -> {
                     startTime = System.currentTimeMillis()

@@ -1,4 +1,4 @@
-package salicki.pawel.blindcarrally.scenes
+package salicki.pawel.blindcarrally.scene
 
 import android.graphics.Canvas
 import android.view.MotionEvent
@@ -10,7 +10,7 @@ import salicki.pawel.blindcarrally.scenemanager.LevelType
 
 class SettingsLevel : SurfaceView(Settings.CONTEXT), ILevel {
 
-    private var texts : HashMap<String, String> = HashMap()
+    private var texts: HashMap<String, String> = HashMap()
     private var settingsIterator = 0
 
     private var swipe: Boolean = false
@@ -31,30 +31,30 @@ class SettingsLevel : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun updateState() {
-        if(swipe){
+        if (swipe) {
             swipe = false
-            when(settingsIterator){
-                0->{
-                    if(Settings.vibrations){
+            when (settingsIterator) {
+                0 -> {
+                    if (Settings.vibrations) {
                         TextToSpeechManager.speakNow(texts["SETTINGS_VIBRATION_ON"].toString())
                     } else {
                         TextToSpeechManager.speakNow(texts["SETTINGS_VIBRATION_OFF"].toString())
                     }
                 }
-                1->{
-                    if(Settings.display){
+                1 -> {
+                    if (Settings.display) {
                         TextToSpeechManager.speakNow(texts["SETTINGS_DISPLAY_ON"].toString())
                     } else {
                         TextToSpeechManager.speakNow(texts["SETTINGS_DISPLAY_OFF"].toString())
                     }
                 }
-                2->{
+                2 -> {
                     TextToSpeechManager.speakNow(texts["SETTINGS_TTS"].toString())
                 }
-                3->{
+                3 -> {
                     TextToSpeechManager.speakNow(texts["SETTINGS_SOUNDS"].toString())
                 }
-                4->{
+                4 -> {
                     TextToSpeechManager.speakNow(texts["SETTINGS_EXIT"].toString())
                 }
             }
@@ -67,30 +67,30 @@ class SettingsLevel : SurfaceView(Settings.CONTEXT), ILevel {
 
     override fun respondTouchState(event: MotionEvent) {
 
-        when(GestureManager.gestureDetect(event)){
-            GestureType.SWIPE_LEFT->{
+        when (GestureManager.gestureDetect(event)) {
+            GestureType.SWIPE_LEFT -> {
                 SoundManager.playSound(R.raw.swoosh)
                 settingsIterator++
 
-                if(settingsIterator > 4){
+                if (settingsIterator > 4) {
                     settingsIterator = 0
                 }
 
                 swipe = true
             }
-            GestureType.SWIPE_RIGHT->{
+            GestureType.SWIPE_RIGHT -> {
                 SoundManager.playSound(R.raw.swoosh)
                 settingsIterator--
-                if(settingsIterator < 0) {
+                if (settingsIterator < 0) {
                     settingsIterator = 4
                 }
 
                 swipe = true
             }
-            GestureType.DOUBLE_TAP->{
+            GestureType.DOUBLE_TAP -> {
                 SoundManager.playSound(R.raw.accept)
 
-                when(settingsIterator) {
+                when (settingsIterator) {
                     0 -> {
                         Settings.vibrations = !Settings.vibrations
 
@@ -109,13 +109,13 @@ class SettingsLevel : SurfaceView(Settings.CONTEXT), ILevel {
                             TextToSpeechManager.speakNow(texts["SETTINGS_DISPLAY_OFF"].toString())
                         }
                     }
-                    2->{
+                    2 -> {
                         LevelManager.changeLevel(LevelType.VOLUME_TTS)
                     }
-                    3->{
+                    3 -> {
                         LevelManager.changeLevel(LevelType.VOLUME_SOUNDS)
                     }
-                    4->{
+                    4 -> {
                         LevelManager.changeLevel(LevelType.MENU)
                     }
                 }

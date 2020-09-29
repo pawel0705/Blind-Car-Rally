@@ -1,4 +1,4 @@
-package salicki.pawel.blindcarrally.scenes
+package salicki.pawel.blindcarrally.scene
 
 import android.graphics.Canvas
 import android.view.MotionEvent
@@ -8,9 +8,10 @@ import salicki.pawel.blindcarrally.scenemanager.ILevel
 import salicki.pawel.blindcarrally.scenemanager.LevelManager
 import salicki.pawel.blindcarrally.scenemanager.LevelType
 
-class VolumeSoundsLevel : SurfaceView(Settings.CONTEXT), ILevel {
-    private var texts : HashMap<String, String> = HashMap()
-    private var volume : ArrayList<String> = ArrayList()
+class VolumeTTSLevel : SurfaceView(Settings.CONTEXT), ILevel {
+
+    private var texts: HashMap<String, String> = HashMap()
+    private var volume: ArrayList<String> = ArrayList()
     private var volumeIterator = 0
 
     private var swipe: Boolean = false
@@ -33,7 +34,7 @@ class VolumeSoundsLevel : SurfaceView(Settings.CONTEXT), ILevel {
     override fun initState() {
         texts.putAll(OpenerCSV.readData(R.raw.settings_tts, Settings.languageTTS))
 
-        TextToSpeechManager.speakNow(texts["SETTINGS_SOUNDS_VOLUME"].toString() + texts[volume[Settings.sounds - 1]].toString())
+        TextToSpeechManager.speakNow(texts["SETTINGS_TTS_VOLUME"].toString() + texts[volume[Settings.reader - 1]].toString())
     }
 
     override fun updateState() {
@@ -45,7 +46,7 @@ class VolumeSoundsLevel : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun respondTouchState(event: MotionEvent) {
-        when(GestureManager.gestureDetect(event)) {
+        when (GestureManager.gestureDetect(event)) {
             GestureType.SWIPE_LEFT -> {
                 SoundManager.playSound(R.raw.swoosh)
                 volumeIterator++
@@ -54,8 +55,8 @@ class VolumeSoundsLevel : SurfaceView(Settings.CONTEXT), ILevel {
                     volumeIterator = 0
                 }
 
-                Settings.sounds = volumeIterator + 1
-                TextToSpeechManager.speakNow(texts["SETTINGS_SOUNDS_VOLUME"].toString() + texts[volume[Settings.sounds - 1]].toString())
+                Settings.reader = volumeIterator + 1
+                TextToSpeechManager.speakNow(texts["SETTINGS_TTS_VOLUME"].toString() + texts[volume[Settings.reader - 1]].toString())
 
                 swipe = true
             }
@@ -66,8 +67,8 @@ class VolumeSoundsLevel : SurfaceView(Settings.CONTEXT), ILevel {
                     volumeIterator = volume.size - 1
                 }
 
-                Settings.sounds = volumeIterator + 1
-                TextToSpeechManager.speakNow(texts["SETTINGS_SOUNDS_VOLUME"].toString() + texts[volume[Settings.sounds - 1]].toString())
+                Settings.reader = volumeIterator + 1
+                TextToSpeechManager.speakNow(texts["SETTINGS_TTS_VOLUME"].toString() + texts[volume[Settings.reader - 1]].toString())
 
                 swipe = true
             }
