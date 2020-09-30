@@ -3,5 +3,6 @@
     <roads>
         <road name="test.xml"/>
         <road name="test2.xml"/>
+        <road name="test3.xml"/>
     </roads>
 </track>

@@ -1,6 +1,12 @@
 package salicki.pawel.blindcarrally.scene
 
-import android.graphics.*
+import android.gesture.Gesture
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.RectF
+import android.util.DisplayMetrics
+import android.util.Log
 import android.view.MotionEvent
 import android.view.SurfaceView
 import androidx.core.content.ContextCompat
@@ -8,29 +14,37 @@ import salicki.pawel.blindcarrally.*
 import salicki.pawel.blindcarrally.data.LeftRightDate
 import salicki.pawel.blindcarrally.scenemanager.ILevel
 
+
 class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
 
-    private val movementManager: MovementManager = MovementManager(context)
-
-    private var car: Car
+    private var car: Car = Car(
+        Settings.SCREEN_WIDTH / 2F,
+        Settings.SCREEN_HEIGHT / 2F,
+        RectF(
+            Settings.SCREEN_WIDTH / 2F,
+            Settings.SCREEN_HEIGHT / 2F,
+            Settings.SCREEN_WIDTH / 2F + 0.2F * Settings.SCREEN_SCALE,
+            Settings.SCREEN_HEIGHT / 2F + 0.4F * Settings.SCREEN_SCALE
+        )
+    )
     private var coordinateDisplayManager: CoordinateDisplayManager
 
     private var tmp: MutableList<LeftRightDate>? = null
 
     init {
-        movementManager.register()
 
-        car = Car(500F, 500F, RectF(500F, 500F, 600F, 700F))
+        //   Log.d("SKALA", scale.toString())
+
         coordinateDisplayManager = CoordinateDisplayManager(car)
 
         isFocusable = true
     }
 
     private fun drawCoordinates(canvas: Canvas) {
-        if (this.movementManager.getOrientation() != null && this.movementManager.getStartOrientation() != null) {
-            val test1 = movementManager.getOrientation()!![0].toDouble().toString()
-            val test2 = movementManager.getOrientation()!![1].toDouble().toString()
-            val test3 = movementManager.getOrientation()!![2].toDouble().toString()
+        if (MovementManager.getOrientation() != null && MovementManager.getStartOrientation() != null) {
+            val test1 = MovementManager.getOrientation()!![0].toDouble().toString()
+            val test2 = MovementManager.getOrientation()!![1].toDouble().toString()
+            val test3 = MovementManager.getOrientation()!![2].toDouble().toString()
             val paint = Paint()
             val color = ContextCompat.getColor(context, R.color.colorPrimary)
             paint.color = color
@@ -49,6 +63,28 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
         car.update()
 
         coordinateDisplayManager.updateEnvironmentCoordinates()
+
+        if (tmp != null) {
+            for (test1 in tmp!!) {
+                for (test in test1.left) {
+                    if (car.collisionCheck(test.xStart, test.yStart, test.xEnd, test.yEnd)) {
+                        return
+                    }
+
+                }
+                for (test in test1.right) {
+                    if (car.collisionCheck(
+                            test.xStart,
+                            test.yStart,
+                            test.xEnd,
+                            test.yEnd
+                        )
+                    ) {
+                        return
+                    }
+                }
+            }
+        }
     }
 
     override fun destroyState() {
@@ -56,7 +92,10 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun respondTouchState(motionEvent: MotionEvent) {
-
+        when(GestureManager.tapPositionDetect(motionEvent)){
+            GestureType.TAP_RIGHT->car.higherGear()
+            GestureType.TAP_LEFT->car.lowerGear()
+        }
     }
 
     override fun redrawState(canvas: Canvas) {
@@ -64,10 +103,25 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
         car.draw(canvas, coordinateDisplayManager)
 
         var paint = Paint()
-        paint.strokeWidth = 10F
+        paint.strokeWidth = Settings.SCREEN_SCALE * 0.02F
         paint.color = Color.WHITE
 
-        if(tmp != null){
+
+        /*
+        canvas.drawLine(
+            coordinateDisplayManager.convertToEnvironmentX(300F),
+            coordinateDisplayManager.convertToEnvironmentY(300F),
+            coordinateDisplayManager.convertToEnvironmentX(600F),
+            coordinateDisplayManager.convertToEnvironmentY(600F), paint
+        )
+
+
+
+        canvas.drawLine(300F, 300F, 600F, 600F, paint)
+        car.collisionCheck(300F, 300F, 600F, 600F)
+*/
+
+        if (tmp != null) {
             for (test1 in tmp!!) {
                 for (test in test1.left) {
                     canvas.drawLine(
@@ -77,8 +131,6 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
                         coordinateDisplayManager.convertToEnvironmentY(test.yEnd),
                         paint
                     );
-
-                    car.collisionCheck(test.xStart, test.yStart, test.xEnd, test.yEnd)
                 }
                 for (test in test1.right) {
                     canvas.drawLine(
@@ -88,8 +140,6 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
                         coordinateDisplayManager.convertToEnvironmentY(test.yEnd),
                         paint
                     );
-
-                    car.collisionCheck(test.xStart, test.yStart, test.xEnd, test.yEnd)
                 }
             }
         }

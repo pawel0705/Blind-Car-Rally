@@ -20,6 +20,8 @@ class MainActivity : AppCompatActivity() {
         Settings.SCREEN_WIDTH = displayMetrics.widthPixels
         Settings.CONTEXT = this
 
+        Settings.SCREEN_SCALE = displayMetrics.densityDpi.toFloat()
+
         TextToSpeechManager.initTextToSpeech()
         SoundManager.initSoundManager()
 

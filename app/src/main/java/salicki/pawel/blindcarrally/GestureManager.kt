@@ -89,4 +89,21 @@ object GestureManager {
 
         return GestureType.NONE
     }
+
+    fun tapPositionDetect(event: MotionEvent): GestureType {
+        when (event.action) {
+            MotionEvent.ACTION_DOWN -> {
+                x1 = event.x
+            }
+            MotionEvent.ACTION_UP -> {
+                return if(x1 > Settings.SCREEN_WIDTH / 2){
+                    GestureType.TAP_RIGHT
+                }else{
+                    GestureType.TAP_LEFT
+                }
+            }
+        }
+
+        return GestureType.NONE
+    }
 }

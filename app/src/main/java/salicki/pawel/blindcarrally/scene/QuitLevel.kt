@@ -14,7 +14,7 @@ class QuitLevel : SurfaceView(Settings.CONTEXT), ILevel {
     private var exit: Boolean = true
 
     override fun initState() {
-        texts.putAll(OpenerCSV.readData(R.raw.quit_tss, Settings.languageTTS))
+        texts.putAll(OpenerCSV.readData(R.raw.quit_tts, Settings.languageTTS))
         TextToSpeechManager.speakNow(texts["QUIT_TUTORIAL"].toString())
         TextToSpeechManager.speakQueue(texts["QUIT_YES"].toString())
     }

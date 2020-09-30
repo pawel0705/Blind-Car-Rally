@@ -2,6 +2,7 @@ package salicki.pawel.blindcarrally.scenemanager
 
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.os.CountDownTimer
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
@@ -9,14 +10,18 @@ import androidx.core.content.ContextCompat
 import salicki.pawel.blindcarrally.GameLoop
 import salicki.pawel.blindcarrally.R
 import salicki.pawel.blindcarrally.Settings
+import salicki.pawel.blindcarrally.TextToSpeechManager
 import salicki.pawel.blindcarrally.scene.*
+import java.util.*
+import kotlin.collections.HashMap
 
 
 object LevelManager : SurfaceView(Settings.CONTEXT), SurfaceHolder.Callback {
 
     private val scenes: HashMap<LevelType, ILevel> = HashMap()
     private var activeLevelType: LevelType = LevelType.SPLASH
-
+    private var touchTimer = Timer()
+    private var activateTouch: Boolean = false
     private var gameLoop: GameLoop
 
     init {
@@ -29,17 +34,35 @@ object LevelManager : SurfaceView(Settings.CONTEXT), SurfaceHolder.Callback {
         scenes[LevelType.CREDITS] = CreditsLevel()
         scenes[LevelType.VOLUME_TTS] = VolumeTTSLevel()
         scenes[LevelType.VOLUME_SOUNDS] = VolumeSoundsLevel()
+        scenes[LevelType.CALIBRATION] = CalibrationLevel()
 
         val surfaceHolder = holder
         surfaceHolder.addCallback(this)
 
         gameLoop = GameLoop(surfaceHolder)
+
+        startTimer()
     }
 
     fun changeLevel(level: LevelType) {
         this.activeLevelType = level
-        this.scenes[activeLevelType]?.initState()
 
+        this.resetTimer()
+        this.startTimer()
+
+        this.scenes[activeLevelType]?.initState()
+    }
+
+    private fun startTimer() {
+        touchTimer.schedule(object : TimerTask() {
+            override fun run() {
+                activateTouch = true
+            }
+        }, 1000)
+    }
+
+    private fun resetTimer() {
+        activateTouch = false
     }
 
     fun updateState() {
@@ -55,8 +78,11 @@ object LevelManager : SurfaceView(Settings.CONTEXT), SurfaceHolder.Callback {
     }
 
     private fun respondTouchState(motionEvent: MotionEvent) {
-        this.scenes[activeLevelType]?.respondTouchState(motionEvent)
+        if(activateTouch){
+            this.scenes[activeLevelType]?.respondTouchState(motionEvent)
+        }
     }
+
 
     fun redrawState(canvas: Canvas) {
         super.draw(canvas)

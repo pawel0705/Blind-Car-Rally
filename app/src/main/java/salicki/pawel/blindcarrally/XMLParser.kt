@@ -76,10 +76,10 @@ object XMLParser {
         var trackDateLeft = mutableListOf<TrackDate>()
         var trackDateRight = mutableListOf<TrackDate>()
 
-        var xLeft: String = "0"
-        var yLeft: String = "0"
-        var xRight: String = "0"
-        var yRight: String = "0"
+        var xLeft: Float = 0F
+        var yLeft: Float = 0F
+        var xRight: Float = 0F
+        var yRight: Float = 0F
         var right: Boolean = false
         var firstPoint: Boolean = false
 
@@ -92,31 +92,46 @@ object XMLParser {
                         right = false
                         firstPoint = true
 
-                        Log.d("LEFT", "LEFT")
+                    //    Log.d("LEFT", "LEFT")
                     }
 
                     if (tag_name == "right") {
                         right = true
                         firstPoint = true
 
-                        Log.d("RIGHT", "RIGHT")
+                    //    Log.d("RIGHT", "RIGHT")
                     }
 
                     if (tag_name == "point") {
                         var x: String = parser.getAttributeValue(0)
                         var y: String = parser.getAttributeValue(1)
 
-                        Log.d("X", x.toString())
-                        Log.d("Y", y.toString())
+                        var x0 = x.toFloat() * Settings.SCREEN_SCALE * 0.01F
+                        var y0 = y.toFloat() * Settings.SCREEN_SCALE * 0.01F
+
+                 //       Log.d("X", x.toString())
+                 //       Log.d("Y", y.toString())
 
                         if (firstPoint) {
                             firstPoint = false
+
+                            if(right){
+                                trackDateRight.add(
+                                    TrackDate(
+                                        x0 + lastRightX,
+                                        y0 + lastRightY,
+                                        xRight.toFloat() + lastRightX,
+                                        yRight.toFloat() + lastRightY
+                                    )
+                                )
+                            }
+
                         } else {
                             if (!right) {
                                 trackDateLeft.add(
                                     TrackDate(
-                                        x.toFloat() + lastLeftX,
-                                        y.toFloat() + lastLeftY,
+                                        x0+ lastLeftX,
+                                        y0+ lastLeftY,
                                         xLeft.toFloat() + lastLeftX,
                                         yLeft.toFloat() + lastLeftY
                                     )
@@ -124,8 +139,8 @@ object XMLParser {
                             } else {
                                 trackDateRight.add(
                                     TrackDate(
-                                        x.toFloat() + lastRightX,
-                                        y.toFloat() + lastRightY,
+                                        x0 + lastRightX,
+                                        y0+ lastRightY,
                                         xRight.toFloat() + lastRightX,
                                         yRight.toFloat() + lastRightY
                                     )
@@ -134,11 +149,11 @@ object XMLParser {
                         }
 
                         if (!right) {
-                            xLeft = x
-                            yLeft = y
+                            xLeft = x0
+                            yLeft = y0
                         } else {
-                            xRight = x
-                            yRight = y
+                            xRight = x0
+                            yRight = y0
                         }
                     }
                 }
@@ -150,14 +165,14 @@ object XMLParser {
         lastLeftX += xLeft.toInt()
         lastLeftY += yLeft.toInt()
 
-        Log.d("X_LEFT", xLeft.toString())
-        Log.d("Y_LEFT", yLeft.toString())
+    //    Log.d("X_LEFT", xLeft.toString())
+    //    Log.d("Y_LEFT", yLeft.toString())
 
         lastRightX += xRight.toInt()
         lastRightY += yRight.toInt()
 
-        Log.d("X_RIGHT", xRight.toString())
-        Log.d("Y_RIGHT", yRight.toString())
+     //   Log.d("X_RIGHT", xRight.toString())
+    //    Log.d("Y_RIGHT", yRight.toString())
 
         return LeftRightDate(trackDateLeft, trackDateRight)
     }

@@ -5,6 +5,7 @@ import android.content.Context
 object Settings {
     var SCREEN_WIDTH: Int = 0
     var SCREEN_HEIGHT: Int = 0
+    var SCREEN_SCALE: Float = 0F
 
     var CONTEXT: Context? = null
 

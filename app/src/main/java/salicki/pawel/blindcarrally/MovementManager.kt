@@ -6,7 +6,7 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 
-class MovementManager(context: Context) : SensorEventListener {
+object MovementManager : SensorEventListener {
     private var manager: SensorManager? = null
     private var accelerometer: Sensor? = null
     private var magnetometer: Sensor? = null
@@ -19,7 +19,7 @@ class MovementManager(context: Context) : SensorEventListener {
     private val orientation = FloatArray(3)
 
     init {
-        manager = context?.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        manager = Settings.CONTEXT?.getSystemService(Context.SENSOR_SERVICE) as SensorManager
         accelerometer = manager!!.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
         magnetometer = manager!!.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)
     }

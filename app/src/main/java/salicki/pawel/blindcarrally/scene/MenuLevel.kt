@@ -22,7 +22,7 @@ class MenuLevel : SurfaceView(Settings.CONTEXT), ILevel {
     init {
         isFocusable = true
 
-        menuSelectionDataData.add(MenuSelectionData(LevelType.GAME, "MENU_PLAY"))
+        menuSelectionDataData.add(MenuSelectionData(LevelType.CALIBRATION, "MENU_PLAY"))
         menuSelectionDataData.add(MenuSelectionData(LevelType.SETTINGS, "MENU_SETTINGS"))
         menuSelectionDataData.add(MenuSelectionData(LevelType.LANGUAGE, "MENU_LANGUAGE"))
         menuSelectionDataData.add(MenuSelectionData(LevelType.CREDITS, "MENU_CREDITS"))
@@ -73,6 +73,7 @@ class MenuLevel : SurfaceView(Settings.CONTEXT), ILevel {
                 swipe = true
             }
             GestureType.DOUBLE_TAP -> {
+                TextToSpeechManager.stop()
                 SoundManager.playSound(R.raw.accept)
                 LevelManager.changeLevel(menuSelectionDataData[menuIterator].levelType)
             }

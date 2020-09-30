@@ -9,5 +9,6 @@ enum class LevelType {
     CREDITS,
     QUIT,
     VOLUME_TTS,
-    VOLUME_SOUNDS
+    VOLUME_SOUNDS,
+    CALIBRATION
 }

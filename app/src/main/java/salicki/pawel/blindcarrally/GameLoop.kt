@@ -42,7 +42,7 @@ class GameLoop(surfaceHolder: SurfaceHolder) : Thread() {
                     LevelManager.updateState()
                     updateCount++
 
-                    Log.d("MPO", Settings.display.toString())
+                //    Log.d("MPO", Settings.display.toString())
                     if(Settings.display){
                         LevelManager.redrawState(canvas)
                     }
