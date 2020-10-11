@@ -10,7 +10,7 @@ import salicki.pawel.blindcarrally.scenemanager.LevelManager
 import salicki.pawel.blindcarrally.scenemanager.LevelType
 
 class LanguageLevel : SurfaceView(Settings.CONTEXT), ILevel {
-
+    private var SoundManager: SoundManager = SoundManager()
     private var languageSelectionData: LinkedHashMap<LanguageTTS, LanguageSelectionData> =
         LinkedHashMap()
     private var languageTypeData: ArrayList<LanguageTTS> =
@@ -20,6 +20,7 @@ class LanguageLevel : SurfaceView(Settings.CONTEXT), ILevel {
     private var swipe: Boolean = false
 
     init {
+        SoundManager.initSoundManager()
         isFocusable = true
 
         languageSelectionData[LanguageTTS.ENGLISH] =
@@ -67,7 +68,7 @@ class LanguageLevel : SurfaceView(Settings.CONTEXT), ILevel {
         }
     }
 
-    override fun updateState() {
+    override fun updateState(deltaTime: Int) {
         if (swipe) {
             TextToSpeechManager.stop()
             Settings.languageTTS = languageTypeData[languageIterator]

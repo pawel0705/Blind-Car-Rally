@@ -11,8 +11,9 @@ import salicki.pawel.blindcarrally.scenemanager.LevelType
 class CreditsLevel : SurfaceView(Settings.CONTEXT), ILevel {
 
     private var texts: HashMap<String, String> = HashMap()
-
+    private var SoundManager: SoundManager = SoundManager()
     init {
+        SoundManager.initSoundManager()
         isFocusable = true
     }
 
@@ -23,7 +24,7 @@ class CreditsLevel : SurfaceView(Settings.CONTEXT), ILevel {
         TextToSpeechManager.speakQueue(texts["CREDITS_BACK"].toString())
     }
 
-    override fun updateState() {
+    override fun updateState(deltaTime: Int) {
 
     }
 

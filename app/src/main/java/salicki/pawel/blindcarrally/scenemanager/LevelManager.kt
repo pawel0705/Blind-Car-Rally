@@ -65,8 +65,8 @@ object LevelManager : SurfaceView(Settings.CONTEXT), SurfaceHolder.Callback {
         activateTouch = false
     }
 
-    fun updateState() {
-        this.scenes[activeLevelType]?.updateState()
+    fun updateState(deltaTime: Int) {
+        this.scenes[activeLevelType]?.updateState(deltaTime)
     }
 
     fun destroyState() {

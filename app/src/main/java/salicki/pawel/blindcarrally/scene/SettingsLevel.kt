@@ -12,10 +12,11 @@ class SettingsLevel : SurfaceView(Settings.CONTEXT), ILevel {
 
     private var texts: HashMap<String, String> = HashMap()
     private var settingsIterator = 0
-
+    private var SoundManager: SoundManager = SoundManager()
     private var swipe: Boolean = false
 
     init {
+        SoundManager.initSoundManager()
         isFocusable = true
     }
 
@@ -30,7 +31,7 @@ class SettingsLevel : SurfaceView(Settings.CONTEXT), ILevel {
         }
     }
 
-    override fun updateState() {
+    override fun updateState(deltaTime: Int) {
         if (swipe) {
             swipe = false
             when (settingsIterator) {

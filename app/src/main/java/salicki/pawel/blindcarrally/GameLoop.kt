@@ -26,20 +26,20 @@ class GameLoop(surfaceHolder: SurfaceHolder) : Thread() {
         // Declare time and cycle count variables
         var updateCount = 0
         var frameCount = 0
-        var startTime: Long
-        var elapsedTime: Long
-        var sleepTime: Long
+        var startTime: Int = 0
+        var elapsedTime: Int = 0
+        var sleepTime: Int = 0
 
         // Game loop
         var canvas: Canvas? = null
-        startTime = System.currentTimeMillis()
+        startTime = System.currentTimeMillis().toInt()
         while (isRunning) {
 
             // Try to update and render game
             try {
                 canvas = surfaceHolder.lockCanvas()
                 synchronized(surfaceHolder) {
-                    LevelManager.updateState()
+                    LevelManager.updateState(elapsedTime)
                     updateCount++
 
                 //    Log.d("MPO", Settings.display.toString())
@@ -61,11 +61,11 @@ class GameLoop(surfaceHolder: SurfaceHolder) : Thread() {
             }
 
             // Pause game loop to not exceed target UPS
-            elapsedTime = System.currentTimeMillis() - startTime
-            sleepTime = (updateCount * UPS_PERIOD - elapsedTime).toLong()
+            elapsedTime = (System.currentTimeMillis() - startTime).toInt()
+            sleepTime = (updateCount * UPS_PERIOD - elapsedTime).toLong().toInt()
             if (sleepTime > 0) {
                 try {
-                    sleep(sleepTime)
+                    sleep(sleepTime.toLong())
                 } catch (e: InterruptedException) {
                     e.printStackTrace()
                 }
@@ -73,21 +73,23 @@ class GameLoop(surfaceHolder: SurfaceHolder) : Thread() {
 
             // Skip frames to keep up with target UPS
             while (sleepTime < 0 && updateCount < MAX_UPS - 1) {
-                LevelManager.updateState()
+                LevelManager.updateState(elapsedTime)
                 updateCount++
-                elapsedTime = System.currentTimeMillis() - startTime
-                sleepTime = (updateCount * UPS_PERIOD - elapsedTime).toLong()
+                elapsedTime = (System.currentTimeMillis() - startTime).toInt()
+                sleepTime = (updateCount * UPS_PERIOD - elapsedTime).toLong().toInt()
             }
 
             // Calculate average UPS and FPS
-            elapsedTime = System.currentTimeMillis() - startTime
+            elapsedTime = (System.currentTimeMillis() - startTime).toInt()
             if (elapsedTime >= 1000) {
                 averageUPS = updateCount / (1E-3 * elapsedTime)
                 averageFPS = frameCount / (1E-3 * elapsedTime)
                 updateCount = 0
                 frameCount = 0
-                startTime = System.currentTimeMillis()
+                startTime = System.currentTimeMillis().toInt()
             }
+
+            Log.d("TIME", elapsedTime.toString())
         }
     }
 

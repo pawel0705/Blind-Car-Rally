@@ -10,8 +10,9 @@ import salicki.pawel.blindcarrally.scenemanager.LevelType
 
 class CalibrationLevel: SurfaceView(Settings.CONTEXT), ILevel  {
     private var texts: HashMap<String, String> = HashMap()
-
+    private var SoundManager: SoundManager = SoundManager()
     init {
+        SoundManager.initSoundManager()
         isFocusable = true
     }
 
@@ -21,7 +22,7 @@ class CalibrationLevel: SurfaceView(Settings.CONTEXT), ILevel  {
         TextToSpeechManager.speakNow(texts["CALIBRATION_TUTORIAL"].toString())
     }
 
-    override fun updateState() {
+    override fun updateState(deltaTime: Int) {
 
     }
 

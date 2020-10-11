@@ -8,12 +8,12 @@ import salicki.pawel.blindcarrally.scenemanager.ILevel
 
 class TrackSelectionLevel : SurfaceView(Settings.CONTEXT), ILevel {
     private var texts: HashMap<String, String> = HashMap()
-
+    private var SoundManager: SoundManager = SoundManager()
     private var swipe: Boolean = false
 
     init {
         isFocusable = true
-
+        SoundManager.initSoundManager()
     }
 
     override fun initState() {
@@ -21,7 +21,7 @@ class TrackSelectionLevel : SurfaceView(Settings.CONTEXT), ILevel {
         TextToSpeechManager.speakNow(texts["TRACK_SELECTION_TUTORIAL"].toString())
     }
 
-    override fun updateState() {
+    override fun updateState(deltaTime: Int) {
 
     }
 

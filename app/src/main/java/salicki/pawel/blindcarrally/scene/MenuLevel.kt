@@ -13,7 +13,7 @@ import kotlin.collections.HashMap
 class MenuLevel : SurfaceView(Settings.CONTEXT), ILevel {
 
     private var texts: HashMap<String, String> = HashMap()
-
+    private var SoundManager: SoundManager = SoundManager()
     private var menuSelectionDataData = arrayListOf<MenuSelectionData>()
     private var menuIterator: Int = 0
 
@@ -21,7 +21,7 @@ class MenuLevel : SurfaceView(Settings.CONTEXT), ILevel {
 
     init {
         isFocusable = true
-
+        SoundManager.initSoundManager()
         menuSelectionDataData.add(MenuSelectionData(LevelType.CALIBRATION, "MENU_PLAY"))
         menuSelectionDataData.add(MenuSelectionData(LevelType.SETTINGS, "MENU_SETTINGS"))
         menuSelectionDataData.add(MenuSelectionData(LevelType.LANGUAGE, "MENU_LANGUAGE"))
@@ -35,7 +35,7 @@ class MenuLevel : SurfaceView(Settings.CONTEXT), ILevel {
         TextToSpeechManager.speakQueue(texts["MENU_PLAY"].toString())
     }
 
-    override fun updateState() {
+    override fun updateState(deltaTime: Int) {
         if (swipe) {
             texts[menuSelectionDataData[menuIterator].textKey]?.let {
                 TextToSpeechManager.speakNow(

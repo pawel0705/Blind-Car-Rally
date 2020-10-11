@@ -36,7 +36,7 @@ class SplashLevel() : SurfaceView(Settings.CONTEXT), ILevel {
         TextToSpeechManager.speakQueue(texts["SPLASH_LOGO"].toString())
     }
 
-    override fun updateState() {
+    override fun updateState(deltaTime: Int) {
     }
 
     override fun destroyState() {

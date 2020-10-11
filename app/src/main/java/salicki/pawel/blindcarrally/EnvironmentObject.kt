@@ -14,12 +14,5 @@ abstract class EnvironmentObject(posX: Float, posY: Float) {
     var velY: Float = 0.0F
 
     abstract fun draw(canvas: Canvas?, coordinateDisplayManager: CoordinateDisplayManager?)
-    abstract fun update()
-
-    open fun calculateDistance(obj: EnvironmentObject): Float {
-        return sqrt(
-            (obj.posX - this.posX).pow(2.0F) +
-                    (obj.posY - this.posY).pow(2.0F)
-        )
-    }
+    abstract fun update(coordinateDisplayManager: CoordinateDisplayManager?)
 }

@@ -6,9 +6,9 @@ import android.media.SoundPool
 import android.os.Build
 
 
-object SoundManager {
+class SoundManager {
     private var soundPool: SoundPool? = null
-    private const val MAX_STREAMS = 3
+    private val MAX_STREAMS = 3
 
     private var sound1: Int = 0
     private var sound2: Int = 0
@@ -33,7 +33,7 @@ object SoundManager {
         sound3 = soundPool?.load(Settings.CONTEXT, R.raw.beep, 1)!!
     }
 
-    fun playSound(soundId: Int) {
+    fun playSound(soundId: Int, leftVolume: Float = 1F, rightVolume: Float = 1F) {
         when (soundId) {
             R.raw.swoosh -> {
                 soundPool!!.play(sound1, Settings.sounds * 0.1f, Settings.sounds * 0.1f, 0, 0, 1f)
@@ -42,7 +42,7 @@ object SoundManager {
                 soundPool!!.play(sound2, Settings.sounds * 0.1f, Settings.sounds * 0.1f, 0, 0, 1f)
             }
             R.raw.beep -> {
-                soundPool!!.play(sound3, Settings.sounds * 0.1f, Settings.sounds * 0.1f, 0, 0, 1f)
+                soundPool!!.play(sound3, Settings.sounds * 0.1f * leftVolume, Settings.sounds * 0.1f * rightVolume, 0, 0, 1f)
             }
         }
     }

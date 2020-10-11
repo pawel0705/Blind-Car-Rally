@@ -1,17 +1,15 @@
 package salicki.pawel.blindcarrally.scene
 
-import android.gesture.Gesture
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
-import android.util.DisplayMetrics
 import android.util.Log
 import android.view.MotionEvent
 import android.view.SurfaceView
 import androidx.core.content.ContextCompat
 import salicki.pawel.blindcarrally.*
-import salicki.pawel.blindcarrally.data.LeftRightDate
+import salicki.pawel.blindcarrally.data.TrackRaceData
 import salicki.pawel.blindcarrally.scenemanager.ILevel
 
 
@@ -29,7 +27,7 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
     )
     private var coordinateDisplayManager: CoordinateDisplayManager
 
-    private var tmp: MutableList<LeftRightDate>? = null
+    private var trackData : TrackRaceData? = null
 
     init {
 
@@ -56,18 +54,17 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun initState() {
-        tmp = XMLParser.read("trackTest.xml")
+        trackData = XMLParser.read("trackTest.xml")
+        car.posX = trackData!!.startPointX.toFloat()
+        car.posY = trackData!!.startPointY.toFloat()
     }
 
-    override fun updateState() {
-        car.update()
-
-        coordinateDisplayManager.updateEnvironmentCoordinates()
-
-        if (tmp != null) {
-            for (test1 in tmp!!) {
+    private fun checkCollistion(){
+        if (trackData != null) {
+            for (test1 in trackData!!.trackRoad!!) {
                 for (test in test1.left) {
                     if (car.collisionCheck(test.xStart, test.yStart, test.xEnd, test.yEnd)) {
+
                         return
                     }
 
@@ -80,11 +77,41 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
                             test.yEnd
                         )
                     ) {
+
                         return
                     }
                 }
             }
         }
+    }
+
+    private fun checkDistance(deltaTime: Int){
+        if (trackData != null) {
+            for (test1 in trackData!!.trackRoad!!) {
+                for (test in test1.left) {
+                    if (car.sensorCheck(test.xStart, test.yStart, test.xEnd, test.yEnd, deltaTime)) {
+
+
+                    }
+
+                }
+                for (test in test1.right) {
+                    if (car.sensorCheck(test.xStart, test.yStart, test.xEnd, test.yEnd, deltaTime)) {
+
+
+                    }
+                }
+            }
+        }
+    }
+
+    override fun updateState(deltaTime: Int) {
+        car.update(coordinateDisplayManager)
+        coordinateDisplayManager.updateEnvironmentCoordinates()
+
+        checkCollistion()
+        checkDistance(deltaTime)
+
     }
 
     override fun destroyState() {
@@ -99,6 +126,9 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun redrawState(canvas: Canvas) {
+        canvas.translate(0F, canvas.height.toFloat());   // reset where 0,0 is located
+        canvas.scale(1F,-1F);    // invert
+
         drawCoordinates(canvas)
         car.draw(canvas, coordinateDisplayManager)
 
@@ -121,8 +151,8 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
         car.collisionCheck(300F, 300F, 600F, 600F)
 */
 
-        if (tmp != null) {
-            for (test1 in tmp!!) {
+        if (trackData != null) {
+            for (test1 in trackData!!.trackRoad!!) {
                 for (test in test1.left) {
                     canvas.drawLine(
                         coordinateDisplayManager.convertToEnvironmentX(test.xStart),

@@ -2,231 +2,430 @@ package salicki.pawel.blindcarrally
 
 import android.graphics.*
 import android.util.Log
-import kotlin.math.cos
-import kotlin.math.pow
-import kotlin.math.sin
-import kotlin.math.sqrt
+import salicki.pawel.blindcarrally.data.CarCoordinates
+import salicki.pawel.blindcarrally.data.CarParameters
+import salicki.pawel.blindcarrally.data.CarPositionSensors
+import salicki.pawel.blindcarrally.data.CarView
+import kotlin.math.*
 
 class Car(posX: Float, posY: Float, rect: RectF) : EnvironmentObject(posX, posY) {
 
-    private var speed: Float = 0F
-    private var angle: Float = 0F
-    private val maxSpeed: Float = 1F
-    private var turnSpeed: Float = 0.008F
-    private val MAX_GEAR = 6
-    private val MIN_GEAR = 0
-    private var gear = 1
-
-    private var rectangle: RectF = rect
-    private var texture: Texture
-
-    private var paint: Paint = Paint()
+    private var carParameters = CarParameters()
     private var carCoordinates: CarCoordinates = CarCoordinates()
+    private var carPositionSensors: CarPositionSensors = CarPositionSensors()
+    private var carView: CarView = CarView()
+
+    private var canBeep: Boolean = true;
+
+    private var iteratorUp = 0
+    private var iteratorDown = 0
+    private var iteratorLeft = 0
+    private var iteratorRight = 0
+
+    private var soundManagerLeft = SoundManager()
+    private var soundManagerRight = SoundManager()
+
+    private var canCollide = false
 
     init {
-        rectangle.set(
-            (posX - rectangle.width() / 2),
-            (posY - rectangle.height() / 2),
-            (posX + rectangle.width() / 2),
-            (posY + rectangle.height() / 2)
+        soundManagerLeft.initSoundManager()
+        soundManagerRight.initSoundManager()
+
+        initCarView(rect)
+        initCarHitbox()
+        initCarDistanceSensors()
+    }
+
+    private fun initCarView(rect: RectF) {
+        carView.carRectangle = rect
+        carView.carHalfWidth = carView.carRectangle!!.width() / 2
+        carView.carHalfHeight = carView.carRectangle!!.height() / 2
+        carView.carPaint.color = Color.YELLOW
+
+        carView.carRectangle?.set(
+            (posX - carView.carHalfWidth),
+            (posY - carView.carHalfHeight),
+            (posX + carView.carHalfWidth),
+            (posY + carView.carHalfHeight)
         )
 
-        carCoordinates.posX1 = posX - rectangle.width() / 2
-        carCoordinates.posY1 = posY - rectangle.height() / 2
-
-        carCoordinates.posX2 = posX + rectangle.width() - rectangle.width() / 2
-        carCoordinates.posY2 = posY - rectangle.height() / 2
-
-        carCoordinates.posX3 = posX - rectangle.width() / 2
-        carCoordinates.posY3 = posY + rectangle.height() - rectangle.height() / 2
-
-        carCoordinates.posX4 = posX + rectangle.width() - rectangle.width() / 2
-        carCoordinates.posY4 = posY + rectangle.height() - rectangle.height() / 2
-
-        var bitmap: Bitmap = BitmapFactory.decodeResource(
+        val bitmap: Bitmap = BitmapFactory.decodeResource(
             Settings.CONTEXT?.resources,
             R.drawable.car
         )
-        texture = Texture(bitmap)
+
+        carView.carTexture = Texture(bitmap)
+    }
+
+    private fun initCarHitbox() {
+        carCoordinates.posX1 = posX - carView.carHalfWidth
+        carCoordinates.posY1 = posY - carView.carHalfHeight
+
+        carCoordinates.posX2 = posX + carView.carRectangle!!.width() - carView.carHalfWidth
+        carCoordinates.posY2 = posY - carView.carHalfHeight
+
+        carCoordinates.posX3 = posX - carView.carHalfWidth
+        carCoordinates.posY3 = posY + carView.carRectangle!!.height() - carView.carHalfHeight
+
+        carCoordinates.posX4 = posX + carView.carRectangle!!.width() - carView.carHalfWidth
+        carCoordinates.posY4 = posY + carView.carRectangle!!.height() - carView.carHalfHeight
+    }
+
+    private fun initCarDistanceSensors() {
+        carParameters.obstacleSensorLength = Settings.SCREEN_SCALE * 1
+
+        carPositionSensors.sensorX1 = posX
+        carPositionSensors.sensorY1 = posY - carView.carHalfHeight
+
+        carPositionSensors.sensorX2 = posX
+        carPositionSensors.sensorY2 =
+            posY - carView.carHalfHeight - carParameters.obstacleSensorLength
+
+        carPositionSensors.sensorX3 = posX
+        carPositionSensors.sensorY3 = posY + carView.carHalfHeight
+
+        carPositionSensors.sensorX4 = posX
+        carPositionSensors.sensorY4 =
+            posY + carView.carHalfHeight + carParameters.obstacleSensorLength
+
+        carPositionSensors.sensorX5 = posX - carView.carHalfWidth
+        carPositionSensors.sensorY5 = posY
+
+        carPositionSensors.sensorX6 =
+            posX - carView.carHalfWidth - carParameters.obstacleSensorLength
+        carPositionSensors.sensorY6 = posY
+
+        carPositionSensors.sensorX7 = posX + carView.carHalfWidth
+        carPositionSensors.sensorY7 = posY
+
+        carPositionSensors.sensorX8 =
+            posX + carView.carHalfWidth + carParameters.obstacleSensorLength
+        carPositionSensors.sensorY8 = posY
     }
 
     override fun draw(canvas: Canvas?, coordinateDisplayManager: CoordinateDisplayManager?) {
 
         if (coordinateDisplayManager != null && canvas != null) {
-            rectangle.set(
-                (coordinateDisplayManager.convertToEnvironmentX(posX) - rectangle.width() / 2),
-                (coordinateDisplayManager.convertToEnvironmentY(posY) - rectangle.height() / 2),
-                (coordinateDisplayManager.convertToEnvironmentX(posX) + rectangle.width() / 2),
-                (coordinateDisplayManager.convertToEnvironmentY(posY) + rectangle.height() / 2)
-            )
+
+            drawCarHitbox(canvas, coordinateDisplayManager)
+            drawCarRotation(canvas, coordinateDisplayManager)
+            drawCarSensors(canvas, coordinateDisplayManager)
+        }
+    }
+
+    private fun drawCarRotation(
+        canvas: Canvas?,
+        coordinateDisplayManager: CoordinateDisplayManager?
+    ) {
+
+        if (canvas != null && coordinateDisplayManager != null) {
 
             canvas.save();
             canvas.rotate(
-                angle * 180 / 3.141593F, coordinateDisplayManager.convertToEnvironmentX(posX),
+                (carParameters.angle * 180 / PI).toFloat(),
+                coordinateDisplayManager.convertToEnvironmentX(posX),
                 coordinateDisplayManager.convertToEnvironmentY(posY)
-            );
+            )
 
-            canvas.drawRect(rectangle, paint)
-            texture.drawTexture(canvas, rectangle)
+   //         carView.carRectangle?.let { canvas.drawRect(it, carView.carPaint) }
+     //       carView.carRectangle?.let { carView.carTexture?.drawTexture(canvas, it) }
             canvas.restore();
+        }
+    }
 
-            var paint2 = Paint()
-            paint2.color = Color.GREEN
+    private fun drawCarSensors(
+        canvas: Canvas?,
+        coordinateDisplayManager: CoordinateDisplayManager?
+    ) {
+        if (canvas != null && coordinateDisplayManager != null) {
+
+            var sensorColor = Paint()
+            sensorColor.color = Color.BLUE
+
+            canvas.drawLine(
+                coordinateDisplayManager.convertToEnvironmentX(carPositionSensors.sensorX01),
+                coordinateDisplayManager.convertToEnvironmentY(carPositionSensors.sensorY01),
+                coordinateDisplayManager.convertToEnvironmentX(carPositionSensors.sensorX02),
+                coordinateDisplayManager.convertToEnvironmentY(carPositionSensors.sensorY02),
+                carView.carPaint
+            )
+
+            canvas.drawLine(
+                coordinateDisplayManager.convertToEnvironmentX(carPositionSensors.sensorX03),
+                coordinateDisplayManager.convertToEnvironmentY(carPositionSensors.sensorY03),
+                coordinateDisplayManager.convertToEnvironmentX(carPositionSensors.sensorX04),
+                coordinateDisplayManager.convertToEnvironmentY(carPositionSensors.sensorY04),
+                sensorColor
+            )
+
+            canvas.drawLine(
+                coordinateDisplayManager.convertToEnvironmentX(carPositionSensors.sensorX05),
+                coordinateDisplayManager.convertToEnvironmentY(carPositionSensors.sensorY05),
+                coordinateDisplayManager.convertToEnvironmentX(carPositionSensors.sensorX06),
+                coordinateDisplayManager.convertToEnvironmentY(carPositionSensors.sensorY06),
+                sensorColor
+            )
+
+            canvas.drawLine(
+                coordinateDisplayManager.convertToEnvironmentX(carPositionSensors.sensorX07),
+                coordinateDisplayManager.convertToEnvironmentY(carPositionSensors.sensorY07),
+                coordinateDisplayManager.convertToEnvironmentX(carPositionSensors.sensorX08),
+                coordinateDisplayManager.convertToEnvironmentY(carPositionSensors.sensorY08),
+                sensorColor
+            )
+
+
+
+        }
+    }
+
+    private fun drawCarHitbox(
+        canvas: Canvas?,
+        coordinateDisplayManager: CoordinateDisplayManager?
+    ) {
+        if (canvas != null && coordinateDisplayManager != null) {
+
+            var hitboxColor = Paint()
+            hitboxColor.color = Color.GREEN
 
             canvas.drawLine(
                 coordinateDisplayManager.convertToEnvironmentX(carCoordinates.posX01),
                 coordinateDisplayManager.convertToEnvironmentY(carCoordinates.posY01),
                 coordinateDisplayManager.convertToEnvironmentX(carCoordinates.posX02),
                 coordinateDisplayManager.convertToEnvironmentY(carCoordinates.posY02),
-                paint2
+                hitboxColor
             )
             canvas.drawLine(
                 coordinateDisplayManager.convertToEnvironmentX(carCoordinates.posX01),
                 coordinateDisplayManager.convertToEnvironmentY(carCoordinates.posY01),
                 coordinateDisplayManager.convertToEnvironmentX(carCoordinates.posX03),
                 coordinateDisplayManager.convertToEnvironmentY(carCoordinates.posY03),
-                paint2
+                hitboxColor
             )
             canvas.drawLine(
                 coordinateDisplayManager.convertToEnvironmentX(carCoordinates.posX02),
                 coordinateDisplayManager.convertToEnvironmentY(carCoordinates.posY02),
                 coordinateDisplayManager.convertToEnvironmentX(carCoordinates.posX04),
                 coordinateDisplayManager.convertToEnvironmentY(carCoordinates.posY04),
-                paint2
+                hitboxColor
             )
             canvas.drawLine(
                 coordinateDisplayManager.convertToEnvironmentX(carCoordinates.posX03),
                 coordinateDisplayManager.convertToEnvironmentY(carCoordinates.posY03),
                 coordinateDisplayManager.convertToEnvironmentX(carCoordinates.posX04),
                 coordinateDisplayManager.convertToEnvironmentY(carCoordinates.posY04),
-                paint2
-            )
-
-
-
-
-
-
-            canvas.drawLine(
-                carCoordinates.posX01,
-               carCoordinates.posY01,
-                carCoordinates.posX02,
-                carCoordinates.posY02,
-                paint2
-            )
-            canvas.drawLine(
-                carCoordinates.posX01,
-               carCoordinates.posY01,
-               carCoordinates.posX03,
-              carCoordinates.posY03,
-                paint2
-            )
-            canvas.drawLine(
-              carCoordinates.posX02,
-              carCoordinates.posY02,
-               carCoordinates.posX04,
-               carCoordinates.posY04,
-                paint2
-            )
-            canvas.drawLine(
-                carCoordinates.posX03,
-             carCoordinates.posY03,
-               carCoordinates.posX04,
-              carCoordinates.posY04,
-                paint2
+                hitboxColor
             )
         }
+    }
+
+
+    fun sensorCheck(x1: Float, y1: Float, x2: Float, y2: Float, elapsedTime: Int): Boolean {
+
+        var sensorUp: Boolean = false
+        var sensorDown: Boolean = false
+        var sensorLeft: Boolean = false
+        var sensorRight: Boolean = false
+
+        if (Mathematics.collisionLineToLine(
+                x1, y1, x2, y2,
+                carPositionSensors.sensorX01, carPositionSensors.sensorY01,
+                carPositionSensors.sensorX02, carPositionSensors.sensorY02
+            )
+        ) {
+            sensorUp = true
+
+            carView.carPaint.color = Color.RED
+
+            var distanceToObstacleUp = Mathematics.distancePointToLine(
+                carPositionSensors.sensorX01,
+                carPositionSensors.sensorY01,
+                x1,
+                y1,
+                x2,
+                y2
+            )
+
+           // Log.d("DYSTANS", distanceToObstacleUp.toString())
+
+       //     val volume = 1 / (distanceToObstacleUp * Settings.SCREEN_SCALE * 0.0001F + 1).toFloat()
+
+      //      iterator += elapsedTime
+
+      //      if(iterator > 2 * 1/volume){
+      //          iterator = 0
+     //           SoundManager.playSound(R.raw.beep, volume, volume)
+      //      }
+
+
+
+
+        //    SoundManager.playSound(R.raw.beep, volume, volume)
+        }
+
+        if (Mathematics.collisionLineToLine(
+                carPositionSensors.sensorX03, carPositionSensors.sensorY03,
+                carPositionSensors.sensorX04, carPositionSensors.sensorY04, x1, y1, x2, y2
+            )
+        ) {
+            sensorDown = true
+
+            var distanceToObstacleDown = Mathematics.distancePointToLine(
+                carPositionSensors.sensorX03,
+                carPositionSensors.sensorY03,
+                x1,
+                y1,
+                x2,
+                y2
+            )
+
+        }
+
+        if (Mathematics.collisionLineToLine(
+                carPositionSensors.sensorX05, carPositionSensors.sensorY05,
+                carPositionSensors.sensorX06, carPositionSensors.sensorY06, x1, y1, x2, y2
+            )
+        ) {
+            sensorLeft = true
+
+            var distanceToObstacleLeft = Mathematics.distancePointToLine(
+                carPositionSensors.sensorX05,
+                carPositionSensors.sensorY05,
+                x1,
+                y1,
+                x2,
+                y2
+            )
+
+                 val volume = 1 / (distanceToObstacleLeft * Settings.SCREEN_SCALE * 0.0001F + 1).toFloat()
+
+
+
+                  if(iteratorLeft > 2 * 1/volume){
+                      iteratorLeft = 0
+                       soundManagerRight.playSound(R.raw.beep, 0F, volume)
+                 }
+
+        }
+
+        if (Mathematics.collisionLineToLine(
+                carPositionSensors.sensorX07, carPositionSensors.sensorY07,
+                carPositionSensors.sensorX08, carPositionSensors.sensorY08, x1, y1, x2, y2
+            )
+        ) {
+            sensorRight = true
+
+            var distanceToObstacleRight = Mathematics.distancePointToLine(
+                carPositionSensors.sensorX07,
+                carPositionSensors.sensorY07,
+                x1,
+                y1,
+                x2,
+                y2
+            )
+
+            val volume = 1 / (distanceToObstacleRight * Settings.SCREEN_SCALE * 0.0001F + 1).toFloat()
+
+
+
+            if(iteratorRight > 2 * 1/volume){
+                iteratorRight = 0
+                soundManagerLeft.playSound(R.raw.beep,volume, 0F)
+            }
+
+
+        }
+
+        if(sensorUp || sensorDown || sensorLeft || sensorRight){
+            return true
+        }
+        else {
+            if(!canCollide){
+                carView.carPaint.color = Color.BLUE
+            }
+
+        }
+
+        return false
     }
 
     fun collisionCheck(x1: Float, y1: Float, x2: Float, y2: Float): Boolean {
-        val left: Boolean = lineCollision(
-            x1, y1, x2, y2,
-            carCoordinates.posX01, carCoordinates.posY01, carCoordinates.posX03, carCoordinates.posY03
+        val left: Boolean = Mathematics.collisionLineToLine(
+            x1,
+            y1,
+            x2,
+            y2,
+            carCoordinates.posX01,
+            carCoordinates.posY01,
+            carCoordinates.posX03,
+            carCoordinates.posY03
         )
-        val right: Boolean = lineCollision(
-            x1, y1, x2, y2,
-            carCoordinates.posX02, carCoordinates.posY02, carCoordinates.posX04, carCoordinates.posY04
+        val right: Boolean = Mathematics.collisionLineToLine(
+            x1,
+            y1,
+            x2,
+            y2,
+            carCoordinates.posX02,
+            carCoordinates.posY02,
+            carCoordinates.posX04,
+            carCoordinates.posY04
         )
-        val top: Boolean = lineCollision(
-            x1, y1, x2, y2,
-            carCoordinates.posX01, carCoordinates.posY01, carCoordinates.posX02, carCoordinates.posY02
+        val top: Boolean = Mathematics.collisionLineToLine(
+            x1,
+            y1,
+            x2,
+            y2,
+            carCoordinates.posX01,
+            carCoordinates.posY01,
+            carCoordinates.posX02,
+            carCoordinates.posY02
         )
-        var bottom: Boolean = lineCollision(
-            x1, y1, x2, y2,
-            carCoordinates.posX03, carCoordinates.posY03, carCoordinates.posX04, carCoordinates.posY04
+        var bottom: Boolean = Mathematics.collisionLineToLine(
+            x1,
+            y1,
+            x2,
+            y2,
+            carCoordinates.posX03,
+            carCoordinates.posY03,
+            carCoordinates.posX04,
+            carCoordinates.posY04
         )
-
-   //     Log.d("posX1", carCoordinates.posX01.toString())
-    //    Log.d("posY1", carCoordinates.posY01.toString())
 
         if (left || right || top || bottom) {
-            paint.color = Color.RED
-
-            speed = 0F
-
-            if(top){
-                posY += 1
-                Log.d("KOLIZJA", "TOP")
-            }
-            else if(bottom){
-                posY -= 1
-                Log.d("KOLIZJA", "BOTTOM")
-            } else {
-                if(left){
-                    posX += 1
-                    Log.d("KOLIZJA", "LEFT")
-                }
-               else if(right) {
-                    posX -=1
-                    Log.d("KOLIZJA", "RIGHT")
-                }
-
-            }
-
-
+            carView.carPaint.color = Color.RED
 
             return true
         }
 
-        paint.color = Color.YELLOW
+        carView.carPaint.color = Color.YELLOW
         return false
     }
 
-    private fun lineCollision(
-        x1: Float,
-        y1: Float,
-        x2: Float,
-        y2: Float,
-        x3: Float,
-        y3: Float,
-        x4: Float,
-        y4: Float
-    ): Boolean {
-        val uA =
-            (((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / ((y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1))).toFloat()
-        val uB =
-            (((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / ((y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1))).toFloat()
-
-        if (uA in 0.0..1.0 && uB in 0.0..1.0) {
-            return true
-        }
-
-        return false
-    }
-
-    fun higherGear(){
-        if(gear < MAX_GEAR){
-            gear++
+    fun higherGear() {
+        if (carParameters.gear < carParameters.maxGear) {
+            carParameters.gear++
         }
     }
 
-    fun lowerGear(){
-        if(gear > MIN_GEAR){
-            gear--
+    fun lowerGear() {
+        if (carParameters.gear > carParameters.minGear) {
+            carParameters.gear--
         }
     }
 
-    override fun update() {
+    private fun updateCarPosition(coordinateDisplayManager: CoordinateDisplayManager?) {
+        if (coordinateDisplayManager != null) {
+            carView.carRectangle?.set(
+                (coordinateDisplayManager.convertToEnvironmentX(posX) - carView.carHalfWidth),
+                (coordinateDisplayManager.convertToEnvironmentY(posY) - carView.carHalfHeight),
+                (coordinateDisplayManager.convertToEnvironmentX(posX) + carView.carHalfWidth),
+                (coordinateDisplayManager.convertToEnvironmentY(posY) + carView.carHalfHeight)
+            )
+        }
+    }
+
+    private fun updateCarMovement() {
+
         if (MovementManager != null) {
             if (MovementManager.getOrientation() != null && MovementManager.getStartOrientation() != null) {
                 val pitch: Float =
@@ -234,55 +433,139 @@ class Car(posX: Float, posY: Float, rect: RectF) : EnvironmentObject(posX, posY)
                 val roll: Float =
                     MovementManager?.getOrientation()!![1] - MovementManager.getStartOrientation()!![1]
 
-                velX = 2 * roll * Settings.SCREEN_WIDTH / 1000f
+                velX = -2 * roll * Settings.SCREEN_WIDTH / 1000f
                 velY = -pitch * Settings.SCREEN_HEIGHT / 1000f
             }
         }
+    }
 
-        if (speed > 2 * gear) {
-            speed = 2F * gear
-        } else if (speed < -2) {
-            speed = -2F
+    private fun updateCarSpeed() {
+
+        if (carParameters.speed > 2 * carParameters.gear) {
+            carParameters.speed = 2F * carParameters.gear
+        } else if (carParameters.speed < -2) {
+            carParameters.speed = -2F
         }
 
-        speed += velY
-        angle += turnSpeed * speed / maxSpeed * velX
+        carParameters.speed += velY
+        carParameters.angle += carParameters.turnSpeed * carParameters.speed / carParameters.maxSpeed * velX
 
-        posX += sin(angle) * speed
-        posY -= cos(angle) * speed
+        posX += sin(carParameters.angle) * carParameters.speed
+        posY -= cos(carParameters.angle) * carParameters.speed
+    }
 
-        carCoordinates.posX1 = posX - rectangle.width() / 2
-        carCoordinates.posY1 = posY - rectangle.height() / 2
+    private fun updateCarSensorsDistancePosition() {
+        carPositionSensors.sensorX1 = posX
+        carPositionSensors.sensorY1 = posY - carView.carHalfHeight
+        carPositionSensors.sensorX01 =
+            cos(carParameters.angle) * (carPositionSensors.sensorX1 - posX) - sin(carParameters.angle) * (carPositionSensors.sensorY1 - posY) + posX
+        carPositionSensors.sensorY01 =
+            sin(carParameters.angle) * (carPositionSensors.sensorX1 - posX) + cos(carParameters.angle) * (carPositionSensors.sensorY1 - posY) + posY
+
+        carPositionSensors.sensorX2 = posX
+        carPositionSensors.sensorY2 = posY - carView.carHalfHeight - carParameters.obstacleSensorLength
+        carPositionSensors.sensorX02 =
+            cos(carParameters.angle) * (carPositionSensors.sensorX2 - posX) - sin(carParameters.angle) * (carPositionSensors.sensorY2 - posY) + posX
+        carPositionSensors.sensorY02 =
+            sin(carParameters.angle) * (carPositionSensors.sensorX2 - posX) + cos(carParameters.angle) * (carPositionSensors.sensorY2 - posY) + posY
+
+        carPositionSensors.sensorX3 = posX
+        carPositionSensors.sensorY3 = posY + carView.carHalfHeight
+        carPositionSensors.sensorX03 =
+            cos(carParameters.angle) * (carPositionSensors.sensorX3 - posX) - sin(carParameters.angle) * (carPositionSensors.sensorY3 - posY) + posX
+        carPositionSensors.sensorY03 =
+            sin(carParameters.angle) * (carPositionSensors.sensorX3 - posX) + cos(carParameters.angle) * (carPositionSensors.sensorY3 - posY) + posY
+
+        carPositionSensors.sensorX4 = posX
+        carPositionSensors.sensorY4 = posY + carView.carHalfHeight + carParameters.obstacleSensorLength
+        carPositionSensors.sensorX04 =
+            cos(carParameters.angle) * (carPositionSensors.sensorX4 - posX) - sin(carParameters.angle) * (carPositionSensors.sensorY4 - posY) + posX
+        carPositionSensors.sensorY04 =
+            sin(carParameters.angle) * (carPositionSensors.sensorX4 - posX) + cos(carParameters.angle) * (carPositionSensors.sensorY4 - posY) + posY
+
+        carPositionSensors.sensorX5 = posX - carView.carHalfWidth
+        carPositionSensors.sensorY5 = posY
+        carPositionSensors.sensorX05 =
+            cos(carParameters.angle) * (carPositionSensors.sensorX5 - posX) - sin(carParameters.angle) * (carPositionSensors.sensorY5 - posY) + posX
+        carPositionSensors.sensorY05 =
+            sin(carParameters.angle) * (carPositionSensors.sensorX5 - posX) + cos(carParameters.angle) * (carPositionSensors.sensorY5 - posY) + posY
+
+        carPositionSensors.sensorX6 = posX - carView.carHalfWidth - carParameters.obstacleSensorLength
+        carPositionSensors.sensorY6 = posY
+        carPositionSensors.sensorX06 =
+            cos(carParameters.angle) * (carPositionSensors.sensorX6 - posX) - sin(carParameters.angle) * (carPositionSensors.sensorY6 - posY) + posX
+        carPositionSensors.sensorY06 =
+            sin(carParameters.angle) * (carPositionSensors.sensorX6 - posX) + cos(carParameters.angle) * (carPositionSensors.sensorY6 - posY) + posY
+
+        carPositionSensors.sensorX7 = posX + carView.carHalfWidth
+        carPositionSensors.sensorY7 = posY
+        carPositionSensors.sensorX07 =
+            cos(carParameters.angle) * (carPositionSensors.sensorX7 - posX) - sin(carParameters.angle) * (carPositionSensors.sensorY7 - posY) + posX
+        carPositionSensors.sensorY07 =
+            sin(carParameters.angle) * (carPositionSensors.sensorX7 - posX) + cos(carParameters.angle) * (carPositionSensors.sensorY7 - posY) + posY
+
+        carPositionSensors.sensorX8 = posX + carView.carHalfWidth + carParameters.obstacleSensorLength
+        carPositionSensors.sensorY8 = posY
+        carPositionSensors.sensorX08 =
+            cos(carParameters.angle) * (carPositionSensors.sensorX8 - posX) - sin(carParameters.angle) * (carPositionSensors.sensorY8 - posY) + posX
+        carPositionSensors.sensorY08 =
+            sin(carParameters.angle) * (carPositionSensors.sensorX8 - posX) + cos(carParameters.angle) * (carPositionSensors.sensorY8 - posY) + posY
+    }
+
+    private fun updateCarHitboxPosition() {
+        carCoordinates.posX1 = posX - carView.carHalfWidth
+        carCoordinates.posY1 = posY - carView.carHalfHeight
         carCoordinates.posX01 =
-            cos(angle) * (carCoordinates.posX1 - posX) - sin(angle) * (carCoordinates.posY1 - posY) + posX
+            cos(carParameters.angle) * (carCoordinates.posX1 - posX) - sin(carParameters.angle) * (carCoordinates.posY1 - posY) + posX
         carCoordinates.posY01 =
-            sin(angle) * (carCoordinates.posX1 - posX) + cos(angle) * (carCoordinates.posY1 - posY) + posY
+            sin(carParameters.angle) * (carCoordinates.posX1 - posX) + cos(carParameters.angle) * (carCoordinates.posY1 - posY) + posY
 
-        carCoordinates.posX2 = posX + rectangle.width() - rectangle.width() / 2
-        carCoordinates.posY2 = posY - rectangle.height() / 2
+        carCoordinates.posX2 = posX + carView.carRectangle!!.width() - carView.carHalfWidth
+        carCoordinates.posY2 = posY - carView.carHalfHeight
         carCoordinates.posX02 =
-            cos(angle) * (carCoordinates.posX2 - posX) - sin(angle) * (carCoordinates.posY2 - posY) + posX
+            cos(carParameters.angle) * (carCoordinates.posX2 - posX) - sin(carParameters.angle) * (carCoordinates.posY2 - posY) + posX
         carCoordinates.posY02 =
-            sin(angle) * (carCoordinates.posX2 - posX) + cos(angle) * (carCoordinates.posY2 - posY) + posY
+            sin(carParameters.angle) * (carCoordinates.posX2 - posX) + cos(carParameters.angle) * (carCoordinates.posY2 - posY) + posY
 
-        carCoordinates.posX3 = posX - rectangle.width() / 2
-        carCoordinates.posY3 = posY + rectangle.height() - rectangle.height() / 2
+        carCoordinates.posX3 = posX - carView.carHalfWidth
+        carCoordinates.posY3 = posY + carView.carHalfHeight - carView.carHalfHeight
         carCoordinates.posX03 =
-            cos(angle) * (carCoordinates.posX3 - posX) - sin(angle) * (carCoordinates.posY3 - posY) + posX
+            cos(carParameters.angle) * (carCoordinates.posX3 - posX) - sin(carParameters.angle) * (carCoordinates.posY3 - posY) + posX
         carCoordinates.posY03 =
-            sin(angle) * (carCoordinates.posX3 - posX) + cos(angle) * (carCoordinates.posY3 - posY) + posY
+            sin(carParameters.angle) * (carCoordinates.posX3 - posX) + cos(carParameters.angle) * (carCoordinates.posY3 - posY) + posY
 
-        carCoordinates.posX4 = posX + rectangle.width() - rectangle.width() / 2
-        carCoordinates.posY4 = posY + rectangle.height() - rectangle.height() / 2
+        carCoordinates.posX4 = posX + carView.carRectangle!!.width() - carView.carHalfWidth
+        carCoordinates.posY4 = posY + carView.carHalfHeight - carView.carHalfHeight
         carCoordinates.posX04 =
-            cos(angle) * (carCoordinates.posX4 - posX) - sin(angle) * (carCoordinates.posY4 - posY) + posX
+            cos(carParameters.angle) * (carCoordinates.posX4 - posX) - sin(carParameters.angle) * (carCoordinates.posY4 - posY) + posX
         carCoordinates.posY04 =
-            sin(angle) * (carCoordinates.posX4 - posX) + cos(angle) * (carCoordinates.posY4 - posY) + posY
+            sin(carParameters.angle) * (carCoordinates.posX4 - posX) + cos(carParameters.angle) * (carCoordinates.posY4 - posY) + posY
+    }
 
+    private fun updateCarDirection() {
         if (velX >= 0.01 || velX <= -0.01 || velY >= 0.01 || velY <= -0.01) {
             val distance: Float = sqrt((0 - velX).pow(2) + (0 - velY).pow(2))
             dirX = velX / distance
             dirY = velY / distance
         }
+    }
+
+    override fun update(coordinateDisplayManager: CoordinateDisplayManager?) {
+
+        iteratorUp++;
+        iteratorDown++;
+        iteratorLeft++
+        iteratorRight++
+
+        updateCarPosition(coordinateDisplayManager)
+        updateCarMovement()
+        updateCarSpeed()
+        updateCarHitboxPosition()
+        updateCarSensorsDistancePosition()
+        updateCarDirection()
+    }
+
+     fun removeCollision(){
+        canCollide = false
     }
 }

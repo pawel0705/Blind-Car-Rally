@@ -12,14 +12,15 @@ class QuitLevel : SurfaceView(Settings.CONTEXT), ILevel {
 
     private var texts: HashMap<String, String> = HashMap()
     private var exit: Boolean = true
-
+    private var SoundManager: SoundManager = SoundManager()
     override fun initState() {
+        SoundManager.initSoundManager()
         texts.putAll(OpenerCSV.readData(R.raw.quit_tts, Settings.languageTTS))
         TextToSpeechManager.speakNow(texts["QUIT_TUTORIAL"].toString())
         TextToSpeechManager.speakQueue(texts["QUIT_YES"].toString())
     }
 
-    override fun updateState() {
+    override fun updateState(deltaTime: Int) {
 
     }
 

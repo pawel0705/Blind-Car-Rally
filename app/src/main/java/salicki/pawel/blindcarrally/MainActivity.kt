@@ -12,6 +12,8 @@ import kotlin.system.exitProcess
 
 class MainActivity : AppCompatActivity() {
 
+    private var SoundManager: SoundManager = SoundManager()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

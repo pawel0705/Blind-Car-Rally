@@ -12,12 +12,12 @@ class VolumeSoundsLevel : SurfaceView(Settings.CONTEXT), ILevel {
     private var texts: HashMap<String, String> = HashMap()
     private var volume: ArrayList<String> = ArrayList()
     private var volumeIterator = 0
-
+    private var SoundManager: SoundManager = SoundManager()
     private var swipe: Boolean = false
 
     init {
         isFocusable = true
-
+        SoundManager.initSoundManager()
         volume.add("SETTINGS_VOLUME_10")
         volume.add("SETTINGS_VOLUME_20")
         volume.add("SETTINGS_VOLUME_30")
@@ -36,7 +36,7 @@ class VolumeSoundsLevel : SurfaceView(Settings.CONTEXT), ILevel {
         TextToSpeechManager.speakNow(texts["SETTINGS_SOUNDS_VOLUME"].toString() + texts[volume[Settings.sounds - 1]].toString())
     }
 
-    override fun updateState() {
+    override fun updateState(deltaTime: Int) {
 
     }
 
