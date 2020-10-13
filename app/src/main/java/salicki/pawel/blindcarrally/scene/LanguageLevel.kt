@@ -10,31 +10,41 @@ import salicki.pawel.blindcarrally.scenemanager.LevelManager
 import salicki.pawel.blindcarrally.scenemanager.LevelType
 
 class LanguageLevel : SurfaceView(Settings.CONTEXT), ILevel {
-    private var SoundManager: SoundManager = SoundManager()
+    private var soundManager: SoundManager = SoundManager()
     private var languageSelectionData: LinkedHashMap<LanguageTTS, LanguageSelectionData> =
         LinkedHashMap()
     private var languageTypeData: ArrayList<LanguageTTS> =
         arrayListOf(LanguageTTS.ENGLISH, LanguageTTS.POLISH)
+
     private var languageIterator: Int = 0
 
     private var swipe: Boolean = false
 
     init {
-        SoundManager.initSoundManager()
         isFocusable = true
 
+        initSoundManager()
+        readTTSTextFile()
+    }
+
+    private fun readTTSTextFile() {
         languageSelectionData[LanguageTTS.ENGLISH] =
             (LanguageSelectionData(OpenerCSV.readData(R.raw.language_tts, LanguageTTS.ENGLISH)))
         languageSelectionData[LanguageTTS.POLISH] =
             (LanguageSelectionData(OpenerCSV.readData(R.raw.language_tts, LanguageTTS.POLISH)))
     }
 
+    private fun initSoundManager() {
+        soundManager.initSoundManager()
+
+        soundManager.addSound(Resources.swapSound)
+        soundManager.addSound(Resources.acceptSound)
+    }
+
     override fun initState() {
-        languageSelectionData[Settings.languageTTS]?.texts?.get("LANGUAGE_TUTORIAL")?.let {
-            TextToSpeechManager.speakQueue(
-                it
-            )
-        }
+        languageSelectionData[Settings.languageTTS]?.texts?.get("LANGUAGE_TUTORIAL")
+            ?.let { TextToSpeechManager.speakQueue(it) }
+
         languageSelectionData[Settings.languageTTS]?.texts?.get("SELECTED_LANGUAGE")
             ?.let { TextToSpeechManager.speakQueue(it) }
     }
@@ -43,7 +53,7 @@ class LanguageLevel : SurfaceView(Settings.CONTEXT), ILevel {
 
         when (GestureManager.gestureDetect(event)) {
             GestureType.SWIPE_LEFT -> {
-                SoundManager.playSound(R.raw.swoosh)
+                soundManager.playSound(Resources.swapSound)
                 languageIterator++
 
                 if (languageIterator >= languageTypeData.size) {
@@ -53,7 +63,7 @@ class LanguageLevel : SurfaceView(Settings.CONTEXT), ILevel {
                 swipe = true
             }
             GestureType.SWIPE_RIGHT -> {
-                SoundManager.playSound(R.raw.swoosh)
+                soundManager.playSound(Resources.swapSound)
                 languageIterator--
                 if (languageIterator < 0) {
                     languageIterator = languageTypeData.size - 1
@@ -62,8 +72,9 @@ class LanguageLevel : SurfaceView(Settings.CONTEXT), ILevel {
                 swipe = true
             }
             GestureType.DOUBLE_TAP -> {
-                SoundManager.playSound(R.raw.accept)
-                LevelManager.changeLevel(LevelType.MENU)
+                soundManager.playSound(Resources.acceptSound)
+                SharedPreferencesManager.saveConfiguration("language", languageIterator.toString())
+                LevelManager.changeLevel(MenuLevel())
             }
         }
     }
@@ -72,6 +83,7 @@ class LanguageLevel : SurfaceView(Settings.CONTEXT), ILevel {
         if (swipe) {
             TextToSpeechManager.stop()
             Settings.languageTTS = languageTypeData[languageIterator]
+            TextToSpeechManager.changeLanguage(languageTypeData[languageIterator])
             languageSelectionData[languageTypeData[languageIterator]]?.texts?.get("SELECTED_LANGUAGE")
                 ?.let { TextToSpeechManager.speakNow(it) }
 
@@ -80,7 +92,9 @@ class LanguageLevel : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun destroyState() {
+        isFocusable = false
 
+        soundManager.destroy()
     }
 
     override fun redrawState(canvas: Canvas) {

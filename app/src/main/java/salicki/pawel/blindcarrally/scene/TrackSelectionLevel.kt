@@ -8,16 +8,28 @@ import salicki.pawel.blindcarrally.scenemanager.ILevel
 
 class TrackSelectionLevel : SurfaceView(Settings.CONTEXT), ILevel {
     private var texts: HashMap<String, String> = HashMap()
-    private var SoundManager: SoundManager = SoundManager()
+    private var soundManager: SoundManager = SoundManager()
     private var swipe: Boolean = false
 
     init {
         isFocusable = true
-        SoundManager.initSoundManager()
+
+        initSoundManager()
+        readTTSTextFile()
+    }
+
+    private fun initSoundManager(){
+        soundManager.initSoundManager()
+
+        soundManager.addSound(Resources.swapSound)
+        soundManager.addSound(Resources.acceptSound)
+    }
+
+    private fun readTTSTextFile() {
+        texts.putAll(OpenerCSV.readData(R.raw.track_selection_tts, Settings.languageTTS))
     }
 
     override fun initState() {
-        texts.putAll(OpenerCSV.readData(R.raw.track_selection_tts, Settings.languageTTS))
         TextToSpeechManager.speakNow(texts["TRACK_SELECTION_TUTORIAL"].toString())
     }
 
@@ -26,23 +38,25 @@ class TrackSelectionLevel : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun destroyState() {
+        isFocusable = false
 
+        soundManager.destroy()
     }
 
     override fun respondTouchState(event: MotionEvent) {
 
         when (GestureManager.gestureDetect(event)) {
             GestureType.SWIPE_LEFT -> {
-                SoundManager.playSound(R.raw.swoosh)
+                soundManager.playSound(Resources.swapSound)
 
             }
             GestureType.SWIPE_RIGHT -> {
-                SoundManager.playSound(R.raw.swoosh)
+                soundManager.playSound(Resources.swapSound)
 
             }
             GestureType.DOUBLE_TAP -> {
                 TextToSpeechManager.stop()
-                SoundManager.playSound(R.raw.accept)
+                soundManager.playSound(Resources.acceptSound)
             }
         }
     }

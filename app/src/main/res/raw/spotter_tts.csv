@@ -1,4 +1,53 @@
 TEXT_KEY;ENGLISH;POLISH
+GOOD_LUCK;Good luck.;Powodzenia.
 COUNTDOWN_1;One.;Jeden.
 COUNTDOWN_2;Two.;Dwa.
-COUNTDOWN_3;
+COUNTDOWN_3;Three.;Trzy.
+COUNTDOWN_4;Four.;Cztery.
+COUNTDOWN_5;Five.;Pięć.
+START;Start.;Start.
+RIGHT_1;One right.;Jeden prawy.
+RIGHT_2;Two right.;Dwa prawy.
+RIGHT_3;Three right.;Trzy prawy.
+RIGHT_4;Four right.;Cztery prawy.
+RIGHT_5;Five right.;Pięć prawy.
+RIGHT_6;Six right.;Sześć prawy.
+LEFT_1;One left.;Jeden lewy.
+LEFT_2;Two left.;Dwa lewy.
+LEFT_3;Three left.;Trzy lewy.
+LEFT_4;Four left.;Cztery lewy.
+LEFT_5;Five left.;Pięć lewy.
+LEFT_6;Six left.;Sześć prawy.
+LENGTH_10;Ten.;Dziesięć.
+LENGTH_20;Twenty.;Dwadzieścia.
+LENGTH_30;Thirty.;Trzydzieści.
+LENGTH_40;Forty.;Czterdzieści.
+LENGTH_50;Fifty.;Pięćdziesiąt.
+LENGTH_60;Sixty.;Sześćdziesiąt.
+LENGTH_70;Seventy.;Siedemdziesiąt.
+LENGTH_80;Eighty.;Osiemdziesiąt.
+LENGTH_90;Ninety.;Dziewięćdziesiąt.
+LENGTH_100;One hundred.;Sto.
+SHORT;Short.;Krórki.
+VERY_SHORT;Very short.;Bardzo krótki.
+LONG;Long.;Długi.
+VERY_LONG;Very long.;Bardzo długi.
+TIGHTENS;Tightens.;Zacisk.
+OPENS;Opens.;Otwiera.
+NARROW;Narrow.;Zwężenie.
+CAUTION;Caution.;Ostrożnie.
+DONT_CUT;Don't cut.;Nie tnij.
+DEEP;Deep.;Siodło.
+JUMP;Jump.;Hopa.
+OVER_JUMP;Ober jump.;Przez hopę.
+INTO;Into.;Do.
+MAYBE;Maybe.;Może.
+OVER_CREST;Over crest.;Przez szczyt.
+UNSEEN;Unseen.;Ukryty.
+KEEP_LEFT;Keep left.;Lewą.
+KEEP_RIGHT;Keep right.;Prawą.
+FLAT;Flat.;Płasko.
+CHICANE;Chicane.;Szykana.
+CUT;Cut.;Tnij.
+SQUARE;Square.;Dziewięćdziesiąt stopni.
+HAIRPIN;Hairpin.;Nawrót.

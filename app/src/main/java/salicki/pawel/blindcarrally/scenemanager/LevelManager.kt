@@ -18,42 +18,36 @@ import kotlin.collections.HashMap
 
 object LevelManager : SurfaceView(Settings.CONTEXT), SurfaceHolder.Callback {
 
-    private val scenes: HashMap<LevelType, ILevel> = HashMap()
-    private var activeLevelType: LevelType = LevelType.SPLASH
+    private var activeScene: ILevel
     private var touchTimer = Timer()
+    private var sceneTransitionTimer = Timer()
     private var activateTouch: Boolean = false
     private var gameLoop: GameLoop
 
     init {
-        scenes[LevelType.SPLASH] = SplashLevel()
-        scenes[LevelType.LANGUAGE] = LanguageLevel()
-        scenes[LevelType.MENU] = MenuLevel()
-        scenes[LevelType.QUIT] = QuitLevel()
-        scenes[LevelType.GAME] = GameLevel()
-        scenes[LevelType.SETTINGS] = SettingsLevel()
-        scenes[LevelType.CREDITS] = CreditsLevel()
-        scenes[LevelType.VOLUME_TTS] = VolumeTTSLevel()
-        scenes[LevelType.VOLUME_SOUNDS] = VolumeSoundsLevel()
-        scenes[LevelType.CALIBRATION] = CalibrationLevel()
+        activeScene = SplashLevel()
+        initState()
 
         val surfaceHolder = holder
         surfaceHolder.addCallback(this)
 
         gameLoop = GameLoop(surfaceHolder)
 
-        startTimer()
+        startTouchTimer()
     }
 
-    fun changeLevel(level: LevelType) {
-        this.activeLevelType = level
+    fun changeLevel(level: ILevel) {
 
-        this.resetTimer()
-        this.startTimer()
+        activeScene?.destroyState()
 
-        this.scenes[activeLevelType]?.initState()
+        this.resetTouchTimer()
+        this.startTouchTimer()
+
+        activeScene = level
+        initState()
     }
 
-    private fun startTimer() {
+    private fun startTouchTimer() {
         touchTimer.schedule(object : TimerTask() {
             override fun run() {
                 activateTouch = true
@@ -61,25 +55,25 @@ object LevelManager : SurfaceView(Settings.CONTEXT), SurfaceHolder.Callback {
         }, 1000)
     }
 
-    private fun resetTimer() {
+    private fun resetTouchTimer() {
         activateTouch = false
     }
 
     fun updateState(deltaTime: Int) {
-        this.scenes[activeLevelType]?.updateState(deltaTime)
+        activeScene?.updateState(deltaTime)
     }
 
     fun destroyState() {
-        this.scenes[activeLevelType]?.destroyState()
+        activeScene?.destroyState()
     }
 
     private fun initState() {
-        this.scenes[activeLevelType]?.initState()
+        activeScene?.initState()
     }
 
     private fun respondTouchState(motionEvent: MotionEvent) {
-        if(activateTouch){
-            this.scenes[activeLevelType]?.respondTouchState(motionEvent)
+        if (activateTouch) {
+            activeScene?.respondTouchState(motionEvent)
         }
     }
 
@@ -90,7 +84,7 @@ object LevelManager : SurfaceView(Settings.CONTEXT), SurfaceHolder.Callback {
         this.drawUPS(canvas)
         this.drawFPS(canvas)
 
-        this.scenes[activeLevelType]?.redrawState(canvas)
+        activeScene?.redrawState(canvas)
     }
 
     private fun drawUPS(canvas: Canvas) {

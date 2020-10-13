@@ -8,11 +8,9 @@ import android.os.Build
 
 class SoundManager {
     private var soundPool: SoundPool? = null
-    private val MAX_STREAMS = 3
+    private val maxStrams = 10
 
-    private var sound1: Int = 0
-    private var sound2: Int = 0
-    private var sound3: Int = 0
+    private var sounds: MutableMap<Int, Int> = mutableMapOf<Int, Int>()
 
     fun initSoundManager() {
         soundPool = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -21,28 +19,29 @@ class SoundManager {
                 .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
                 .build()
             SoundPool.Builder()
-                .setMaxStreams(MAX_STREAMS)
+                .setMaxStreams(maxStrams)
                 .setAudioAttributes(audioAttributes)
                 .build()
         } else {
-            SoundPool(MAX_STREAMS, AudioManager.STREAM_ACCESSIBILITY, 0)
+            SoundPool(maxStrams, AudioManager.STREAM_ACCESSIBILITY, 0)
         }
+    }
 
-        sound1 = soundPool?.load(Settings.CONTEXT, R.raw.swoosh, 1)!!
-        sound2 = soundPool?.load(Settings.CONTEXT, R.raw.accept, 1)!!
-        sound3 = soundPool?.load(Settings.CONTEXT, R.raw.beep, 1)!!
+    fun addSound(soundId: Int) {
+        sounds?.set(soundId, soundPool?.load(Settings.CONTEXT, soundId, 1)!!)
     }
 
     fun playSound(soundId: Int, leftVolume: Float = 1F, rightVolume: Float = 1F) {
-        when (soundId) {
-            R.raw.swoosh -> {
-                soundPool!!.play(sound1, Settings.sounds * 0.1f, Settings.sounds * 0.1f, 0, 0, 1f)
-            }
-            R.raw.accept -> {
-                soundPool!!.play(sound2, Settings.sounds * 0.1f, Settings.sounds * 0.1f, 0, 0, 1f)
-            }
-            R.raw.beep -> {
-                soundPool!!.play(sound3, Settings.sounds * 0.1f * leftVolume, Settings.sounds * 0.1f * rightVolume, 0, 0, 1f)
+        if (soundPool != null) {
+            sounds?.get(soundId)?.let {
+                soundPool!!.play(
+                    it,
+                    Settings.sounds * 0.1F * leftVolume,
+                    Settings.sounds * 0.1F * rightVolume,
+                    0,
+                    0,
+                    1F
+                )
             }
         }
     }

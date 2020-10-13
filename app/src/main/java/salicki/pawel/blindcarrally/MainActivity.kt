@@ -12,8 +12,6 @@ import kotlin.system.exitProcess
 
 class MainActivity : AppCompatActivity() {
 
-    private var SoundManager: SoundManager = SoundManager()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -25,12 +23,13 @@ class MainActivity : AppCompatActivity() {
         Settings.SCREEN_SCALE = displayMetrics.densityDpi.toFloat()
 
         TextToSpeechManager.initTextToSpeech()
-        SoundManager.initSoundManager()
 
         setContentView(LevelManager);
     }
 
     fun exit() {
+        TextToSpeechManager.destroy()
+
         finishAffinity()
         exitProcess(0)
     }
@@ -40,6 +39,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onPause() {
+        TextToSpeechManager.stop()
         LevelManager.pause()
 
         super.onPause()

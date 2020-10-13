@@ -10,16 +10,27 @@ import salicki.pawel.blindcarrally.scenemanager.LevelType
 
 class CalibrationLevel: SurfaceView(Settings.CONTEXT), ILevel  {
     private var texts: HashMap<String, String> = HashMap()
-    private var SoundManager: SoundManager = SoundManager()
+    private var soundManager: SoundManager = SoundManager()
+
     init {
-        SoundManager.initSoundManager()
         isFocusable = true
+
+        initSoundManager()
+        readTTSTextFile()
+    }
+
+    private fun initSoundManager(){
+        soundManager.initSoundManager()
+
+        soundManager.addSound(Resources.acceptSound)
+    }
+
+    private fun readTTSTextFile() {
+        TextToSpeechManager.speakNow(texts["CALIBRATION_TUTORIAL"].toString())
     }
 
     override fun initState() {
         texts.putAll(OpenerCSV.readData(R.raw.calibration_tts, Settings.languageTTS))
-
-        TextToSpeechManager.speakNow(texts["CALIBRATION_TUTORIAL"].toString())
     }
 
     override fun updateState(deltaTime: Int) {
@@ -27,15 +38,16 @@ class CalibrationLevel: SurfaceView(Settings.CONTEXT), ILevel  {
     }
 
     override fun destroyState() {
-
+        isFocusable = false
+        soundManager.destroy()
     }
 
     override fun respondTouchState(event: MotionEvent) {
         when (GestureManager.gestureDetect(event)) {
             GestureType.DOUBLE_TAP -> {
                 MovementManager.register()
-                SoundManager.playSound(R.raw.accept)
-                LevelManager.changeLevel(LevelType.GAME)
+                soundManager.playSound(Resources.acceptSound)
+                LevelManager.changeLevel(GameLevel())
             }
         }
     }

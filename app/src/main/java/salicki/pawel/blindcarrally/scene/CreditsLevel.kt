@@ -11,15 +11,26 @@ import salicki.pawel.blindcarrally.scenemanager.LevelType
 class CreditsLevel : SurfaceView(Settings.CONTEXT), ILevel {
 
     private var texts: HashMap<String, String> = HashMap()
-    private var SoundManager: SoundManager = SoundManager()
+    private var soundManager: SoundManager = SoundManager()
+
     init {
-        SoundManager.initSoundManager()
         isFocusable = true
+
+        initSoundManager()
+        readTTSTextFile()
+    }
+
+    private fun initSoundManager() {
+        soundManager.initSoundManager()
+
+        soundManager.addSound(Resources.acceptSound)
+    }
+
+    private fun readTTSTextFile() {
+        texts.putAll(OpenerCSV.readData(R.raw.credits_tts, Settings.languageTTS))
     }
 
     override fun initState() {
-        texts.putAll(OpenerCSV.readData(R.raw.credits_tts, Settings.languageTTS))
-
         TextToSpeechManager.speakNow(texts["CREDITS_AUTHOR"].toString())
         TextToSpeechManager.speakQueue(texts["CREDITS_BACK"].toString())
     }
@@ -29,14 +40,16 @@ class CreditsLevel : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun destroyState() {
+        isFocusable = false
 
+        soundManager.destroy()
     }
 
     override fun respondTouchState(event: MotionEvent) {
         when (GestureManager.gestureDetect(event)) {
             GestureType.DOUBLE_TAP -> {
-                SoundManager.playSound(R.raw.accept)
-                LevelManager.changeLevel(LevelType.MENU)
+                soundManager.playSound(Resources.acceptSound)
+                LevelManager.changeLevel(MenuLevel())
             }
         }
     }

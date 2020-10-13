@@ -14,26 +14,49 @@ import kotlin.collections.HashMap
 class SplashLevel() : SurfaceView(Settings.CONTEXT), ILevel {
 
     private var texts: HashMap<String, String> = HashMap()
+    private var languageTypeData: ArrayList<LanguageTTS> =
+        arrayListOf(LanguageTTS.ENGLISH, LanguageTTS.POLISH)
+
     private lateinit var logoRectangle: Rect
     private var logoImage: Bitmap
+
+    private var languageSelection: Boolean = true
 
     private var logoTimer = Timer()
 
     init {
         isFocusable = true
 
-        texts.putAll(OpenerCSV.readData(R.raw.splash_tts, LanguageTTS.ENGLISH))
+        readTTSTextFile()
+
         logoImage = BitmapFactory.decodeResource(context.resources, R.drawable.logo)
 
-        logoTimer.schedule(object : TimerTask() {
-            override fun run() {
-                LevelManager.changeLevel(LevelType.LANGUAGE)
-            }
-        }, 5000)
+        checkLanguageOption()
+        initScreenTransitionTimer()
+    }
+
+    private fun initScreenTransitionTimer() {
+        if (languageSelection) {
+            logoTimer.schedule(object : TimerTask() {
+                override fun run() {
+                    LevelManager.changeLevel(LanguageLevel())
+                }
+            }, 5000)
+        } else {
+            logoTimer.schedule(object : TimerTask() {
+                override fun run() {
+                    LevelManager.changeLevel(MenuLevel())
+                }
+            }, 5000)
+        }
+    }
+
+    private fun readTTSTextFile() {
+        texts.putAll(OpenerCSV.readData(R.raw.splash_tts, LanguageTTS.ENGLISH))
     }
 
     override fun initState() {
-        TextToSpeechManager.speakQueue(texts["SPLASH_LOGO"].toString())
+        TextToSpeechManager.speakNow(texts["SPLASH_LOGO"].toString())
     }
 
     override fun updateState(deltaTime: Int) {
@@ -47,13 +70,27 @@ class SplashLevel() : SurfaceView(Settings.CONTEXT), ILevel {
         when (GestureManager.gestureDetect(event)) {
             GestureType.DOUBLE_TAP -> {
                 logoTimer.cancel()
-                LevelManager.changeLevel(LevelType.LANGUAGE)
+
+                if (languageSelection) {
+                    LevelManager.changeLevel(LanguageLevel())
+                } else {
+                    LevelManager.changeLevel(MenuLevel())
+                }
             }
         }
     }
 
     override fun redrawState(canvas: Canvas) {
         this.drawSplashScreen(canvas)
+    }
+
+    private fun checkLanguageOption() {
+        var language = SharedPreferencesManager.loadConfiguration("language")
+        if (language != null && language != "") {
+            languageSelection = false
+            Settings.languageTTS = languageTypeData[language.toInt()]
+            TextToSpeechManager.setLanguage(Settings.languageTTS)
+        }
     }
 
     private fun drawSplashScreen(canvas: Canvas) {

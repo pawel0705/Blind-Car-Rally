@@ -1,6 +1,7 @@
 TEXT_KEY;ENGLISH;POLISH
 MENU_TUTORIAL;You are in the main menu. Swipe left or right to navigate through the selections. Confirm your selection with a double tap with your finger.;Znajdujesz się w menu głównym. Przesuń palcem w lewo lub prawo, by poruszać się po wyborach. Zatwierdź wybór podwójnym stuknięciem palcem.
 MENU_PLAY;Selected option: Start the game.;Wybrana opcja: Rozpocznij grę.
+MENU_HOE;Selected option: How to play.;Wybrana opcja: Jak grać.
 MENU_SETTINGS;Selected option: Settings.;Wybrana opcja: Ustawienia.
 MENU_LANGUAGE;Selected option: Change language.;Wybrana opcja: Zmień język.
 MENU_CREDITS;Selected option: Credits.;Wybrana opcja: Autorzy.

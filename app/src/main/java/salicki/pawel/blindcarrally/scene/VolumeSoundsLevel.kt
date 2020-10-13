@@ -12,12 +12,18 @@ class VolumeSoundsLevel : SurfaceView(Settings.CONTEXT), ILevel {
     private var texts: HashMap<String, String> = HashMap()
     private var volume: ArrayList<String> = ArrayList()
     private var volumeIterator = 0
-    private var SoundManager: SoundManager = SoundManager()
+    private var soundManager: SoundManager = SoundManager()
     private var swipe: Boolean = false
 
     init {
         isFocusable = true
-        SoundManager.initSoundManager()
+
+        initSoundManager()
+        readTTSTextFile()
+        initVolumeOptions()
+    }
+
+    private fun initVolumeOptions() {
         volume.add("SETTINGS_VOLUME_10")
         volume.add("SETTINGS_VOLUME_20")
         volume.add("SETTINGS_VOLUME_30")
@@ -31,9 +37,18 @@ class VolumeSoundsLevel : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun initState() {
-        texts.putAll(OpenerCSV.readData(R.raw.settings_tts, Settings.languageTTS))
-
         TextToSpeechManager.speakNow(texts["SETTINGS_SOUNDS_VOLUME"].toString() + texts[volume[Settings.sounds - 1]].toString())
+    }
+
+    private fun initSoundManager() {
+        soundManager.initSoundManager()
+
+        soundManager.addSound(Resources.swapSound)
+        soundManager.addSound(Resources.acceptSound)
+    }
+
+    private fun readTTSTextFile() {
+        texts.putAll(OpenerCSV.readData(R.raw.settings_tts, Settings.languageTTS))
     }
 
     override fun updateState(deltaTime: Int) {
@@ -41,13 +56,15 @@ class VolumeSoundsLevel : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun destroyState() {
+        isFocusable = false
 
+        soundManager.destroy()
     }
 
     override fun respondTouchState(event: MotionEvent) {
         when (GestureManager.gestureDetect(event)) {
             GestureType.SWIPE_LEFT -> {
-                SoundManager.playSound(R.raw.swoosh)
+                soundManager.playSound(Resources.swapSound)
                 volumeIterator++
 
                 if (volumeIterator >= volume.size) {
@@ -60,7 +77,7 @@ class VolumeSoundsLevel : SurfaceView(Settings.CONTEXT), ILevel {
                 swipe = true
             }
             GestureType.SWIPE_RIGHT -> {
-                SoundManager.playSound(R.raw.swoosh)
+                soundManager.playSound(Resources.swapSound)
                 volumeIterator--
                 if (volumeIterator < 0) {
                     volumeIterator = volume.size - 1
@@ -72,9 +89,9 @@ class VolumeSoundsLevel : SurfaceView(Settings.CONTEXT), ILevel {
                 swipe = true
             }
             GestureType.DOUBLE_TAP -> {
-                SoundManager.playSound(R.raw.accept)
+                soundManager.playSound(Resources.acceptSound)
 
-                LevelManager.changeLevel(LevelType.SETTINGS)
+                LevelManager.changeLevel(SettingsLevel())
             }
         }
     }

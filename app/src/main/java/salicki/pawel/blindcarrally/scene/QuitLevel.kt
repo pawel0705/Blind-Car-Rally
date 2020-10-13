@@ -12,12 +12,29 @@ class QuitLevel : SurfaceView(Settings.CONTEXT), ILevel {
 
     private var texts: HashMap<String, String> = HashMap()
     private var exit: Boolean = true
-    private var SoundManager: SoundManager = SoundManager()
+    private var soundManager: SoundManager = SoundManager()
+
+    init{
+        isFocusable = true
+
+        initSoundManager()
+        readTTSTextFile()
+    }
+
     override fun initState() {
-        SoundManager.initSoundManager()
-        texts.putAll(OpenerCSV.readData(R.raw.quit_tts, Settings.languageTTS))
         TextToSpeechManager.speakNow(texts["QUIT_TUTORIAL"].toString())
         TextToSpeechManager.speakQueue(texts["QUIT_YES"].toString())
+    }
+
+    private fun initSoundManager(){
+        soundManager.initSoundManager()
+
+        soundManager.addSound(Resources.swapSound)
+        soundManager.addSound(Resources.acceptSound)
+    }
+
+    private fun readTTSTextFile() {
+        texts.putAll(OpenerCSV.readData(R.raw.quit_tts, Settings.languageTTS))
     }
 
     override fun updateState(deltaTime: Int) {
@@ -25,13 +42,15 @@ class QuitLevel : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun destroyState() {
+        isFocusable = false
 
+        soundManager.destroy()
     }
 
     override fun respondTouchState(event: MotionEvent) {
         when (GestureManager.gestureDetect(event)) {
             GestureType.SWIPE_LEFT, GestureType.SWIPE_RIGHT -> {
-                SoundManager.playSound(R.raw.swoosh)
+                soundManager.playSound(Resources.swapSound)
                 exit = !exit
                 if (exit) {
                     texts["QUIT_YES"]?.let { TextToSpeechManager.speakNow(it) }
@@ -40,9 +59,9 @@ class QuitLevel : SurfaceView(Settings.CONTEXT), ILevel {
                 }
             }
             GestureType.DOUBLE_TAP -> {
-                SoundManager.playSound(R.raw.accept)
+                soundManager.playSound(Resources.acceptSound)
                 if (!exit) {
-                    LevelManager.changeLevel(LevelType.MENU)
+                    LevelManager.changeLevel(MenuLevel())
                 } else {
                     (Settings.CONTEXT as MainActivity).exit()
                 }

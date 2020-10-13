@@ -12,17 +12,29 @@ class SettingsLevel : SurfaceView(Settings.CONTEXT), ILevel {
 
     private var texts: HashMap<String, String> = HashMap()
     private var settingsIterator = 0
-    private var SoundManager: SoundManager = SoundManager()
+    private var soundManager: SoundManager = SoundManager()
     private var swipe: Boolean = false
 
     init {
-        SoundManager.initSoundManager()
         isFocusable = true
+
+        initSoundManager()
+        readTTSTextFile()
     }
 
+    private fun initSoundManager(){
+        soundManager.initSoundManager()
+
+        soundManager.addSound(Resources.swapSound)
+        soundManager.addSound(Resources.acceptSound)
+    }
+
+    private fun readTTSTextFile() {
+        texts.putAll(OpenerCSV.readData(R.raw.settings_tts, Settings.languageTTS))
+    }
 
     override fun initState() {
-        texts.putAll(OpenerCSV.readData(R.raw.settings_tts, Settings.languageTTS))
+
         TextToSpeechManager.speakNow(texts["SETTINGS_TUTORIAL"].toString())
         if (Settings.vibrations) {
             TextToSpeechManager.speakQueue(texts["SETTINGS_VIBRATION_ON"].toString())
@@ -63,14 +75,16 @@ class SettingsLevel : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun destroyState() {
+        isFocusable = false
 
+        soundManager.destroy()
     }
 
     override fun respondTouchState(event: MotionEvent) {
 
         when (GestureManager.gestureDetect(event)) {
             GestureType.SWIPE_LEFT -> {
-                SoundManager.playSound(R.raw.swoosh)
+                soundManager.playSound(Resources.swapSound)
                 settingsIterator++
 
                 if (settingsIterator > 4) {
@@ -80,7 +94,7 @@ class SettingsLevel : SurfaceView(Settings.CONTEXT), ILevel {
                 swipe = true
             }
             GestureType.SWIPE_RIGHT -> {
-                SoundManager.playSound(R.raw.swoosh)
+                soundManager.playSound(Resources.swapSound)
                 settingsIterator--
                 if (settingsIterator < 0) {
                     settingsIterator = 4
@@ -89,7 +103,7 @@ class SettingsLevel : SurfaceView(Settings.CONTEXT), ILevel {
                 swipe = true
             }
             GestureType.DOUBLE_TAP -> {
-                SoundManager.playSound(R.raw.accept)
+                soundManager.playSound(Resources.acceptSound)
 
                 when (settingsIterator) {
                     0 -> {
@@ -111,13 +125,13 @@ class SettingsLevel : SurfaceView(Settings.CONTEXT), ILevel {
                         }
                     }
                     2 -> {
-                        LevelManager.changeLevel(LevelType.VOLUME_TTS)
+                        LevelManager.changeLevel(VolumeTTSLevel())
                     }
                     3 -> {
-                        LevelManager.changeLevel(LevelType.VOLUME_SOUNDS)
+                        LevelManager.changeLevel(VolumeSoundsLevel())
                     }
                     4 -> {
-                        LevelManager.changeLevel(LevelType.MENU)
+                        LevelManager.changeLevel(MenuLevel())
                     }
                 }
             }
