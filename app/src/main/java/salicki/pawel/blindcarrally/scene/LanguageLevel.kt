@@ -1,5 +1,6 @@
 package salicki.pawel.blindcarrally.scene
 
+import android.gesture.Gesture
 import android.graphics.Canvas
 import android.view.MotionEvent
 import android.view.SurfaceView
@@ -18,13 +19,21 @@ class LanguageLevel : SurfaceView(Settings.CONTEXT), ILevel {
 
     private var languageIterator: Int = 0
 
+    private var selectBoxManager = SelectBoxManager()
+
     private var swipe: Boolean = false
+    private var changeLanguage: Boolean = false
 
     init {
         isFocusable = true
 
         initSoundManager()
         readTTSTextFile()
+        initSelectBoxModel()
+    }
+
+    private fun initSelectBoxModel(){
+        selectBoxManager.initSelectBoxModel(2)
     }
 
     private fun readTTSTextFile() {
@@ -51,7 +60,9 @@ class LanguageLevel : SurfaceView(Settings.CONTEXT), ILevel {
 
     override fun respondTouchState(event: MotionEvent) {
 
-        when (GestureManager.gestureDetect(event)) {
+        swipe = false
+
+        when (GestureManager.swipeDetect(event)){
             GestureType.SWIPE_LEFT -> {
                 soundManager.playSound(Resources.swapSound)
                 languageIterator++
@@ -71,12 +82,29 @@ class LanguageLevel : SurfaceView(Settings.CONTEXT), ILevel {
 
                 swipe = true
             }
+        }
+
+        when (GestureManager.doubleTapDetect(event)) {
             GestureType.DOUBLE_TAP -> {
-                soundManager.playSound(Resources.acceptSound)
+                Settings.globalSounds.playSound(Resources.acceptSound)
                 SharedPreferencesManager.saveConfiguration("language", languageIterator.toString())
                 LevelManager.changeLevel(MenuLevel())
             }
         }
+
+        val holdPosition = GestureManager.holdPositionDetect(event).first
+        if (holdPosition > 0 && !swipe) {
+            when {
+                holdPosition < Settings.SCREEN_WIDTH / 2 -> {
+                    languageIterator = 0
+                }
+                holdPosition < Settings.SCREEN_WIDTH / 2 * 2 -> {
+                    languageIterator = 1
+                }
+            }
+        }
+
+        selectBoxManager.updateSelectBoxPosition(languageIterator)
     }
 
     override fun updateState(deltaTime: Int) {
@@ -98,6 +126,6 @@ class LanguageLevel : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun redrawState(canvas: Canvas) {
-
+        selectBoxManager.drawSelectBox(canvas)
     }
 }

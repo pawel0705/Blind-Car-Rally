@@ -45,7 +45,7 @@ class TrackSelectionLevel : SurfaceView(Settings.CONTEXT), ILevel {
 
     override fun respondTouchState(event: MotionEvent) {
 
-        when (GestureManager.gestureDetect(event)) {
+        when (GestureManager.doubleTapDetect(event)) {
             GestureType.SWIPE_LEFT -> {
                 soundManager.playSound(Resources.swapSound)
 
@@ -56,7 +56,7 @@ class TrackSelectionLevel : SurfaceView(Settings.CONTEXT), ILevel {
             }
             GestureType.DOUBLE_TAP -> {
                 TextToSpeechManager.stop()
-                soundManager.playSound(Resources.acceptSound)
+                Settings.globalSounds.playSound(Resources.acceptSound)
             }
         }
     }

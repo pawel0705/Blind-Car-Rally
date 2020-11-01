@@ -1,6 +1,7 @@
 package salicki.pawel.blindcarrally.scenemanager
 
 enum class LevelType {
+    NULL,
     SPLASH,
     LANGUAGE,
     MENU,
@@ -10,5 +11,11 @@ enum class LevelType {
     QUIT,
     VOLUME_TTS,
     VOLUME_SOUNDS,
-    CALIBRATION
+    CALIBRATION,
+    VIBRATION,
+    INTRODUCTION,
+    DISPLAY,
+    GAME_MODE,
+    SINGLE,
+    TOURNAMENT
 }

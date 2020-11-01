@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="fontSize">20sp</dimen>
+    <dimen name="optionSize">90sp</dimen>
+    <dimen name="selectFontSize">50sp</dimen>
     <dimen name="screenSize">400sp</dimen>
+    <dimen name="informationSize">30sp</dimen>
     <dimen name="carSizeX">20sp</dimen>
     <dimen name="carSizeY">10sp</dimen>
 </resources>

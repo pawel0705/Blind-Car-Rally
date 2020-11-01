@@ -43,10 +43,10 @@ class CalibrationLevel: SurfaceView(Settings.CONTEXT), ILevel  {
     }
 
     override fun respondTouchState(event: MotionEvent) {
-        when (GestureManager.gestureDetect(event)) {
+        when (GestureManager.doubleTapDetect(event)) {
             GestureType.DOUBLE_TAP -> {
                 MovementManager.register()
-                soundManager.playSound(Resources.acceptSound)
+                Settings.globalSounds.playSound(Resources.acceptSound)
                 LevelManager.changeLevel(GameLevel())
             }
         }

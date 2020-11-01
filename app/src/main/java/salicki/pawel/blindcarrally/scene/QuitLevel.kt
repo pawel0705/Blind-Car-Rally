@@ -48,7 +48,7 @@ class QuitLevel : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun respondTouchState(event: MotionEvent) {
-        when (GestureManager.gestureDetect(event)) {
+        when (GestureManager.doubleTapDetect(event)) {
             GestureType.SWIPE_LEFT, GestureType.SWIPE_RIGHT -> {
                 soundManager.playSound(Resources.swapSound)
                 exit = !exit
@@ -59,7 +59,7 @@ class QuitLevel : SurfaceView(Settings.CONTEXT), ILevel {
                 }
             }
             GestureType.DOUBLE_TAP -> {
-                soundManager.playSound(Resources.acceptSound)
+                Settings.globalSounds.playSound(Resources.acceptSound)
                 if (!exit) {
                     LevelManager.changeLevel(MenuLevel())
                 } else {

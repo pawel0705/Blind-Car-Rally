@@ -13,6 +13,13 @@ object Settings {
 
     var vibrations: Boolean = true
     var display: Boolean = true
+    var introduction: Boolean = true
     var reader: Int = 10
     var sounds: Int = 10
+
+    var globalSounds = SoundManager()
+
+    init{
+        globalSounds.initSoundManager()
+    }
 }

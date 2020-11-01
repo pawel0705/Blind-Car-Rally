@@ -15,6 +15,7 @@ class VolumeTTSLevel : SurfaceView(Settings.CONTEXT), ILevel {
     private var volumeIterator = 0
     private var soundManager: SoundManager = SoundManager()
     private var swipe: Boolean = false
+    private var selectBoxManager = SelectBoxManager()
 
     init {
         isFocusable = true
@@ -22,6 +23,7 @@ class VolumeTTSLevel : SurfaceView(Settings.CONTEXT), ILevel {
         initSoundManager()
         readTTSTextFile()
         initVolumeOptions()
+        initSelectBoxModel()
     }
 
     private fun initVolumeOptions(){
@@ -53,7 +55,7 @@ class VolumeTTSLevel : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun updateState(deltaTime: Int) {
-
+        selectBoxManager.updateSelectBoxPosition(volumeIterator)
     }
 
     override fun destroyState() {
@@ -62,8 +64,14 @@ class VolumeTTSLevel : SurfaceView(Settings.CONTEXT), ILevel {
         soundManager.destroy()
     }
 
+    private fun initSelectBoxModel(){
+        selectBoxManager.initSelectBoxModel(10)
+    }
+
     override fun respondTouchState(event: MotionEvent) {
-        when (GestureManager.gestureDetect(event)) {
+        swipe = false
+
+        when(GestureManager.swipeDetect(event)){
             GestureType.SWIPE_LEFT -> {
                 soundManager.playSound(Resources.swapSound)
                 volumeIterator++
@@ -89,15 +97,59 @@ class VolumeTTSLevel : SurfaceView(Settings.CONTEXT), ILevel {
 
                 swipe = true
             }
+        }
+
+        when (GestureManager.doubleTapDetect(event)) {
+
             GestureType.DOUBLE_TAP -> {
-                soundManager.playSound(Resources.acceptSound)
+                Settings.globalSounds.playSound(Resources.acceptSound)
 
                 LevelManager.changeLevel(SettingsLevel())
             }
         }
+
+        val holdPosition = GestureManager.holdPositionDetect(event).first
+        if (holdPosition > 0 && !swipe) {
+            when {
+                holdPosition < Settings.SCREEN_WIDTH / 10 -> {
+                    volumeIterator = 0
+                }
+                holdPosition < Settings.SCREEN_WIDTH / 10 * 2 -> {
+                    volumeIterator = 1
+                }
+                holdPosition < Settings.SCREEN_WIDTH / 10 * 3 -> {
+                    volumeIterator = 2
+                }
+                holdPosition < Settings.SCREEN_WIDTH / 10 * 4 -> {
+                    volumeIterator = 3
+                }
+                holdPosition < Settings.SCREEN_WIDTH / 10 * 5 -> {
+                    volumeIterator = 4
+                }
+                holdPosition < Settings.SCREEN_WIDTH / 10 * 6 -> {
+                    volumeIterator = 5
+                }
+                holdPosition < Settings.SCREEN_WIDTH / 10 * 7 -> {
+                    volumeIterator = 6
+                }
+                holdPosition < Settings.SCREEN_WIDTH / 10 * 8 -> {
+                    volumeIterator = 7
+                }
+                holdPosition < Settings.SCREEN_WIDTH / 10 * 9 -> {
+                    volumeIterator = 8
+                }
+                holdPosition < Settings.SCREEN_WIDTH / 10 * 10 -> {
+                    volumeIterator = 9
+                }
+            }
+            Settings.reader = volumeIterator + 1
+            TextToSpeechManager.speakNow(texts["SETTINGS_TTS_VOLUME"].toString() + texts[volume[Settings.reader - 1]].toString())
+        }
+
+
     }
 
     override fun redrawState(canvas: Canvas) {
-
+        selectBoxManager.drawSelectBox(canvas)
     }
 }

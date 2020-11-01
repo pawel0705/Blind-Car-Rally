@@ -9,11 +9,16 @@ import android.view.MotionEvent
 import android.view.SurfaceView
 import androidx.core.content.ContextCompat
 import salicki.pawel.blindcarrally.*
+import salicki.pawel.blindcarrally.data.TrackData
 import salicki.pawel.blindcarrally.data.TrackRaceData
 import salicki.pawel.blindcarrally.scenemanager.ILevel
 
 
 class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
+
+    private var trackReader = TrackReader()
+
+    private var trackIterator = 0
 
     private var car: Car = Car(
         Settings.SCREEN_WIDTH / 2F,
@@ -27,10 +32,10 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
     )
     private var coordinateDisplayManager: CoordinateDisplayManager
 
-    private var trackData : TrackRaceData? = null
+    private var trackData : TrackData? = null
 
     init {
-
+        trackData = trackReader.readRacingTrack("trackTest.xml")
         //   Log.d("SKALA", scale.toString())
 
         coordinateDisplayManager = CoordinateDisplayManager(car)
@@ -54,32 +59,24 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun initState() {
-        trackData = XMLParser.read("trackTest.xml")
-        car.posX = trackData!!.startPointX.toFloat()
-        car.posY = trackData!!.startPointY.toFloat()
+
+       car.posX = trackData!!.roadList?.get(trackIterator)?.spawnX!!.toFloat()
+       car.posY = trackData!!.roadList?.get(trackIterator)?.spawnY!!.toFloat()
     }
 
     private fun checkCollistion(){
         if (trackData != null) {
-            for (test1 in trackData!!.trackRoad!!) {
-                for (test in test1.left) {
-                    if (car.collisionCheck(test.xStart, test.yStart, test.xEnd, test.yEnd)) {
 
-                        return
-                    }
-
+            for(left in trackData!!.roadList?.get(trackIterator)?.leftPoints!!){
+                if(car.collisionCheck(left.startX.toFloat(), left.startY.toFloat(), left.endX.toFloat(), left.endY.toFloat())){
+                    car.posX += 50
                 }
-                for (test in test1.right) {
-                    if (car.collisionCheck(
-                            test.xStart,
-                            test.yStart,
-                            test.xEnd,
-                            test.yEnd
-                        )
-                    ) {
+            }
 
-                        return
-                    }
+            for(right in trackData!!.roadList?.get(trackIterator)?.rightPints!!){
+                if(car.collisionCheck(right.startX.toFloat(), right.startY.toFloat(), right.endX.toFloat(), right.endY.toFloat()))
+                {
+                    car.posX -= 50
                 }
             }
         }
@@ -87,19 +84,17 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
 
     private fun checkDistance(deltaTime: Int){
         if (trackData != null) {
-            for (test1 in trackData!!.trackRoad!!) {
-                for (test in test1.left) {
-                    if (car.sensorCheck(test.xStart, test.yStart, test.xEnd, test.yEnd, deltaTime)) {
 
-
-                    }
-
+            leftSensor@for(left in trackData!!.roadList?.get(trackIterator)?.leftPoints!!){
+                if(car.sensorCheck(left.startX.toFloat(), left.startY.toFloat(), left.endX.toFloat(), left.endY.toFloat(), deltaTime)){
+                    break@leftSensor
                 }
-                for (test in test1.right) {
-                    if (car.sensorCheck(test.xStart, test.yStart, test.xEnd, test.yEnd, deltaTime)) {
+            }
 
-
-                    }
+            rightSensor@for(right in trackData!!.roadList?.get(trackIterator)?.rightPints!!){
+                if(car.sensorCheck(right.startX.toFloat(), right.startY.toFloat(), right.endX.toFloat(), right.endY.toFloat(), deltaTime))
+                {
+                    break@rightSensor
                 }
             }
         }
@@ -112,6 +107,14 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
         checkCollistion()
         checkDistance(deltaTime)
 
+        if (trackData != null) {
+            if(trackData!!.roadList[trackIterator].finishY < car.posY){
+                trackIterator++
+                car.posX = trackData!!.roadList?.get(trackIterator)?.spawnX!!.toFloat()
+                car.posY = trackData!!.roadList?.get(trackIterator)?.spawnY!!.toFloat()
+            }
+
+        }
     }
 
     override fun destroyState() {
@@ -152,25 +155,25 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
 */
 
         if (trackData != null) {
-            for (test1 in trackData!!.trackRoad!!) {
-                for (test in test1.left) {
-                    canvas.drawLine(
-                        coordinateDisplayManager.convertToEnvironmentX(test.xStart),
-                        coordinateDisplayManager.convertToEnvironmentY(test.yStart),
-                        coordinateDisplayManager.convertToEnvironmentX(test.xEnd),
-                        coordinateDisplayManager.convertToEnvironmentY(test.yEnd),
-                        paint
-                    );
-                }
-                for (test in test1.right) {
-                    canvas.drawLine(
-                        coordinateDisplayManager.convertToEnvironmentX(test.xStart),
-                        coordinateDisplayManager.convertToEnvironmentY(test.yStart),
-                        coordinateDisplayManager.convertToEnvironmentX(test.xEnd),
-                        coordinateDisplayManager.convertToEnvironmentY(test.yEnd),
-                        paint
-                    );
-                }
+
+            for(left in trackData!!.roadList?.get(trackIterator)?.leftPoints!!){
+                canvas.drawLine(
+                    coordinateDisplayManager.convertToEnvironmentX(left.startX.toFloat()),
+                    coordinateDisplayManager.convertToEnvironmentY(left.startY.toFloat()),
+                    coordinateDisplayManager.convertToEnvironmentX(left.endX.toFloat()),
+                    coordinateDisplayManager.convertToEnvironmentY(left.endY.toFloat()),
+                    paint
+                )
+            }
+
+            for(right in trackData!!.roadList?.get(trackIterator)?.rightPints!!){
+                canvas.drawLine(
+                    coordinateDisplayManager.convertToEnvironmentX(right.startX.toFloat()),
+                    coordinateDisplayManager.convertToEnvironmentY(right.startY.toFloat()),
+                    coordinateDisplayManager.convertToEnvironmentX(right.endX.toFloat()),
+                    coordinateDisplayManager.convertToEnvironmentY(right.endY.toFloat()),
+                    paint
+                )
             }
         }
 

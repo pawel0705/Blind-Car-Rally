@@ -46,9 +46,9 @@ class CreditsLevel : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun respondTouchState(event: MotionEvent) {
-        when (GestureManager.gestureDetect(event)) {
+        when (GestureManager.doubleTapDetect(event)) {
             GestureType.DOUBLE_TAP -> {
-                soundManager.playSound(Resources.acceptSound)
+                Settings.globalSounds.playSound(Resources.acceptSound)
                 LevelManager.changeLevel(MenuLevel())
             }
         }

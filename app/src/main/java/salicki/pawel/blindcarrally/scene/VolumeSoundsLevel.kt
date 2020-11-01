@@ -62,7 +62,7 @@ class VolumeSoundsLevel : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun respondTouchState(event: MotionEvent) {
-        when (GestureManager.gestureDetect(event)) {
+        when (GestureManager.doubleTapDetect(event)) {
             GestureType.SWIPE_LEFT -> {
                 soundManager.playSound(Resources.swapSound)
                 volumeIterator++
@@ -89,7 +89,7 @@ class VolumeSoundsLevel : SurfaceView(Settings.CONTEXT), ILevel {
                 swipe = true
             }
             GestureType.DOUBLE_TAP -> {
-                soundManager.playSound(Resources.acceptSound)
+                Settings.globalSounds.playSound(Resources.acceptSound)
 
                 LevelManager.changeLevel(SettingsLevel())
             }

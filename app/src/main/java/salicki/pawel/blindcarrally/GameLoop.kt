@@ -1,6 +1,8 @@
 package salicki.pawel.blindcarrally
 
 import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.PorterDuff
 import android.util.Log
 import android.view.SurfaceHolder
 import salicki.pawel.blindcarrally.scenemanager.LevelManager
@@ -44,6 +46,9 @@ class GameLoop(surfaceHolder: SurfaceHolder) : Thread() {
 
                 //    Log.d("MPO", Settings.display.toString())
                     if(Settings.display){
+                        canvas.drawColor(
+                            Color.TRANSPARENT,
+                            PorterDuff.Mode.CLEAR);
                         LevelManager.redrawState(canvas)
                     }
                 }
@@ -89,7 +94,7 @@ class GameLoop(surfaceHolder: SurfaceHolder) : Thread() {
                 startTime = System.currentTimeMillis().toInt()
             }
 
-            Log.d("TIME", elapsedTime.toString())
+        //    Log.d("TIME", elapsedTime.toString())
         }
     }
 

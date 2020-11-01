@@ -1,12 +1,12 @@
 package salicki.pawel.blindcarrally.scene
 
-import android.graphics.*
+import android.graphics.Canvas
+import android.os.CountDownTimer
 import android.view.MotionEvent
 import android.view.SurfaceView
 import salicki.pawel.blindcarrally.*
 import salicki.pawel.blindcarrally.scenemanager.ILevel
 import salicki.pawel.blindcarrally.scenemanager.LevelManager
-import salicki.pawel.blindcarrally.scenemanager.LevelType
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -17,37 +17,46 @@ class SplashLevel() : SurfaceView(Settings.CONTEXT), ILevel {
     private var languageTypeData: ArrayList<LanguageTTS> =
         arrayListOf(LanguageTTS.ENGLISH, LanguageTTS.POLISH)
 
-    private lateinit var logoRectangle: Rect
-    private var logoImage: Bitmap
+    private var splashImage = OptionImage()
 
     private var languageSelection: Boolean = true
-
-    private var logoTimer = Timer()
 
     init {
         isFocusable = true
 
         readTTSTextFile()
 
-        logoImage = BitmapFactory.decodeResource(context.resources, R.drawable.logo)
-
+        initSplashScreen()
         checkLanguageOption()
         initScreenTransitionTimer()
     }
 
+    private fun initSplashScreen(){
+        splashImage.setImage(
+            R.drawable.logo,
+            Settings.SCREEN_WIDTH / 2,
+            (Settings.SCREEN_HEIGHT / 5).toInt(),
+            R.dimen.screenSize
+        )
+    }
+
     private fun initScreenTransitionTimer() {
         if (languageSelection) {
-            logoTimer.schedule(object : TimerTask() {
-                override fun run() {
-                    LevelManager.changeLevel(LanguageLevel())
+                 var timer = object : CountDownTimer(5000, 5000) {
+                    override fun onTick(millisUntilFinished: Long) {}
+                    override fun onFinish() {
+                        LevelManager.changeLevel(LanguageLevel())
+                    }
                 }
-            }, 5000)
+                timer.start()
         } else {
-            logoTimer.schedule(object : TimerTask() {
-                override fun run() {
-                    LevelManager.changeLevel(MenuLevel())
+            var timer = object : CountDownTimer(5000, 5000) {
+                override fun onTick(millisUntilFinished: Long) {}
+                override fun onFinish() {
+                    LevelManager.changeLevel(InformationLevel())
                 }
-            }, 5000)
+            }
+            timer.start()
         }
     }
 
@@ -67,17 +76,7 @@ class SplashLevel() : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun respondTouchState(event: MotionEvent) {
-        when (GestureManager.gestureDetect(event)) {
-            GestureType.DOUBLE_TAP -> {
-                logoTimer.cancel()
 
-                if (languageSelection) {
-                    LevelManager.changeLevel(LanguageLevel())
-                } else {
-                    LevelManager.changeLevel(MenuLevel())
-                }
-            }
-        }
     }
 
     override fun redrawState(canvas: Canvas) {
@@ -94,35 +93,6 @@ class SplashLevel() : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     private fun drawSplashScreen(canvas: Canvas) {
-
-        logoRectangle = Rect()
-
-        var point = Point(Settings.SCREEN_WIDTH / 2, Settings.SCREEN_HEIGHT / 2)
-
-        logoRectangle.set(
-            0,
-            0,
-            resources.getDimensionPixelSize(R.dimen.screenSize),
-            resources.getDimensionPixelSize(R.dimen.screenSize)
-        )
-
-        logoRectangle.set(
-            point.x - logoRectangle.width() / 2,
-            point.y - logoRectangle.height() / 2,
-            point.x + logoRectangle.width() / 2,
-            point.y + logoRectangle.height() / 2
-        )
-
-        val whRatio: Float =
-            logoImage.width.toFloat() / logoImage.height
-        if (logoRectangle.width() > logoRectangle.height()) {
-            logoRectangle.left =
-                logoRectangle.right - ((logoRectangle.height() * whRatio)).toInt()
-        } else {
-            logoRectangle.top =
-                logoRectangle.bottom - ((logoRectangle.width() * (1 / whRatio))).toInt()
-        }
-
-        canvas.drawBitmap(logoImage, null, logoRectangle, Paint())
+        splashImage.drawImage(canvas)
     }
 }
