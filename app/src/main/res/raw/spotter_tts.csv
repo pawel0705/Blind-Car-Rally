@@ -1,53 +1,54 @@
 TEXT_KEY;ENGLISH;POLISH
+INSTRUCTION;Instruction. To speed up, tilt the phone forward. To slow down, bring the phone closer to you. Rotate the phone left or right to turn the car. Tap the left half of the acran with your finger to downshift. Tap on the right half of the screen to increase the gear. Swipe up to pause or exit the game. Double-tap to start the race!;Instrukcja. Aby przyśpieszyć przechyl telefon do przodu. Aby zwolnić przybliż telefon do siebie. Obracaj telefonem w lewo lub prawo, aby skręcać samochodem. Stuknij palcem w lewą połowę akranu, by zmniejszyć bieg. Stuknij w prawą połowę ekranu, by zwiększyć bieg. Przesuń palcem w górę, aby zapauzować lub wyjść z gry. Stuknij dwukrotnie palcem, by rozpocząć wyścig!
 GOOD_LUCK;Good luck.;Powodzenia.
 COUNTDOWN_1;One.;Jeden.
 COUNTDOWN_2;Two.;Dwa.
 COUNTDOWN_3;Three.;Trzy.
 COUNTDOWN_4;Four.;Cztery.
 COUNTDOWN_5;Five.;Pięć.
-START;Start.;Start.
-RIGHT_1;One right.;Jeden prawy.
-RIGHT_2;Two right.;Dwa prawy.
-RIGHT_3;Three right.;Trzy prawy.
-RIGHT_4;Four right.;Cztery prawy.
-RIGHT_5;Five right.;Pięć prawy.
-RIGHT_6;Six right.;Sześć prawy.
-LEFT_1;One left.;Jeden lewy.
-LEFT_2;Two left.;Dwa lewy.
-LEFT_3;Three left.;Trzy lewy.
-LEFT_4;Four left.;Cztery lewy.
-LEFT_5;Five left.;Pięć lewy.
-LEFT_6;Six left.;Sześć prawy.
-LENGTH_10;Ten.;Dziesięć.
-LENGTH_20;Twenty.;Dwadzieścia.
-LENGTH_30;Thirty.;Trzydzieści.
-LENGTH_40;Forty.;Czterdzieści.
-LENGTH_50;Fifty.;Pięćdziesiąt.
-LENGTH_60;Sixty.;Sześćdziesiąt.
-LENGTH_70;Seventy.;Siedemdziesiąt.
-LENGTH_80;Eighty.;Osiemdziesiąt.
-LENGTH_90;Ninety.;Dziewięćdziesiąt.
-LENGTH_100;One hundred.;Sto.
-SHORT;Short.;Krórki.
-VERY_SHORT;Very short.;Bardzo krótki.
-LONG;Long.;Długi.
-VERY_LONG;Very long.;Bardzo długi.
-TIGHTENS;Tightens.;Zacisk.
-OPENS;Opens.;Otwiera.
-NARROW;Narrow.;Zwężenie.
-CAUTION;Caution.;Ostrożnie.
-DONT_CUT;Don't cut.;Nie tnij.
-DEEP;Deep.;Siodło.
-JUMP;Jump.;Hopa.
-OVER_JUMP;Ober jump.;Przez hopę.
-INTO;Into.;Do.
-MAYBE;Maybe.;Może.
-OVER_CREST;Over crest.;Przez szczyt.
-UNSEEN;Unseen.;Ukryty.
-KEEP_LEFT;Keep left.;Lewą.
-KEEP_RIGHT;Keep right.;Prawą.
-FLAT;Flat.;Płasko.
-CHICANE;Chicane.;Szykana.
-CUT;Cut.;Tnij.
-SQUARE;Square.;Dziewięćdziesiąt stopni.
-HAIRPIN;Hairpin.;Nawrót.
+START;Start!;Start!
+RIGHT_1;One right;Jeden prawy
+RIGHT_2;Two right;Dwa prawy
+RIGHT_3;Three right;Trzy prawy
+RIGHT_4;Four right;Cztery prawy
+RIGHT_5;Five right;Pięć prawy
+RIGHT_6;Six right;Sześć prawy
+LEFT_1;One left;Jeden lewy
+LEFT_2;Two left;Dwa lewy
+LEFT_3;Three left;Trzy lewy
+LEFT_4;Four left;Cztery lewy
+LEFT_5;Five left;Pięć lewy
+LEFT_6;Six left;Sześć prawy
+LENGTH_10;Ten;Dziesięć
+LENGTH_20;Twenty;Dwadzieścia
+LENGTH_30;Thirty;Trzydzieści
+LENGTH_40;Forty;Czterdzieści
+LENGTH_50;Fifty;Pięćdziesiąt
+LENGTH_60;Sixty;Sześćdziesiąt
+LENGTH_70;Seventy;Siedemdziesiąt
+LENGTH_80;Eighty;Osiemdziesiąt
+LENGTH_90;Ninety;Dziewięćdziesiąt
+LENGTH_100;One hundred;Sto
+SHORT;Short;Krórki
+VERY_SHORT;Very short;Bardzo krótki
+LONG;Long;Długi
+VERY_LONG;Very long;Bardzo długi
+TIGHTENS;Tightens;Zacisk
+OPENS;Opens;Otwiera
+NARROW;Narrow;Zwężenie
+CAUTION;Caution;Ostrożnie
+DONT_CUT;Don't cut;Nie tnij
+DEEP;Deep;Siodło
+JUMP;Jump;Hopa
+OVER_JUMP;Ober jump;Przez hopę
+INTO;Into;Do
+MAYBE;Maybe;Może
+OVER_CREST;Over crest;Przez szczyt
+UNSEEN;Unseen;Ukryty
+KEEP_LEFT;Keep left;Lewą
+KEEP_RIGHT;Keep right;Prawą
+FLAT;Flat;Płasko
+CHICANE;Chicane;Szykana
+CUT;Cut;Tnij
+SQUARE;Square;Dziewięćdziesiąt stopni
+HAIRPIN;Hairpin;Nawrót

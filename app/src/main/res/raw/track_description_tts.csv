@@ -1,9 +1,9 @@
 TEXT_KEY;ENGLISH;POLISH
 DISTANCE;Distance:;Odległość:
-HEIGHT;Height difference:;Różnica wysokości:;
-TIME;Start time:;Czas startu:;
-WEATHER;Weather conditions:;Warunki pogodowe:;
-SURFACE;Type of surface:;Rodzaj nawieżchni:;
+HEIGHT;Height difference:;Różnica wysokości:
+TIME;Start time:;Czas startu:
+WEATHER;Weather conditions:;Warunki pogodowe:
+SURFACE;Type of surface:;Rodzaj nawieżchni:
 SUNNY;Sunny.;Słonecznie.
 RAIN;Little rain.;Mały deszcz.
 STORM;Storm.;Burza.

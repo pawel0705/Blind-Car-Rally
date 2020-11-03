@@ -1,5 +1,6 @@
 package salicki.pawel.blindcarrally
 
+import android.util.Log
 import java.io.BufferedReader
 import java.io.InputStream
 import java.io.InputStreamReader
@@ -27,6 +28,9 @@ object OpenerCSV {
             if (tokens.isNotEmpty()) {
 
                 if (languageTTS == LanguageTTS.ENGLISH) {
+
+                    Log.d("CS", tokens[ENGLISH_KEY])
+
                     texts[tokens[TEXT_KEY]] = tokens[ENGLISH_KEY]
                 } else {
                     texts[tokens[TEXT_KEY]] = tokens[POLISH_KEY]

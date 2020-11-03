@@ -12,13 +12,32 @@ import salicki.pawel.blindcarrally.*
 import salicki.pawel.blindcarrally.data.TrackData
 import salicki.pawel.blindcarrally.data.TrackRaceData
 import salicki.pawel.blindcarrally.scenemanager.ILevel
+import salicki.pawel.blindcarrally.scenemanager.LevelManager
 
 
 class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
 
     private var trackReader = TrackReader()
-
     private var trackIterator = 0
+
+    private var pilotTexts: HashMap<String, String> = HashMap()
+
+    private var soundManagerGame: SoundManager = SoundManager()
+
+    private var speakerCountDown: HashMap<String, Boolean> = HashMap()
+
+    private var stopGameplay: Boolean = false
+    private var countDown: Boolean = false
+
+    private var startCountTime: Long = 0
+    private var durationCount: Long = 0
+    private val MAX_DURATION_COUNT = 6000
+
+    private var newRoadTile = false
+
+    private var swipe = false
+
+    private var pauseGame = false
 
     private var car: Car = Car(
         Settings.SCREEN_WIDTH / 2F,
@@ -41,6 +60,34 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
         coordinateDisplayManager = CoordinateDisplayManager(car)
 
         isFocusable = true
+
+        readTTSTextFile()
+        initSpeakerSpecial()
+        initSoundManager()
+    }
+
+    private fun initSoundManager(){
+        soundManagerGame.initSoundManager()
+
+        soundManagerGame.addSound(R.raw.countdown)
+        soundManagerGame.addSound(R.raw.start)
+    }
+
+    private fun initSpeakerSpecial(){
+        speakerCountDown["COUNTDOWN_1"] = false
+        speakerCountDown["COUNTDOWN_2"] = false
+        speakerCountDown["COUNTDOWN_3"] = false
+        speakerCountDown["COUNTDOWN_4"] = false
+        speakerCountDown["COUNTDOWN_5"] = false
+    }
+
+    private fun readTTSTextFile() {
+        pilotTexts.putAll(
+            OpenerCSV.readData(
+                R.raw.spotter_tts,
+                Settings.languageTTS
+            )
+        )
     }
 
     private fun drawCoordinates(canvas: Canvas) {
@@ -59,9 +106,10 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun initState() {
-
        car.posX = trackData!!.roadList?.get(trackIterator)?.spawnX!!.toFloat()
        car.posY = trackData!!.roadList?.get(trackIterator)?.spawnY!!.toFloat()
+
+        TextToSpeechManager.speakNow(pilotTexts["INSTRUCTION"].toString())
     }
 
     private fun checkCollistion(){
@@ -100,7 +148,52 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
         }
     }
 
+    private fun countDown(){
+        durationCount += System.currentTimeMillis() - startCountTime - durationCount
+
+
+        if(durationCount > 1000 && speakerCountDown["COUNTDOWN_5"] == false) {
+            TextToSpeechManager.speakNow(pilotTexts["COUNTDOWN_5"].toString())
+            soundManagerGame.playSound(R.raw.countdown)
+            speakerCountDown["COUNTDOWN_5"] = true
+        } else if(durationCount > 2000 && speakerCountDown["COUNTDOWN_4"] == false){
+            TextToSpeechManager.speakNow(pilotTexts["COUNTDOWN_4"].toString())
+            soundManagerGame.playSound(R.raw.countdown)
+            speakerCountDown["COUNTDOWN_4"] = true
+        } else if(durationCount > 3000 && speakerCountDown["COUNTDOWN_3"] == false){
+            TextToSpeechManager.speakNow(pilotTexts["COUNTDOWN_3"].toString())
+            soundManagerGame.playSound(R.raw.countdown)
+            speakerCountDown["COUNTDOWN_3"] = true
+        } else if(durationCount > 4000 && speakerCountDown["COUNTDOWN_2"] == false){
+            TextToSpeechManager.speakNow(pilotTexts["COUNTDOWN_2"].toString())
+            soundManagerGame.playSound(R.raw.countdown)
+            speakerCountDown["COUNTDOWN_2"] = true
+        } else if(durationCount > 5000 && speakerCountDown["COUNTDOWN_1"] == false){
+            TextToSpeechManager.speakNow(pilotTexts["COUNTDOWN_1"].toString())
+            soundManagerGame.playSound(R.raw.countdown)
+            speakerCountDown["COUNTDOWN_1"] = true
+        } else if(durationCount > MAX_DURATION_COUNT){
+            TextToSpeechManager.speakNow(pilotTexts["START"].toString())
+            soundManagerGame.playSound(R.raw.start)
+            newRoadTile = true
+        }
+
+        if(durationCount > MAX_DURATION_COUNT){
+            stopGameplay = true
+            countDown = false
+        }
+    }
+
     override fun updateState(deltaTime: Int) {
+
+        if(countDown){
+            countDown()
+        }
+
+        if(!stopGameplay){
+            return
+        }
+
         car.update(coordinateDisplayManager)
         coordinateDisplayManager.updateEnvironmentCoordinates()
 
@@ -110,10 +203,21 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
         if (trackData != null) {
             if(trackData!!.roadList[trackIterator].finishY < car.posY){
                 trackIterator++
+
+                newRoadTile = true
+
                 car.posX = trackData!!.roadList?.get(trackIterator)?.spawnX!!.toFloat()
                 car.posY = trackData!!.roadList?.get(trackIterator)?.spawnY!!.toFloat()
             }
 
+            if(newRoadTile){
+
+                for(tts in trackData!!.roadList[trackIterator].speakerKeys){
+                    TextToSpeechManager.speakQueue(pilotTexts[tts].toString())
+                }
+
+                newRoadTile = false
+            }
         }
     }
 
@@ -121,11 +225,46 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
 
     }
 
-    override fun respondTouchState(motionEvent: MotionEvent) {
-        when(GestureManager.tapPositionDetect(motionEvent)){
+    override fun respondTouchState(event: MotionEvent) {
+        swipe = false
+
+        when (GestureManager.swipeDetect(event)) {
+            GestureType.SWIPE_RIGHT -> {
+
+
+                swipe = true
+            }
+            GestureType.SWIPE_LEFT -> {
+
+                swipe = true
+            }
+            GestureType.SWIPE_UP -> {
+                Settings.globalSounds.playSound(Resources.swapSound)
+
+                LevelManager.stackLevel(PauseLevel())
+
+                swipe = true
+            }
+        }
+
+        when(GestureManager.tapPositionDetect(event)){
             GestureType.TAP_RIGHT->car.higherGear()
             GestureType.TAP_LEFT->car.lowerGear()
         }
+
+        when (GestureManager.doubleTapDetect(event)) {
+
+            GestureType.DOUBLE_TAP -> {
+                TextToSpeechManager.stop()
+                Settings.globalSounds.playSound(Resources.acceptSound)
+                startGame()
+            }
+        }
+    }
+
+    private fun startGame(){
+        startCountTime = System.currentTimeMillis()
+        countDown = true
     }
 
     override fun redrawState(canvas: Canvas) {
@@ -138,21 +277,6 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
         var paint = Paint()
         paint.strokeWidth = Settings.SCREEN_SCALE * 0.02F
         paint.color = Color.WHITE
-
-
-        /*
-        canvas.drawLine(
-            coordinateDisplayManager.convertToEnvironmentX(300F),
-            coordinateDisplayManager.convertToEnvironmentY(300F),
-            coordinateDisplayManager.convertToEnvironmentX(600F),
-            coordinateDisplayManager.convertToEnvironmentY(600F), paint
-        )
-
-
-
-        canvas.drawLine(300F, 300F, 600F, 600F, paint)
-        car.collisionCheck(300F, 300F, 600F, 600F)
-*/
 
         if (trackData != null) {
 

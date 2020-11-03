@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <track>
+    <tts_key key="VERY_LONG"/>
+    <tts_key key="LENGTH_100"/>
     <spawn x="25" y="50"/>
     <finish x="50" y="100"/>
     <left></left>

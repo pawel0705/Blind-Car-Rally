@@ -31,7 +31,7 @@ class SoundManager {
         sounds?.set(soundId, soundPool?.load(Settings.CONTEXT, soundId, 1)!!)
     }
 
-    fun playSound(soundId: Int, leftVolume: Float = 1F, rightVolume: Float = 1F) {
+    fun playSound(soundId: Int, leftVolume: Float = 1F, rightVolume: Float = 1F, loop: Int = 0, rate: Float = 1F) {
         if (soundPool != null) {
             sounds?.get(soundId)?.let {
                 soundPool!!.play(
@@ -39,8 +39,8 @@ class SoundManager {
                     Settings.sounds * 0.1F * leftVolume,
                     Settings.sounds * 0.1F * rightVolume,
                     0,
-                    0,
-                    1F
+                    loop,
+                    rate
                 )
             }
         }

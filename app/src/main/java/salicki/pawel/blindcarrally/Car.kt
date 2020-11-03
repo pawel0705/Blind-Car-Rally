@@ -11,20 +11,24 @@ import kotlin.math.*
 class Car(posX: Float, posY: Float, rect: RectF) : EnvironmentObject(posX, posY) {
 
     private var carParameters = CarParameters()
-
+    private var gear = 0
     private var carSensors: CarSensors = CarSensors()
     private var carHitbox: CarHitbox = CarHitbox()
     private var carView: CarView = CarView()
 
     private var sensorBeepIteratorLeft: Int = 0
     private var sensorBeepIteratorRight: Int = 0
+    private var engineIterator: Int = 0
 
     private var canBeep: Boolean = true;
 
     private var soundManagerLeft = SoundManager()
     private var soundManagerRight = SoundManager()
+    private var soundManagerEngine = SoundManager()
 
     private var canCollide = false
+
+    private var gearRatio = arrayOf(0.25, 0.50, 0.75, 1.0, 1.25, 1.50)
 
     init {
         initSoundManager();
@@ -36,9 +40,43 @@ class Car(posX: Float, posY: Float, rect: RectF) : EnvironmentObject(posX, posY)
     private fun initSoundManager(){
         soundManagerLeft.initSoundManager()
         soundManagerRight.initSoundManager()
+        soundManagerEngine.initSoundManager()
 
         soundManagerLeft.addSound(R.raw.beep)
         soundManagerRight.addSound(R.raw.beep)
+        soundManagerEngine.addSound(R.raw.engine_03)
+    }
+
+    private fun carEngine(){
+        var i = 0
+        loop@while(i < gearRatio.size){
+            if(i > carParameters.speed){
+                gear = i
+                break@loop
+            }
+
+            i++
+        }
+
+        var gearMinValue : Float = 0.0F
+        var gearMaxValue : Float = 0.0F
+
+        if(gear == 0){
+            gearMinValue = 0F
+        } else {
+            gearMinValue = gearRatio[gear-1].toFloat()
+        }
+        gearMaxValue = gearRatio[gear].toFloat()
+
+        var enginePitch = ((carParameters.speed - gearMaxValue)/(gearMaxValue-gearMinValue)) + 1 / 3F
+
+        Log.d("SPED", carParameters.speed.toString())
+        Log.d("PITCH", (carParameters.speed / carParameters.maxSpeed + 1).toString())
+
+        if(engineIterator > 2){
+            engineIterator = 0
+  //          soundManagerEngine.playSound(R.raw.engine_03, 1F, 1F, 0, carParameters.speed / carParameters.maxSpeed + 1)
+        }
     }
 
     private fun initCarView(rect: RectF) {
@@ -175,6 +213,8 @@ class Car(posX: Float, posY: Float, rect: RectF) : EnvironmentObject(posX, posY)
         }
     }
 
+
+
     private fun updateCarSpeed() {
 /*
         if (carParameters.speed > 2 * carParameters.gear) {
@@ -236,6 +276,7 @@ class Car(posX: Float, posY: Float, rect: RectF) : EnvironmentObject(posX, posY)
 
         sensorBeepIteratorLeft++
         sensorBeepIteratorRight++
+        engineIterator++
 
         updateCarPosition(coordinateDisplayManager)
         updateCarMovement()
@@ -243,6 +284,7 @@ class Car(posX: Float, posY: Float, rect: RectF) : EnvironmentObject(posX, posY)
         updateCarHitboxPosition()
         updateCarSensorsDistancePosition()
         updateCarDirection()
+        carEngine()
     }
 
     fun removeCollision() {

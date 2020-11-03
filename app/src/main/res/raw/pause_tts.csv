@@ -1,0 +1,9 @@
+TEXT_KEY;ENGLISH;POLISH
+PAUSE;Pause.;Pauza.
+RESUME;Resume the game.;Wznów grę.
+MENU;Return to the main menu.;Powróć do głównego menu.
+EXIT;Quit game.;Wyjdź z gry.
+MENU_ASK;Are you sure you want to exit to the main menu?;Czy na pewno chcesz wyjść do głównego menu?
+EXIT_ASK;Are you sure you want to quit the game?;Czy na pewno chcesz wyjść z gry?
+YES;Yes.;Tak.
+NO;No.;Nie.

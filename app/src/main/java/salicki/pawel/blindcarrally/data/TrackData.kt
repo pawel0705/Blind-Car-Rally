@@ -30,6 +30,7 @@ data class TrackData(
 )
 
 data class RoadTileData(
+    var speakerKeys: ArrayList<String> = ArrayList(),
     var leftPoints: MutableList<RoadPointsData> = mutableListOf(),
     var rightPints: MutableList<RoadPointsData> = mutableListOf(),
     var spawnX: Int = 0,

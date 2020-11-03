@@ -61,7 +61,7 @@ class QuitLevel : SurfaceView(Settings.CONTEXT), ILevel {
             GestureType.DOUBLE_TAP -> {
                 Settings.globalSounds.playSound(Resources.acceptSound)
                 if (!exit) {
-                    LevelManager.changeLevel(MenuLevel())
+                    LevelManager.popLevel()
                 } else {
                     (Settings.CONTEXT as MainActivity).exit()
                 }

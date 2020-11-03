@@ -86,57 +86,67 @@ class TrackReader {
 
             when (event) {
                 XmlPullParser.END_TAG -> {
-                    if (tag_name == "left") {
-                        right = false
-                        left = true
-                        lastX = 0
-                        lastY = 0
-
-                        Log.d("LEFT", "left");
-                    } else if (tag_name == "right") {
-                        right = true
-                        left = false
-                        lastX = 0
-                        lastY = 0
-                        Log.d("RIGHT", "right");
-                    } else if (tag_name == "point") {
-                        var x: String = parser.getAttributeValue(0)
-                        var y: String = parser.getAttributeValue(1)
-
-                        var x0 = x.toFloat() * Settings.SCREEN_SCALE * 0.02F
-                        var y0 = y.toFloat() * Settings.SCREEN_SCALE * 0.02F
-
-                        if(left){
-                            if(firstLeft){
-                                road.leftPoints?.add(RoadPointsData(lastX, lastY, x0.toInt(), y0.toInt()))
-                            }
-                            firstLeft = true
-                        } else{
-                            if(firstRight){
-                                road.rightPints?.add(RoadPointsData(lastX, lastY, x0.toInt(), y0.toInt()))
-                            }
-                            firstRight = true
+                    when (tag_name) {
+                        "tts_key"->{
+                            var key: String = parser.getAttributeValue(0)
+                            road.speakerKeys.add(key)
                         }
+                        "left" -> {
+                            right = false
+                            left = true
+                            lastX = 0
+                            lastY = 0
 
-                        lastX = x0.toInt()
-                        lastY = y0.toInt()
+                            Log.d("LEFT", "left");
+                        }
+                        "right" -> {
+                            right = true
+                            left = false
+                            lastX = 0
+                            lastY = 0
+                            Log.d("RIGHT", "right");
+                        }
+                        "point" -> {
+                            var x: String = parser.getAttributeValue(0)
+                            var y: String = parser.getAttributeValue(1)
 
-                        Log.d("POINT", "point");
-                    } else if(tag_name == "spawn") {
-                        var x: String = parser.getAttributeValue(0)
-                        var y: String = parser.getAttributeValue(1)
+                            var x0 = x.toFloat() * Settings.SCREEN_SCALE * 0.02F
+                            var y0 = y.toFloat() * Settings.SCREEN_SCALE * 0.02F
 
-                        road.spawnX = (x.toInt() * Settings.SCREEN_SCALE * 0.02F).toInt()
-                        road.spawnY = (y.toInt() * Settings.SCREEN_SCALE * 0.02F).toInt()
-                        Log.d("SPAWN", "spawn");
-                    } else if(tag_name == "finish"){
-                        var x: String = parser.getAttributeValue(0)
-                        var y: String = parser.getAttributeValue(1)
+                            if(left){
+                                if(firstLeft){
+                                    road.leftPoints?.add(RoadPointsData(lastX, lastY, x0.toInt(), y0.toInt()))
+                                }
+                                firstLeft = true
+                            } else{
+                                if(firstRight){
+                                    road.rightPints?.add(RoadPointsData(lastX, lastY, x0.toInt(), y0.toInt()))
+                                }
+                                firstRight = true
+                            }
 
-                        road.finishX = (x.toInt() * Settings.SCREEN_SCALE * 0.02F).toInt()
-                        road.finishY = (y.toInt() * Settings.SCREEN_SCALE * 0.02F).toInt()
+                            lastX = x0.toInt()
+                            lastY = y0.toInt()
 
-                        Log.d("FINISH", "finish");
+                            Log.d("POINT", "point");
+                        }
+                        "spawn" -> {
+                            var x: String = parser.getAttributeValue(0)
+                            var y: String = parser.getAttributeValue(1)
+
+                            road.spawnX = (x.toInt() * Settings.SCREEN_SCALE * 0.02F).toInt()
+                            road.spawnY = (y.toInt() * Settings.SCREEN_SCALE * 0.02F).toInt()
+                            Log.d("SPAWN", "spawn");
+                        }
+                        "finish" -> {
+                            var x: String = parser.getAttributeValue(0)
+                            var y: String = parser.getAttributeValue(1)
+
+                            road.finishX = (x.toInt() * Settings.SCREEN_SCALE * 0.02F).toInt()
+                            road.finishY = (y.toInt() * Settings.SCREEN_SCALE * 0.02F).toInt()
+
+                            Log.d("FINISH", "finish");
+                        }
                     }
                 }
             }

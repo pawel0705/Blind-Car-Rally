@@ -49,7 +49,7 @@ object GestureManager {
                 val time: Long = System.currentTimeMillis() - swipeStartTime
                 swipeDuration += time
 
-                Log.d("SWIPE", swipeDuration.toString())
+           //     Log.d("SWIPE", swipeDuration.toString())
 
                 if (swipeDuration < MAX_SWIPE_DURATION) {
                     when {
@@ -146,7 +146,7 @@ object GestureManager {
                 holdDuration = System.currentTimeMillis() - holdStartTime
 
 
-                Log.d("HOLD", holdDuration.toString())
+          //      Log.d("HOLD", holdDuration.toString())
 
                 return if(holdDuration > HOLD_MAX_DURATION){
                     Pair(event.x, event.y)

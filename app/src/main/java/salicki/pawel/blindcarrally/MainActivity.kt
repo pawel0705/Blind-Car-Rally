@@ -24,6 +24,7 @@ class MainActivity : AppCompatActivity() {
 
         Settings.SCREEN_SCALE = displayMetrics.densityDpi.toFloat()
         Settings.globalSounds.addSound(Resources.acceptSound)
+        Settings.globalSounds.addSound(Resources.swapSound)
 
         TextToSpeechManager.initTextToSpeech()
 

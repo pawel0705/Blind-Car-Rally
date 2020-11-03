@@ -17,5 +17,6 @@ enum class LevelType {
     DISPLAY,
     GAME_MODE,
     SINGLE,
-    TOURNAMENT
+    TOURNAMENT,
+    MODE_DESCRIPTION
 }

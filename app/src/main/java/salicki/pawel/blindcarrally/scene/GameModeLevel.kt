@@ -53,7 +53,7 @@ class GameModeLevel: SurfaceView(Settings.CONTEXT), ILevel {
         )
         modeSelectionData.add(
             OptionSelectionData(
-                LevelType.NULL,
+                LevelType.MODE_DESCRIPTION,
                 "MODE_DESCRIPTION",
                 "Opis trybów",
                 false
@@ -93,7 +93,9 @@ class GameModeLevel: SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun destroyState() {
+        soundManager.destroy()
 
+        isFocusable = false
     }
 
     override fun respondTouchState(event: MotionEvent) {
@@ -158,26 +160,17 @@ class GameModeLevel: SurfaceView(Settings.CONTEXT), ILevel {
     private fun changeLevel(option: Int) {
         when (modeSelectionData[option].levelType) {
             LevelType.SINGLE -> {
+                LevelManager.changeLevel(TrackSelectionLevel())
+            }
+            LevelType.TOURNAMENT -> {
                 LevelManager.changeLevel(CalibrationLevel())
             }
-            /*
-            LevelType.CALIBRATION -> {
-                LevelManager.changeLevel(CalibrationLevel())
+            LevelType.MODE_DESCRIPTION -> {
+                TextToSpeechManager.speakNow(texts["MODE_DESCRIPTION_CLICKED"].toString())
             }
-            LevelType.SETTINGS -> {
-                LevelManager.changeLevel(SettingsLevel())
+            LevelType.MENU -> {
+                LevelManager.changeLevel(MenuLevel())
             }
-            LevelType.LANGUAGE -> {
-                LevelManager.changeLevel(LanguageLevel())
-            }
-            LevelType.CREDITS -> {
-                LevelManager.changeLevel(CreditsLevel())
-            }
-            LevelType.QUIT -> {
-                LevelManager.changeLevel(QuitLevel())
-            }
-            */
-
         }
     }
 

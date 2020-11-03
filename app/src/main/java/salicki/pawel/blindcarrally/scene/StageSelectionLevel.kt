@@ -1,21 +1,24 @@
 package salicki.pawel.blindcarrally.scene
 
 import android.graphics.Canvas
+import android.util.Log
 import android.view.MotionEvent
 import android.view.SurfaceView
 import salicki.pawel.blindcarrally.*
 import salicki.pawel.blindcarrally.data.OptionSelectionData
 import salicki.pawel.blindcarrally.scenemanager.ILevel
 import salicki.pawel.blindcarrally.scenemanager.LevelManager
-import salicki.pawel.blindcarrally.scenemanager.LevelType
 
-class TrackSelectionLevel : SurfaceView(Settings.CONTEXT), ILevel {
-    private var textsTrackSelection: HashMap<String, String> = HashMap()
+class StageSelectionLevel(nation: NationEnum) : SurfaceView(Settings.CONTEXT), ILevel {
+
+    private val stageName = nation.toString()
+
+    private var textsStageSelection: HashMap<String, String> = HashMap()
     private var textsNations: HashMap<String, String> = HashMap()
     private var soundManager: SoundManager = SoundManager()
     private var swipe: Boolean = false
-    private var trackSelectionData = arrayListOf<OptionSelectionData>()
-    private var trackIterator: Int = 0
+    private var stageSelectionData = arrayListOf<OptionSelectionData>()
+    private var stageIterator: Int = 0
     private var lastOption: Int = -1
 
     init {
@@ -23,46 +26,49 @@ class TrackSelectionLevel : SurfaceView(Settings.CONTEXT), ILevel {
 
         initSoundManager()
         readTTSTextFile()
-        initTrackSelectionOptions()
+        initStageSelectionOptions()
     }
 
-    private fun initTrackSelectionOptions() {
-        trackSelectionData.add(
+    private fun initStageSelectionOptions() {
+
+       // Log.d("TRST", stageName.toString())
+
+        stageSelectionData.add(
             OptionSelectionData(
-                NationEnum.ARGENTINA,
-                "ARGENTINA",
+                StageEnum.STAGE_1,
+                stageName + "_1",
                 "Argentyna",
                 false
             )
         )
-        trackSelectionData.add(
+        stageSelectionData.add(
             OptionSelectionData(
-                NationEnum.AUSTRALIA,
-                "AUSTRALIA",
+                StageEnum.STAGE_2,
+                stageName + "_2",
                 "Australia",
                 false
             )
         )
-        trackSelectionData.add(
+        stageSelectionData.add(
             OptionSelectionData(
-                NationEnum.POLAND,
-                "POLAND",
+                StageEnum.STAGE_3,
+                stageName + "_3",
                 "Polska",
                 false
             )
         )
-        trackSelectionData.add(
+        stageSelectionData.add(
             OptionSelectionData(
-                NationEnum.SPAIN,
-                "SPAIN",
+                StageEnum.STAGE_4,
+                stageName  + "_4",
                 "Hiszpania",
                 false
             )
         )
-        trackSelectionData.add(
+        stageSelectionData.add(
             OptionSelectionData(
-                NationEnum.NEW_ZEALAND,
-                "NEW_ZEALAND",
+                StageEnum.STAGE_5,
+                stageName  + "_5",
                 "Nowa Zelania",
                 false
             )
@@ -77,29 +83,29 @@ class TrackSelectionLevel : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     private fun readTTSTextFile() {
-        textsTrackSelection.putAll(
+        textsStageSelection.putAll(
             OpenerCSV.readData(
-                R.raw.track_selection_tts,
+                R.raw.stage_selection_tts,
                 Settings.languageTTS
             )
         )
-        textsNations.putAll(OpenerCSV.readData(R.raw.tracks_tts, Settings.languageTTS))
+        textsNations.putAll(OpenerCSV.readData(R.raw.nation_roads_tts, Settings.languageTTS))
     }
 
     override fun initState() {
-        TextToSpeechManager.speakNow(textsTrackSelection["TRACK_SELECTION_TUTORIAL"].toString())
-        TextToSpeechManager.speakQueue(textsNations["ARGENTINA"].toString())
+        TextToSpeechManager.speakNow(textsStageSelection["STAGE_SELECTION_TUTORIAL"].toString())
+        TextToSpeechManager.speakQueue(textsNations[stageName + "_1"].toString())
     }
 
     override fun updateState(deltaTime: Int) {
-        if (trackSelectionData[trackIterator].selected && lastOption != trackIterator) {
-            textsNations[trackSelectionData[trackIterator].textKey]?.let {
+        if (stageSelectionData[stageIterator].selected && lastOption != stageIterator) {
+            textsNations[stageSelectionData[stageIterator].textKey]?.let {
                 TextToSpeechManager.speakNow(
                     it
                 )
             }
 
-            lastOption = trackIterator
+            lastOption = stageIterator
         }
     }
 
@@ -116,19 +122,19 @@ class TrackSelectionLevel : SurfaceView(Settings.CONTEXT), ILevel {
         when (GestureManager.swipeDetect(event)) {
             GestureType.SWIPE_RIGHT -> {
                 soundManager.playSound(Resources.swapSound)
-                trackIterator++
+                stageIterator++
 
-                if (trackIterator >= trackSelectionData.size) {
-                    trackIterator = 0
+                if (stageIterator >= stageSelectionData.size) {
+                    stageIterator = 0
                 }
 
                 swipe = true
             }
             GestureType.SWIPE_LEFT -> {
                 soundManager.playSound(Resources.swapSound)
-                trackIterator--
-                if (trackIterator < 0) {
-                    trackIterator = trackSelectionData.size - 1
+                stageIterator--
+                if (stageIterator < 0) {
+                    stageIterator = stageSelectionData.size - 1
                 }
 
                 swipe = true
@@ -140,7 +146,7 @@ class TrackSelectionLevel : SurfaceView(Settings.CONTEXT), ILevel {
             GestureType.DOUBLE_TAP -> {
                 TextToSpeechManager.stop()
                 Settings.globalSounds.playSound(Resources.acceptSound)
-                changeLevel(trackIterator)
+                changeLevel(stageIterator)
             }
         }
 
@@ -148,46 +154,46 @@ class TrackSelectionLevel : SurfaceView(Settings.CONTEXT), ILevel {
         if (holdPosition > 0 && !swipe) {
             when {
                 holdPosition < Settings.SCREEN_WIDTH / 5 -> {
-                    trackIterator = 0
+                    stageIterator = 0
                 }
                 holdPosition < Settings.SCREEN_WIDTH / 5 * 2 -> {
-                    trackIterator = 1
+                    stageIterator = 1
                 }
                 holdPosition < Settings.SCREEN_WIDTH / 5 * 3 -> {
-                    trackIterator = 2
+                    stageIterator = 2
                 }
                 holdPosition < Settings.SCREEN_WIDTH / 5 * 4 -> {
-                    trackIterator = 3
+                    stageIterator = 3
                 }
                 holdPosition < Settings.SCREEN_WIDTH / 5 * 5 -> {
-                    trackIterator = 4
+                    stageIterator = 4
                 }
             }
         }
 
-        trackSelectionData.forEach {
+        stageSelectionData.forEach {
             it.selected = false
         }
 
-        trackSelectionData[trackIterator].selected = true
+        stageSelectionData[stageIterator].selected = true
     }
 
     private fun changeLevel(option: Int) {
-        when (trackSelectionData[option].levelType) {
-            NationEnum.ARGENTINA -> {
-                LevelManager.changeLevel(StageSelectionLevel(NationEnum.ARGENTINA))
+        when (stageSelectionData[option].levelType) {
+            StageEnum.STAGE_1 -> {
+                LevelManager.changeLevel(CalibrationLevel())
             }
-            NationEnum.AUSTRALIA -> {
-                LevelManager.changeLevel(StageSelectionLevel(NationEnum.AUSTRALIA))
+            StageEnum.STAGE_2 -> {
+
             }
-            NationEnum.POLAND -> {
-                LevelManager.changeLevel(StageSelectionLevel(NationEnum.POLAND))
+            StageEnum.STAGE_3 -> {
+
             }
-            NationEnum.SPAIN -> {
-                LevelManager.changeLevel(StageSelectionLevel(NationEnum.SPAIN))
+            StageEnum.STAGE_4 -> {
+
             }
-            NationEnum.NEW_ZEALAND -> {
-                LevelManager.changeLevel(StageSelectionLevel(NationEnum.NEW_ZEALAND))
+            StageEnum.STAGE_5 -> {
+
             }
         }
     }

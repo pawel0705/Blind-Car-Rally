@@ -216,7 +216,7 @@ class MenuLevel : SurfaceView(Settings.CONTEXT), ILevel {
                 LevelManager.changeLevel(CreditsLevel())
             }
             LevelType.QUIT -> {
-                LevelManager.changeLevel(QuitLevel())
+                LevelManager.stackLevel(QuitLevel())
             }
         }
     }
