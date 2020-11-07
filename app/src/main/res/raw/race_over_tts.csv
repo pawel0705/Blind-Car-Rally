@@ -2,5 +2,10 @@ TEXT_KEY;ENGLISH;POLISH
 STAGE_COMPLETED_1;Stage completed! Good job!;Etap ukończony! Dobra robota!
 STAGE_COMPLETED_2;A difficult stage, but I have the impression that we overcame it quickly.;Trudny etap, ale mam wrażenie że szybko go pokonaliśmy.
 TIME;Your time is: ; Twój czas wynosi: ;
+SECONDS; seconds.; sekund.
 SCORE;Your score is: ; Twój wynik to:
-CAR_DEMAGE;Vehicle damaged in: ;Pojazd uszkodzony w:
+POINTS; points.; punktów.;
+CAR_DAMAGE;The condition of the car is: ;Sprawność pojazdu wynosi:
+RACE_AGAIN;Start the race again.;Rozpocznij wyścig jeszcze raz.
+MENU;Return to main menu.;Powróć do głównego menu.
+READ_SCORE;Result of the rally.;Wynik rajdu.

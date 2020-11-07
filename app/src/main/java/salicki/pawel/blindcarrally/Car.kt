@@ -107,6 +107,7 @@ class Car(posX: Float, posY: Float, rect: RectF) : EnvironmentObject(posX, posY)
     private fun initCarDistanceSensors() {
         carParameters.obstacleSensorLength = Settings.SCREEN_SCALE * 0.5F
 
+
         carSensors.initCarDistanceSensors(carParameters.obstacleSensorLength)
     }
 
@@ -174,12 +175,16 @@ class Car(posX: Float, posY: Float, rect: RectF) : EnvironmentObject(posX, posY)
         val collision = carHitbox.collisionCheck(x1, y1, x2, y2)
 
         if(collision){
-            
+            this.carParameters.health -= 5
 
             return true
         }
 
-        return carHitbox.collisionCheck(x1, y1, x2, y2)
+        return false
+    }
+
+    fun getCarHealth() :Int{
+        return this.carParameters.health
     }
 
     fun higherGear() {

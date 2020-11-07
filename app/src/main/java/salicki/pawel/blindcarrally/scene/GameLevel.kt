@@ -9,10 +9,12 @@ import android.view.MotionEvent
 import android.view.SurfaceView
 import androidx.core.content.ContextCompat
 import salicki.pawel.blindcarrally.*
+import salicki.pawel.blindcarrally.data.StageResultData
 import salicki.pawel.blindcarrally.data.TrackData
 import salicki.pawel.blindcarrally.data.TrackRaceData
 import salicki.pawel.blindcarrally.scenemanager.ILevel
 import salicki.pawel.blindcarrally.scenemanager.LevelManager
+import kotlin.concurrent.timer
 
 
 class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
@@ -26,19 +28,17 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
     private var raceTimeSeconds = 0
 
     private var pilotTexts: HashMap<String, String> = HashMap()
-    private var raceOverTexts: HashMap<String, String> = HashMap()
-
     private var soundManagerGame: SoundManager = SoundManager()
 
     private var speakerCountDown: HashMap<String, Boolean> = HashMap()
 
     private var stopGameplay: Boolean = false
     private var countDown: Boolean = false
-
+    private var MAX_SCORE: Int = 1000000;
     private var startCountTime: Long = 0
     private var durationCount: Long = 0
     private val MAX_DURATION_COUNT = 6000
-
+    private var stageResult : StageResultData = StageResultData()
     private var newRoadTile = false
 
     private var swipe = false
@@ -91,13 +91,6 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
         pilotTexts.putAll(
             OpenerCSV.readData(
                 R.raw.spotter_tts,
-                Settings.languageTTS
-            )
-        )
-
-        raceOverTexts.putAll(
-            OpenerCSV.readData(
-                R.raw.race_over_tts,
                 Settings.languageTTS
             )
         )
@@ -197,6 +190,12 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
         }
     }
 
+    private fun updateStageResult(){
+        stageResult.carDamage = car.getCarHealth()
+        stageResult.time = raceTimeSeconds
+        stageResult.score = (MAX_SCORE * car.getCarHealth() * 0.01F / raceTimeSeconds).toInt()
+    }
+
     override fun updateState(deltaTime: Int) {
 
         if(countDown){
@@ -210,15 +209,21 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
         raceTime++
         if(raceTime%30 == 0){
             raceTimeSeconds++
+            updateStageResult()
         }
 
         car.update(coordinateDisplayManager)
         coordinateDisplayManager.updateEnvironmentCoordinates()
-
+        
         checkCollistion()
         checkDistance(deltaTime)
 
         if (trackData != null) {
+
+            if(trackIterator > trackData!!.roadList.size - 1){
+                LevelManager.changeLevel(RaceOverScene(stageResult))
+            }
+
             if(trackData!!.roadList[trackIterator].finishY < car.posY){
                 trackIterator++
 
@@ -229,18 +234,18 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
             }
 
             if(newRoadTile){
-
                 for(tts in trackData!!.roadList[trackIterator].speakerKeys){
                     TextToSpeechManager.speakQueue(pilotTexts[tts].toString())
                 }
-
                 newRoadTile = false
             }
         }
     }
 
     override fun destroyState() {
+        isFocusable = false
 
+        // dodac sound managery
     }
 
     override fun respondTouchState(event: MotionEvent) {
