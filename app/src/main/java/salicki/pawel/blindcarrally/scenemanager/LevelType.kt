@@ -20,3 +20,8 @@ enum class LevelType {
     TOURNAMENT,
     MODE_DESCRIPTION
 }
+
+enum class AnswerEnum {
+    YES,
+    NO
+}

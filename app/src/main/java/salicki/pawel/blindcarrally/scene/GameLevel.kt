@@ -18,9 +18,15 @@ import salicki.pawel.blindcarrally.scenemanager.LevelManager
 class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
 
     private var trackReader = TrackReader()
+
+
     private var trackIterator = 0
 
+    private var raceTime = 0
+    private var raceTimeSeconds = 0
+
     private var pilotTexts: HashMap<String, String> = HashMap()
+    private var raceOverTexts: HashMap<String, String> = HashMap()
 
     private var soundManagerGame: SoundManager = SoundManager()
 
@@ -85,6 +91,13 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
         pilotTexts.putAll(
             OpenerCSV.readData(
                 R.raw.spotter_tts,
+                Settings.languageTTS
+            )
+        )
+
+        raceOverTexts.putAll(
+            OpenerCSV.readData(
+                R.raw.race_over_tts,
                 Settings.languageTTS
             )
         )
@@ -172,7 +185,7 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
             TextToSpeechManager.speakNow(pilotTexts["COUNTDOWN_1"].toString())
             soundManagerGame.playSound(R.raw.countdown)
             speakerCountDown["COUNTDOWN_1"] = true
-        } else if(durationCount > MAX_DURATION_COUNT){
+        } else if(durationCount > MAX_DURATION_COUNT && countDown){
             TextToSpeechManager.speakNow(pilotTexts["START"].toString())
             soundManagerGame.playSound(R.raw.start)
             newRoadTile = true
@@ -192,6 +205,11 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
 
         if(!stopGameplay){
             return
+        }
+
+        raceTime++
+        if(raceTime%30 == 0){
+            raceTimeSeconds++
         }
 
         car.update(coordinateDisplayManager)
@@ -240,6 +258,7 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
             }
             GestureType.SWIPE_UP -> {
                 Settings.globalSounds.playSound(Resources.swapSound)
+                pauseGame = true
 
                 LevelManager.stackLevel(PauseLevel())
 
@@ -301,5 +320,7 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
             }
         }
 
+        paint.textSize = 50F
+        canvas.drawText(raceTimeSeconds.toString(), 500F, 500F, paint)
     }
 }

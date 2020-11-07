@@ -12,7 +12,8 @@ data class CarParameters(
     var maxGear: Int = 6,
     var minGear: Int = 0,
     var gear: Int = 1,
-    var obstacleSensorLength: Float = 0F
+    var obstacleSensorLength: Float = 0F,
+    var health: Int = 100
 ) {}
 
 data class CarView(

@@ -28,15 +28,15 @@ class CarSensors {
         carPositionSensors.sensorX01 = posX - carHalfWidth
         carPositionSensors.sensorY01 = posY - carHalfHeight
 
-        carPositionSensors.sensorX02 = posX - 4 * carHalfWidth
-        carPositionSensors.sensorY02 = posY - obstacleSensorLength
+        carPositionSensors.sensorX02 = posX - 3 * carHalfWidth
+        carPositionSensors.sensorY02 = posY - obstacleSensorLength * 0.6F
 
 
         carPositionSensors.sensorX03 = posX - carHalfWidth
         carPositionSensors.sensorY03 = posY + carHalfHeight
 
-        carPositionSensors.sensorX04 = posX - 4 * carHalfWidth
-        carPositionSensors.sensorY04 = posY + obstacleSensorLength
+        carPositionSensors.sensorX04 = posX - 3 * carHalfWidth
+        carPositionSensors.sensorY04 = posY + obstacleSensorLength * 0.6F
 
 
         carPositionSensors.sensorX05 = posX - carHalfWidth
@@ -55,15 +55,15 @@ class CarSensors {
         carPositionSensors.sensorX09 = posX + carHalfWidth
         carPositionSensors.sensorY09 = posY + carHalfHeight
 
-        carPositionSensors.sensorX10 = posX + 4 * carHalfWidth
-        carPositionSensors.sensorY10 = posY + obstacleSensorLength
+        carPositionSensors.sensorX10 = posX + 3 * carHalfWidth
+        carPositionSensors.sensorY10 = posY + obstacleSensorLength * 0.6F
 
 
         carPositionSensors.sensorX11 = posX + carHalfWidth
         carPositionSensors.sensorY11 = posY - carHalfHeight
 
-        carPositionSensors.sensorX12 = posX + 4 * carHalfWidth
-        carPositionSensors.sensorY12 = posY - obstacleSensorLength
+        carPositionSensors.sensorX12 = posX + 3 * carHalfWidth
+        carPositionSensors.sensorY12 = posY - obstacleSensorLength * 0.6F
     }
 
     fun drawSensors(

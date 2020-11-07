@@ -70,8 +70,8 @@ class Car(posX: Float, posY: Float, rect: RectF) : EnvironmentObject(posX, posY)
 
         var enginePitch = ((carParameters.speed - gearMaxValue)/(gearMaxValue-gearMinValue)) + 1 / 3F
 
-        Log.d("SPED", carParameters.speed.toString())
-        Log.d("PITCH", (carParameters.speed / carParameters.maxSpeed + 1).toString())
+     //   Log.d("SPED", carParameters.speed.toString())
+     //   Log.d("PITCH", (carParameters.speed / carParameters.maxSpeed + 1).toString())
 
         if(engineIterator > 2){
             engineIterator = 0
@@ -105,7 +105,7 @@ class Car(posX: Float, posY: Float, rect: RectF) : EnvironmentObject(posX, posY)
     }
 
     private fun initCarDistanceSensors() {
-        carParameters.obstacleSensorLength = Settings.SCREEN_SCALE * 1
+        carParameters.obstacleSensorLength = Settings.SCREEN_SCALE * 0.5F
 
         carSensors.initCarDistanceSensors(carParameters.obstacleSensorLength)
     }
@@ -149,7 +149,7 @@ class Car(posX: Float, posY: Float, rect: RectF) : EnvironmentObject(posX, posY)
 
 
             if (sensorBeepIteratorLeft > 2 * 1 / volume) {
-                Log.d("VOLUME LEFT", volume.toString())
+       //         Log.d("VOLUME LEFT", volume.toString())
                 sensorBeepIteratorLeft = 0
                 soundManagerLeft.playSound(R.raw.beep, 0F, volume)
             }
@@ -161,7 +161,7 @@ class Car(posX: Float, posY: Float, rect: RectF) : EnvironmentObject(posX, posY)
 
 
             if (sensorBeepIteratorRight > 2 * 1 / volume) {
-                Log.d("VOLUME RIGHT", volume.toString())
+            //    Log.d("VOLUME RIGHT", volume.toString())
                 sensorBeepIteratorRight = 0
                 soundManagerRight.playSound(R.raw.beep, volume, 0F)
             }
@@ -170,6 +170,15 @@ class Car(posX: Float, posY: Float, rect: RectF) : EnvironmentObject(posX, posY)
     }
 
     fun collisionCheck(x1: Float, y1: Float, x2: Float, y2: Float): Boolean {
+
+        val collision = carHitbox.collisionCheck(x1, y1, x2, y2)
+
+        if(collision){
+            
+
+            return true
+        }
+
         return carHitbox.collisionCheck(x1, y1, x2, y2)
     }
 

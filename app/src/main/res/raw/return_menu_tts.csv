@@ -1,0 +1,4 @@
+TEXT_KEY;ENGLISH;POLISH
+RETURN_MENU;Are you sure you want to exit to the main menu?;Czy na pewno chcesz wyjść do głównego menu?
+YES;Selected option: Yes.;Wybrana opcja: Tak.
+NO;Selected option: No.;Wybrana opcja: Nie.
