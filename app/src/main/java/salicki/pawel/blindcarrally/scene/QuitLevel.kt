@@ -13,6 +13,11 @@ class QuitLevel : SurfaceView(Settings.CONTEXT), ILevel {
     private var texts: HashMap<String, String> = HashMap()
     private var exit: Boolean = true
     private var soundManager: SoundManager = SoundManager()
+    private var exitIterator: Int = 0
+    private var lastOption: Int = 0
+    private var swipe: Boolean = false
+    private var idleTime: Int = 0
+    private var idleTimeSeconds: Int = 0
 
     init{
         isFocusable = true
@@ -38,7 +43,29 @@ class QuitLevel : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun updateState(deltaTime: Int) {
+        if(exitIterator != lastOption){
+            if (exit) {
+                texts["QUIT_YES"]?.let { TextToSpeechManager.speakNow(it) }
+            } else {
+                texts["QUIT_NO"]?.let { TextToSpeechManager.speakNow(it) }
+            }
 
+            lastOption = exitIterator
+        }
+
+        if(!TextToSpeechManager.isSpeaking()){
+            idleTime++
+
+            if(idleTime % 30 == 0){
+                idleTimeSeconds++
+            }
+        }
+
+        if(idleTimeSeconds > 10){
+            TextToSpeechManager.speakNow(texts["QUIT_TUTORIAL"].toString())
+
+            idleTimeSeconds = 0
+        }
     }
 
     override fun destroyState() {
@@ -48,16 +75,25 @@ class QuitLevel : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun respondTouchState(event: MotionEvent) {
-        when (GestureManager.doubleTapDetect(event)) {
+
+        swipe = false
+
+        when (GestureManager.swipeDetect(event)) {
             GestureType.SWIPE_LEFT, GestureType.SWIPE_RIGHT -> {
                 soundManager.playSound(Resources.swapSound)
                 exit = !exit
-                if (exit) {
-                    texts["QUIT_YES"]?.let { TextToSpeechManager.speakNow(it) }
+                exitIterator = if (exit) {
+                    0
                 } else {
-                    texts["QUIT_NO"]?.let { TextToSpeechManager.speakNow(it) }
+                    1
                 }
+
+                swipe = true
+                idleTimeSeconds = 0
             }
+        }
+
+        when (GestureManager.doubleTapDetect(event)) {
             GestureType.DOUBLE_TAP -> {
                 Settings.globalSounds.playSound(Resources.acceptSound)
                 if (!exit) {
@@ -66,6 +102,22 @@ class QuitLevel : SurfaceView(Settings.CONTEXT), ILevel {
                     (Settings.CONTEXT as MainActivity).exit()
                 }
             }
+        }
+
+        val holdPosition = GestureManager.holdPositionDetect(event).first
+        if (holdPosition > 0 && !swipe) {
+            when {
+                holdPosition < Settings.SCREEN_WIDTH / 2 -> {
+                    exitIterator = 0
+                    exit = true
+                }
+                holdPosition < Settings.SCREEN_WIDTH / 2 * 2 -> {
+                    exitIterator = 1
+                    exit = false
+                }
+            }
+
+            idleTimeSeconds = 0
         }
     }
 

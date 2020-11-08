@@ -20,6 +20,9 @@ class SettingsLevel : SurfaceView(Settings.CONTEXT), ILevel {
     private var lastOption = -1
     private var optionText = TextObject()
 
+    private var idleTime: Int = 0
+    private var idleTimeSeconds: Int = 0
+
     init {
         isFocusable = true
 
@@ -122,6 +125,20 @@ class SettingsLevel : SurfaceView(Settings.CONTEXT), ILevel {
         }
 
         selectBoxManager.updateSelectBoxPosition(settingsIterator)
+
+        if(!TextToSpeechManager.isSpeaking()){
+            idleTime++
+
+            if(idleTime % 30 == 0){
+                idleTimeSeconds++
+            }
+        }
+
+        if(idleTimeSeconds > 10){
+            TextToSpeechManager.speakNow(texts["SETTINGS_TUTORIAL"].toString())
+
+            idleTimeSeconds = 0
+        }
     }
 
     override fun destroyState() {
@@ -145,6 +162,7 @@ class SettingsLevel : SurfaceView(Settings.CONTEXT), ILevel {
                 }
 
                 swipe = true
+                idleTimeSeconds = 0
             }
             GestureType.SWIPE_LEFT -> {
                 soundManager.playSound(Resources.swapSound)
@@ -154,6 +172,7 @@ class SettingsLevel : SurfaceView(Settings.CONTEXT), ILevel {
                 }
 
                 swipe = true
+                idleTimeSeconds = 0
             }
         }
 
@@ -199,6 +218,8 @@ class SettingsLevel : SurfaceView(Settings.CONTEXT), ILevel {
                         LevelManager.changeLevel(MenuLevel())
                     }
                 }
+
+                idleTimeSeconds = 0
             }
         }
 
@@ -224,6 +245,8 @@ class SettingsLevel : SurfaceView(Settings.CONTEXT), ILevel {
                     settingsIterator = 5
                 }
             }
+
+            idleTimeSeconds = 0
         }
 
         settingsSelectionData.forEach {

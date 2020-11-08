@@ -19,6 +19,9 @@ class PauseLevel : SurfaceView(Settings.CONTEXT), ILevel {
     private var pauseIterator: Int = 0
     private var lastOption: Int = -1
 
+    private var idleTime: Int = 0
+    private var idleTimeSeconds: Int = 0
+
     init {
         isFocusable = true
 
@@ -85,6 +88,20 @@ class PauseLevel : SurfaceView(Settings.CONTEXT), ILevel {
 
             lastOption = pauseIterator
         }
+
+        if(!TextToSpeechManager.isSpeaking()){
+            idleTime++
+
+            if(idleTime % 30 == 0){
+                idleTimeSeconds++
+            }
+        }
+
+        if(idleTimeSeconds > 10){
+            TextToSpeechManager.speakNow(textsPause["PAUSE"].toString())
+
+            idleTimeSeconds = 0
+        }
     }
 
     override fun destroyState() {
@@ -107,6 +124,7 @@ class PauseLevel : SurfaceView(Settings.CONTEXT), ILevel {
                 }
 
                 swipe = true
+                idleTimeSeconds = 0
             }
             GestureType.SWIPE_LEFT -> {
                 soundManager.playSound(Resources.swapSound)
@@ -116,6 +134,7 @@ class PauseLevel : SurfaceView(Settings.CONTEXT), ILevel {
                 }
 
                 swipe = true
+                idleTimeSeconds = 0
             }
         }
 
@@ -125,6 +144,7 @@ class PauseLevel : SurfaceView(Settings.CONTEXT), ILevel {
                 TextToSpeechManager.stop()
                 Settings.globalSounds.playSound(Resources.acceptSound)
                 changeLevel(pauseIterator)
+                idleTimeSeconds = 0
             }
         }
 
@@ -141,6 +161,7 @@ class PauseLevel : SurfaceView(Settings.CONTEXT), ILevel {
                     pauseIterator = 2
                 }
             }
+            idleTimeSeconds = 0
         }
 
         pauseSelectionData.forEach {

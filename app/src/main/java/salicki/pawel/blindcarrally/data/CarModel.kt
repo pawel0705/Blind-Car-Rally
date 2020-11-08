@@ -7,10 +7,10 @@ import salicki.pawel.blindcarrally.Texture
 data class CarParameters(
     var speed: Float = 0F,
     var angle: Float = 0F,
-    var maxSpeed: Float = 2F,
+    var maxSpeed: Float = 1F,
     var turnSpeed: Float = 0.008F,
     var maxGear: Int = 6,
-    var minGear: Int = 0,
+    var minGear: Int = 1,
     var gear: Int = 1,
     var obstacleSensorLength: Float = 0F,
     var health: Int = 100

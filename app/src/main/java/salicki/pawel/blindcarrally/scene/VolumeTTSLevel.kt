@@ -13,6 +13,7 @@ class VolumeTTSLevel : SurfaceView(Settings.CONTEXT), ILevel {
     private var texts: HashMap<String, String> = HashMap()
     private var volume: ArrayList<String> = ArrayList()
     private var volumeIterator = 0
+    private var lastOption = 0
     private var soundManager: SoundManager = SoundManager()
     private var swipe: Boolean = false
     private var selectBoxManager = SelectBoxManager()
@@ -55,6 +56,16 @@ class VolumeTTSLevel : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun updateState(deltaTime: Int) {
+
+        if(volumeIterator != lastOption){
+
+            TextToSpeechManager.speakNow(texts["SETTINGS_TTS_VOLUME"].toString() + texts[volume[Settings.reader - 1]].toString())
+
+            lastOption = volumeIterator
+        }
+
+
+
         selectBoxManager.updateSelectBoxPosition(volumeIterator)
     }
 
@@ -72,7 +83,7 @@ class VolumeTTSLevel : SurfaceView(Settings.CONTEXT), ILevel {
         swipe = false
 
         when(GestureManager.swipeDetect(event)){
-            GestureType.SWIPE_LEFT -> {
+            GestureType.SWIPE_RIGHT -> {
                 soundManager.playSound(Resources.swapSound)
                 volumeIterator++
 
@@ -85,7 +96,7 @@ class VolumeTTSLevel : SurfaceView(Settings.CONTEXT), ILevel {
 
                 swipe = true
             }
-            GestureType.SWIPE_RIGHT -> {
+            GestureType.SWIPE_LEFT -> {
                 soundManager.playSound(Resources.swapSound)
                 volumeIterator--
                 if (volumeIterator < 0) {
@@ -143,7 +154,6 @@ class VolumeTTSLevel : SurfaceView(Settings.CONTEXT), ILevel {
                 }
             }
             Settings.reader = volumeIterator + 1
-            TextToSpeechManager.speakNow(texts["SETTINGS_TTS_VOLUME"].toString() + texts[volume[Settings.reader - 1]].toString())
         }
 
 

@@ -6,23 +6,29 @@ import android.view.MotionEvent
 import android.view.SurfaceView
 import salicki.pawel.blindcarrally.*
 import salicki.pawel.blindcarrally.data.LanguageSelectionData
+import salicki.pawel.blindcarrally.data.OptionSelectionData
 import salicki.pawel.blindcarrally.scenemanager.ILevel
 import salicki.pawel.blindcarrally.scenemanager.LevelManager
 import salicki.pawel.blindcarrally.scenemanager.LevelType
 
-class LanguageLevel : SurfaceView(Settings.CONTEXT), ILevel {
+class LanguageLevel(flow: LanguageLevelFlowEnum) : SurfaceView(Settings.CONTEXT), ILevel {
+
+    private val languageLevelFlow = flow
+
     private var soundManager: SoundManager = SoundManager()
     private var languageSelectionData: LinkedHashMap<LanguageTTS, LanguageSelectionData> =
         LinkedHashMap()
     private var languageTypeData: ArrayList<LanguageTTS> =
         arrayListOf(LanguageTTS.ENGLISH, LanguageTTS.POLISH)
 
-    private var languageIterator: Int = 0
-
+    private var languageIterator: Int = Settings.languageTTS.ordinal
+    private var lastOption: Int = Settings.languageTTS.ordinal
     private var selectBoxManager = SelectBoxManager()
 
     private var swipe: Boolean = false
-    private var changeLanguage: Boolean = false
+
+    private var idleTime: Int = 0
+    private var idleTimeSeconds: Int = 0
 
     init {
         isFocusable = true
@@ -35,6 +41,7 @@ class LanguageLevel : SurfaceView(Settings.CONTEXT), ILevel {
     private fun initSelectBoxModel(){
         selectBoxManager.initSelectBoxModel(2)
     }
+
 
     private fun readTTSTextFile() {
         languageSelectionData[LanguageTTS.ENGLISH] =
@@ -72,6 +79,7 @@ class LanguageLevel : SurfaceView(Settings.CONTEXT), ILevel {
                 }
 
                 swipe = true
+                idleTimeSeconds = 0
             }
             GestureType.SWIPE_RIGHT -> {
                 soundManager.playSound(Resources.swapSound)
@@ -81,6 +89,7 @@ class LanguageLevel : SurfaceView(Settings.CONTEXT), ILevel {
                 }
 
                 swipe = true
+                idleTimeSeconds = 0
             }
         }
 
@@ -88,7 +97,13 @@ class LanguageLevel : SurfaceView(Settings.CONTEXT), ILevel {
             GestureType.DOUBLE_TAP -> {
                 Settings.globalSounds.playSound(Resources.acceptSound)
                 SharedPreferencesManager.saveConfiguration("language", languageIterator.toString())
-                LevelManager.changeLevel(MenuLevel())
+
+                if(languageLevelFlow == LanguageLevelFlowEnum.INTRODUCTION){
+                    LevelManager.changeLevel(InformationLevel())
+                }
+                else {
+                    LevelManager.changeLevel(MenuLevel())
+                }
             }
         }
 
@@ -102,21 +117,39 @@ class LanguageLevel : SurfaceView(Settings.CONTEXT), ILevel {
                     languageIterator = 1
                 }
             }
+
+            idleTimeSeconds = 0
         }
 
         selectBoxManager.updateSelectBoxPosition(languageIterator)
     }
 
     override fun updateState(deltaTime: Int) {
-        if (swipe) {
+        if (lastOption != languageIterator) {
             TextToSpeechManager.stop()
             Settings.languageTTS = languageTypeData[languageIterator]
             TextToSpeechManager.changeLanguage(languageTypeData[languageIterator])
             languageSelectionData[languageTypeData[languageIterator]]?.texts?.get("SELECTED_LANGUAGE")
                 ?.let { TextToSpeechManager.speakNow(it) }
 
-            swipe = false
+            lastOption = languageIterator
         }
+
+        if(!TextToSpeechManager.isSpeaking()){
+            idleTime++
+
+            if(idleTime % 30 == 0){
+                idleTimeSeconds++
+            }
+        }
+
+        if(idleTimeSeconds > 10){
+            languageSelectionData[Settings.languageTTS]?.texts?.get("LANGUAGE_TUTORIAL")
+                ?.let { TextToSpeechManager.speakNow(it) }
+
+            idleTimeSeconds = 0
+        }
+
     }
 
     override fun destroyState() {

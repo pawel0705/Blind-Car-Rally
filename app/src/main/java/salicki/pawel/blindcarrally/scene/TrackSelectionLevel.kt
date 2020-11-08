@@ -18,6 +18,9 @@ class TrackSelectionLevel : SurfaceView(Settings.CONTEXT), ILevel {
     private var trackIterator: Int = 0
     private var lastOption: Int = -1
 
+    private var idleTime: Int = 0
+    private var idleTimeSeconds: Int = 0
+
     init {
         isFocusable = true
 
@@ -100,6 +103,20 @@ class TrackSelectionLevel : SurfaceView(Settings.CONTEXT), ILevel {
             }
 
             lastOption = trackIterator
+        }
+
+        if(!TextToSpeechManager.isSpeaking()){
+            idleTime++
+
+            if(idleTime % 30 == 0){
+                idleTimeSeconds++
+            }
+        }
+
+        if(idleTimeSeconds > 10){
+            TextToSpeechManager.speakNow(textsTrackSelection["TRACK_SELECTION_TUTORIAL"].toString())
+
+            idleTimeSeconds = 0
         }
     }
 

@@ -45,7 +45,7 @@ class SplashLevel() : SurfaceView(Settings.CONTEXT), ILevel {
                  var timer = object : CountDownTimer(5000, 5000) {
                     override fun onTick(millisUntilFinished: Long) {}
                     override fun onFinish() {
-                        LevelManager.changeLevel(LanguageLevel())
+                        LevelManager.changeLevel(LanguageLevel(LanguageLevelFlowEnum.INTRODUCTION))
                     }
                 }
                 timer.start()

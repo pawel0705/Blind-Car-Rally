@@ -19,6 +19,9 @@ class GameModeLevel: SurfaceView(Settings.CONTEXT), ILevel {
     private var soundManager: SoundManager = SoundManager()
     private var lastOption: Int = -1
 
+    private var idleTime: Int = 0
+    private var idleTimeSeconds: Int = 0
+
     init {
         isFocusable = true
 
@@ -89,7 +92,19 @@ class GameModeLevel: SurfaceView(Settings.CONTEXT), ILevel {
             lastOption = modeIterator
         }
 
-     //   selectBoxManager.updateSelectBoxPosition(menuIterator)
+        if(!TextToSpeechManager.isSpeaking()){
+            idleTime++
+
+            if(idleTime % 30 == 0){
+                idleTimeSeconds++
+            }
+        }
+
+        if(idleTimeSeconds > 10){
+            TextToSpeechManager.speakNow(texts["MODE_TUTORIAL"].toString())
+
+            idleTimeSeconds = 0
+        }
     }
 
     override fun destroyState() {
@@ -111,6 +126,7 @@ class GameModeLevel: SurfaceView(Settings.CONTEXT), ILevel {
                 }
 
                 swipe = true
+                idleTimeSeconds = 0
             }
             GestureType.SWIPE_LEFT -> {
                 soundManager.playSound(Resources.swapSound)
@@ -120,6 +136,7 @@ class GameModeLevel: SurfaceView(Settings.CONTEXT), ILevel {
                 }
 
                 swipe = true
+                idleTimeSeconds = 0
             }
         }
 
@@ -129,6 +146,8 @@ class GameModeLevel: SurfaceView(Settings.CONTEXT), ILevel {
                 TextToSpeechManager.stop()
                 Settings.globalSounds.playSound(Resources.acceptSound)
                 changeLevel(modeIterator)
+
+                idleTimeSeconds = 0
             }
         }
 
@@ -148,6 +167,8 @@ class GameModeLevel: SurfaceView(Settings.CONTEXT), ILevel {
                     modeIterator = 3
                 }
             }
+
+            idleTimeSeconds = 0
         }
 
         modeSelectionData.forEach {

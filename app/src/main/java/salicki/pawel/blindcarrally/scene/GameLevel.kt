@@ -45,6 +45,9 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
 
     private var pauseGame = false
 
+    private var idleTime: Int = 0
+    private var idleTimeSeconds: Int = 0
+
     private var car: Car = Car(
         Settings.SCREEN_WIDTH / 2F,
         Settings.SCREEN_HEIGHT / 2F,
@@ -203,6 +206,21 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
         }
 
         if(!stopGameplay){
+
+            if(!TextToSpeechManager.isSpeaking()){
+                idleTime++
+
+                if(idleTime % 30 == 0){
+                    idleTimeSeconds++
+                }
+            }
+
+            if(idleTimeSeconds > 10){
+                TextToSpeechManager.speakNow(pilotTexts["INSTRUCTION"].toString())
+
+                idleTimeSeconds = 0
+            }
+
             return
         }
 
@@ -220,7 +238,7 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
 
         if (trackData != null) {
 
-            if(trackIterator > trackData!!.roadList.size - 1){
+            if(trackIterator >= trackData!!.roadList.size - 1){
                 LevelManager.changeLevel(RaceOverScene(stageResult))
             }
 
@@ -252,36 +270,29 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
         swipe = false
 
         when (GestureManager.swipeDetect(event)) {
-            GestureType.SWIPE_RIGHT -> {
-
-
-                swipe = true
-            }
-            GestureType.SWIPE_LEFT -> {
-
-                swipe = true
-            }
             GestureType.SWIPE_UP -> {
                 Settings.globalSounds.playSound(Resources.swapSound)
                 pauseGame = true
-
                 LevelManager.stackLevel(PauseLevel())
-
                 swipe = true
             }
         }
 
-        when(GestureManager.tapPositionDetect(event)){
-            GestureType.TAP_RIGHT->car.higherGear()
-            GestureType.TAP_LEFT->car.lowerGear()
+        if(stopGameplay){
+            when(GestureManager.tapPositionDetect(event)){
+                GestureType.TAP_RIGHT->car.higherGear()
+                GestureType.TAP_LEFT->car.lowerGear()
+            }
+
         }
 
-        when (GestureManager.doubleTapDetect(event)) {
-
-            GestureType.DOUBLE_TAP -> {
-                TextToSpeechManager.stop()
-                Settings.globalSounds.playSound(Resources.acceptSound)
-                startGame()
+        if(!stopGameplay){
+            when (GestureManager.doubleTapDetect(event)) {
+                GestureType.DOUBLE_TAP -> {
+                    TextToSpeechManager.stop()
+                    Settings.globalSounds.playSound(Resources.acceptSound)
+                    startGame()
+                }
             }
         }
     }
@@ -326,6 +337,6 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
         }
 
         paint.textSize = 50F
-        canvas.drawText(raceTimeSeconds.toString(), 500F, 500F, paint)
+        canvas.drawText(car.getCarSpeed().toString(), 500F, 500F, paint)
     }
 }

@@ -13,6 +13,9 @@ class CreditsLevel : SurfaceView(Settings.CONTEXT), ILevel {
     private var texts: HashMap<String, String> = HashMap()
     private var soundManager: SoundManager = SoundManager()
 
+    private var idleTime: Int = 0
+    private var idleTimeSeconds: Int = 0
+
     init {
         isFocusable = true
 
@@ -36,7 +39,21 @@ class CreditsLevel : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun updateState(deltaTime: Int) {
+        if(TextToSpeechManager.isSpeaking()){
+            idleTime = 0
+        }
 
+        idleTime++
+
+        if(idleTime % 30 == 0){
+            idleTimeSeconds++
+        }
+
+        if(idleTimeSeconds > 10 && !TextToSpeechManager.isSpeaking()){
+            TextToSpeechManager.speakNow(texts["CREDITS_AUTHOR"].toString())
+            TextToSpeechManager.speakQueue(texts["CREDITS_BACK"].toString())
+            idleTimeSeconds = 0
+        }
     }
 
     override fun destroyState() {

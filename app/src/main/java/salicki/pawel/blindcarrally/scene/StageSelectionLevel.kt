@@ -21,6 +21,9 @@ class StageSelectionLevel(nation: NationEnum) : SurfaceView(Settings.CONTEXT), I
     private var stageIterator: Int = 0
     private var lastOption: Int = -1
 
+    private var idleTime: Int = 0
+    private var idleTimeSeconds: Int = 0
+
     init {
         isFocusable = true
 
@@ -107,6 +110,20 @@ class StageSelectionLevel(nation: NationEnum) : SurfaceView(Settings.CONTEXT), I
 
             lastOption = stageIterator
         }
+
+        if(!TextToSpeechManager.isSpeaking()){
+            idleTime++
+
+            if(idleTime % 30 == 0){
+                idleTimeSeconds++
+            }
+        }
+
+        if(idleTimeSeconds > 10){
+            TextToSpeechManager.speakNow(textsStageSelection["STAGE_SELECTION_TUTORIAL"].toString())
+
+            idleTimeSeconds = 0
+        }
     }
 
     override fun destroyState() {
@@ -129,6 +146,7 @@ class StageSelectionLevel(nation: NationEnum) : SurfaceView(Settings.CONTEXT), I
                 }
 
                 swipe = true
+                idleTimeSeconds = 0
             }
             GestureType.SWIPE_LEFT -> {
                 soundManager.playSound(Resources.swapSound)
@@ -138,6 +156,7 @@ class StageSelectionLevel(nation: NationEnum) : SurfaceView(Settings.CONTEXT), I
                 }
 
                 swipe = true
+                idleTimeSeconds = 0
             }
         }
 
@@ -147,6 +166,7 @@ class StageSelectionLevel(nation: NationEnum) : SurfaceView(Settings.CONTEXT), I
                 TextToSpeechManager.stop()
                 Settings.globalSounds.playSound(Resources.acceptSound)
                 changeLevel(stageIterator)
+                idleTimeSeconds = 0
             }
         }
 
@@ -169,6 +189,7 @@ class StageSelectionLevel(nation: NationEnum) : SurfaceView(Settings.CONTEXT), I
                     stageIterator = 4
                 }
             }
+            idleTimeSeconds = 0
         }
 
         stageSelectionData.forEach {

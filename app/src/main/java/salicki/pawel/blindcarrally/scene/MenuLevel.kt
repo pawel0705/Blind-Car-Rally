@@ -31,6 +31,9 @@ class MenuLevel : SurfaceView(Settings.CONTEXT), ILevel {
 
     private var lastOption = -1
 
+    private var idleTime: Int = 0
+    private var idleTimeSeconds: Int = 0
+
     init {
         isFocusable = true
 
@@ -130,6 +133,21 @@ class MenuLevel : SurfaceView(Settings.CONTEXT), ILevel {
         }
 
         selectBoxManager.updateSelectBoxPosition(menuIterator)
+
+        if(!TextToSpeechManager.isSpeaking()){
+            idleTime++
+
+            if(idleTime % 30 == 0){
+                idleTimeSeconds++
+            }
+        }
+
+        if(idleTimeSeconds > 10){
+            TextToSpeechManager.speakNow(texts["MENU_TUTORIAL"].toString())
+
+            idleTimeSeconds = 0
+        }
+
     }
 
     override fun destroyState() {
@@ -152,6 +170,7 @@ class MenuLevel : SurfaceView(Settings.CONTEXT), ILevel {
                 }
 
                 swipe = true
+                idleTimeSeconds = 0
             }
             GestureType.SWIPE_LEFT -> {
                 soundManager.playSound(Resources.swapSound)
@@ -161,6 +180,7 @@ class MenuLevel : SurfaceView(Settings.CONTEXT), ILevel {
                 }
 
                 swipe = true
+                idleTimeSeconds = 0
             }
         }
 
@@ -192,6 +212,8 @@ class MenuLevel : SurfaceView(Settings.CONTEXT), ILevel {
                     menuIterator = 4
                 }
             }
+
+            idleTimeSeconds = 0
         }
 
         menuSelectionData.forEach {
@@ -210,7 +232,7 @@ class MenuLevel : SurfaceView(Settings.CONTEXT), ILevel {
                 LevelManager.changeLevel(SettingsLevel())
             }
             LevelType.LANGUAGE -> {
-                LevelManager.changeLevel(LanguageLevel())
+                LevelManager.changeLevel(LanguageLevel(LanguageLevelFlowEnum.MENU))
             }
             LevelType.CREDITS -> {
                 LevelManager.changeLevel(CreditsLevel())

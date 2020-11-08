@@ -21,6 +21,9 @@ class InformationLevel : SurfaceView(Settings.CONTEXT), ILevel {
     private var posX = 0F
     private var posY = 0F
 
+    private var idleTime: Int = 0
+    private var idleTimeSeconds: Int = 0
+
     init {
         isFocusable = true
 
@@ -52,7 +55,20 @@ class InformationLevel : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun updateState(deltaTime: Int) {
+        if(TextToSpeechManager.isSpeaking()){
+            idleTime = 0
+        }
 
+        idleTime++
+
+        if(idleTime % 30 == 0){
+            idleTimeSeconds++
+        }
+
+        if(idleTimeSeconds > 10 && !TextToSpeechManager.isSpeaking()){
+            TextToSpeechManager.speakNow(texts["INTRODUCTION_TUTORIAL"].toString())
+            idleTimeSeconds = 0
+        }
     }
 
     override fun destroyState() {
