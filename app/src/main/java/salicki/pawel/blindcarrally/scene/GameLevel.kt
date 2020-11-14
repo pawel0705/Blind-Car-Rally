@@ -21,8 +21,9 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
 
     private var trackReader = TrackReader()
 
-
     private var trackIterator = 0
+
+    private var weather: WeatherEnum = WeatherEnum.SUN
 
     private var raceTime = 0
     private var raceTimeSeconds = 0
@@ -38,7 +39,7 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
     private var startCountTime: Long = 0
     private var durationCount: Long = 0
     private val MAX_DURATION_COUNT = 6000
-    private var stageResult : StageResultData = StageResultData()
+    private var stageResult: StageResultData = StageResultData()
     private var newRoadTile = false
 
     private var swipe = false
@@ -60,29 +61,117 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
     )
     private var coordinateDisplayManager: CoordinateDisplayManager
 
-    private var trackData : TrackData? = null
+    private var trackData: TrackData? = null
 
     init {
-        trackData = trackReader.readRacingTrack("trackTest.xml")
+        trackData = trackReader.readRacingTrack(getStageFileName())
         //   Log.d("SKALA", scale.toString())
 
         coordinateDisplayManager = CoordinateDisplayManager(car)
 
         isFocusable = true
 
+
+        setWeather()
         readTTSTextFile()
         initSpeakerSpecial()
         initSoundManager()
     }
 
-    private fun initSoundManager(){
+    private fun setWeather(){
+        weather = when(GameOptions.stage){
+            StageEnum.STAGE_1->{
+                WeatherEnum.SUN
+            }
+            StageEnum.STAGE_2->{
+                WeatherEnum.RAIN
+            }
+            StageEnum.STAGE_3->{
+                WeatherEnum.WIND
+            }
+        }
+    }
+
+    private fun getStageFileName(): String {
+        when (GameOptions.nation) {
+            NationEnum.ARGENTINA -> {
+                return when (GameOptions.stage) {
+                    StageEnum.STAGE_1 -> {
+                        Resources.argentina_1
+                    }
+                    StageEnum.STAGE_2 -> {
+                        Resources.argentina_2
+                    }
+                    StageEnum.STAGE_3 -> {
+                        Resources.argentina_3
+                    }
+                }
+            }
+            NationEnum.AUSTRALIA -> {
+                return when (GameOptions.stage) {
+                    StageEnum.STAGE_1 -> {
+                        Resources.australia_1
+                    }
+                    StageEnum.STAGE_2 -> {
+                        Resources.australia_2
+                    }
+                    StageEnum.STAGE_3 -> {
+                        Resources.australia_3
+                    }
+                }
+            }
+            NationEnum.POLAND -> {
+                return when (GameOptions.stage) {
+                    StageEnum.STAGE_1 -> {
+                        Resources.poland_1
+                    }
+                    StageEnum.STAGE_2 -> {
+                        Resources.poland_2
+                    }
+                    StageEnum.STAGE_3 -> {
+                        Resources.poland_3
+                    }
+                }
+            }
+            NationEnum.SPAIN -> {
+                return when (GameOptions.stage) {
+                    StageEnum.STAGE_1 -> {
+                        Resources.spain_1
+                    }
+                    StageEnum.STAGE_2 -> {
+                        Resources.spain_2
+                    }
+                    StageEnum.STAGE_3 -> {
+                        Resources.spain_3
+                    }
+                }
+            }
+            NationEnum.NEW_ZEALAND -> {
+                return when (GameOptions.stage) {
+                    StageEnum.STAGE_1 -> {
+                        Resources.zealand_1
+                    }
+                    StageEnum.STAGE_2 -> {
+                        Resources.zealand_2
+                    }
+                    StageEnum.STAGE_3 -> {
+                        Resources.zealand_3
+                    }
+                }
+            }
+        }
+
+        return ""
+    }
+
+    private fun initSoundManager() {
         soundManagerGame.initSoundManager()
 
         soundManagerGame.addSound(R.raw.countdown)
         soundManagerGame.addSound(R.raw.start)
     }
 
-    private fun initSpeakerSpecial(){
+    private fun initSpeakerSpecial() {
         speakerCountDown["COUNTDOWN_1"] = false
         speakerCountDown["COUNTDOWN_2"] = false
         speakerCountDown["COUNTDOWN_3"] = false
@@ -115,85 +204,109 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun initState() {
-       car.posX = trackData!!.roadList?.get(trackIterator)?.spawnX!!.toFloat()
-       car.posY = trackData!!.roadList?.get(trackIterator)?.spawnY!!.toFloat()
+        car.posX = trackData!!.roadList?.get(trackIterator)?.spawnX!!.toFloat()
+        car.posY = trackData!!.roadList?.get(trackIterator)?.spawnY!!.toFloat()
 
         TextToSpeechManager.speakNow(pilotTexts["INSTRUCTION"].toString())
     }
 
-    private fun checkCollistion(){
+    private fun checkCollistion() {
         if (trackData != null) {
 
-            for(left in trackData!!.roadList?.get(trackIterator)?.leftPoints!!){
-                if(car.collisionCheck(left.startX.toFloat(), left.startY.toFloat(), left.endX.toFloat(), left.endY.toFloat())){
+            for (left in trackData!!.roadList?.get(trackIterator)?.leftPoints!!) {
+                if (car.collisionCheck(
+                        left.startX.toFloat(),
+                        left.startY.toFloat(),
+                        left.endX.toFloat(),
+                        left.endY.toFloat()
+                    )
+                ) {
                     car.posX += 50
                 }
             }
 
-            for(right in trackData!!.roadList?.get(trackIterator)?.rightPints!!){
-                if(car.collisionCheck(right.startX.toFloat(), right.startY.toFloat(), right.endX.toFloat(), right.endY.toFloat()))
-                {
+            for (right in trackData!!.roadList?.get(trackIterator)?.rightPints!!) {
+                if (car.collisionCheck(
+                        right.startX.toFloat(),
+                        right.startY.toFloat(),
+                        right.endX.toFloat(),
+                        right.endY.toFloat()
+                    )
+                ) {
                     car.posX -= 50
                 }
             }
         }
     }
 
-    private fun checkDistance(deltaTime: Int){
+    private fun checkDistance(deltaTime: Int) {
         if (trackData != null) {
 
-            leftSensor@for(left in trackData!!.roadList?.get(trackIterator)?.leftPoints!!){
-                if(car.sensorCheck(left.startX.toFloat(), left.startY.toFloat(), left.endX.toFloat(), left.endY.toFloat(), deltaTime)){
+            leftSensor@ for (left in trackData!!.roadList?.get(trackIterator)?.leftPoints!!) {
+                if (car.sensorCheck(
+                        left.startX.toFloat(),
+                        left.startY.toFloat(),
+                        left.endX.toFloat(),
+                        left.endY.toFloat(),
+                        deltaTime
+                    )
+                ) {
                     break@leftSensor
                 }
             }
 
-            rightSensor@for(right in trackData!!.roadList?.get(trackIterator)?.rightPints!!){
-                if(car.sensorCheck(right.startX.toFloat(), right.startY.toFloat(), right.endX.toFloat(), right.endY.toFloat(), deltaTime))
-                {
+            rightSensor@ for (right in trackData!!.roadList?.get(trackIterator)?.rightPints!!) {
+                if (car.sensorCheck(
+                        right.startX.toFloat(),
+                        right.startY.toFloat(),
+                        right.endX.toFloat(),
+                        right.endY.toFloat(),
+                        deltaTime
+                    )
+                ) {
                     break@rightSensor
                 }
             }
         }
     }
 
-    private fun countDown(){
+    private fun countDown() {
         durationCount += System.currentTimeMillis() - startCountTime - durationCount
 
 
-        if(durationCount > 1000 && speakerCountDown["COUNTDOWN_5"] == false) {
+        if (durationCount > 1000 && speakerCountDown["COUNTDOWN_5"] == false) {
             TextToSpeechManager.speakNow(pilotTexts["COUNTDOWN_5"].toString())
             soundManagerGame.playSound(R.raw.countdown)
             speakerCountDown["COUNTDOWN_5"] = true
-        } else if(durationCount > 2000 && speakerCountDown["COUNTDOWN_4"] == false){
+        } else if (durationCount > 2000 && speakerCountDown["COUNTDOWN_4"] == false) {
             TextToSpeechManager.speakNow(pilotTexts["COUNTDOWN_4"].toString())
             soundManagerGame.playSound(R.raw.countdown)
             speakerCountDown["COUNTDOWN_4"] = true
-        } else if(durationCount > 3000 && speakerCountDown["COUNTDOWN_3"] == false){
+        } else if (durationCount > 3000 && speakerCountDown["COUNTDOWN_3"] == false) {
             TextToSpeechManager.speakNow(pilotTexts["COUNTDOWN_3"].toString())
             soundManagerGame.playSound(R.raw.countdown)
             speakerCountDown["COUNTDOWN_3"] = true
-        } else if(durationCount > 4000 && speakerCountDown["COUNTDOWN_2"] == false){
+        } else if (durationCount > 4000 && speakerCountDown["COUNTDOWN_2"] == false) {
             TextToSpeechManager.speakNow(pilotTexts["COUNTDOWN_2"].toString())
             soundManagerGame.playSound(R.raw.countdown)
             speakerCountDown["COUNTDOWN_2"] = true
-        } else if(durationCount > 5000 && speakerCountDown["COUNTDOWN_1"] == false){
+        } else if (durationCount > 5000 && speakerCountDown["COUNTDOWN_1"] == false) {
             TextToSpeechManager.speakNow(pilotTexts["COUNTDOWN_1"].toString())
             soundManagerGame.playSound(R.raw.countdown)
             speakerCountDown["COUNTDOWN_1"] = true
-        } else if(durationCount > MAX_DURATION_COUNT && countDown){
+        } else if (durationCount > MAX_DURATION_COUNT && countDown) {
             TextToSpeechManager.speakNow(pilotTexts["START"].toString())
             soundManagerGame.playSound(R.raw.start)
             newRoadTile = true
         }
 
-        if(durationCount > MAX_DURATION_COUNT){
+        if (durationCount > MAX_DURATION_COUNT) {
             stopGameplay = true
             countDown = false
         }
     }
 
-    private fun updateStageResult(){
+    private fun updateStageResult() {
         stageResult.carDamage = car.getCarHealth()
         stageResult.time = raceTimeSeconds
         stageResult.score = (MAX_SCORE * car.getCarHealth() * 0.01F / raceTimeSeconds).toInt()
@@ -201,21 +314,21 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
 
     override fun updateState(deltaTime: Int) {
 
-        if(countDown){
+        if (countDown) {
             countDown()
         }
 
-        if(!stopGameplay){
+        if (!stopGameplay) {
 
-            if(!TextToSpeechManager.isSpeaking()){
+            if (!TextToSpeechManager.isSpeaking()) {
                 idleTime++
 
-                if(idleTime % 30 == 0){
+                if (idleTime % 30 == 0) {
                     idleTimeSeconds++
                 }
             }
 
-            if(idleTimeSeconds > 10){
+            if (idleTimeSeconds > 10) {
                 TextToSpeechManager.speakNow(pilotTexts["INSTRUCTION"].toString())
 
                 idleTimeSeconds = 0
@@ -225,24 +338,24 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
         }
 
         raceTime++
-        if(raceTime%30 == 0){
+        if (raceTime % 30 == 0) {
             raceTimeSeconds++
             updateStageResult()
         }
 
         car.update(coordinateDisplayManager)
         coordinateDisplayManager.updateEnvironmentCoordinates()
-        
+
         checkCollistion()
         checkDistance(deltaTime)
 
         if (trackData != null) {
 
-            if(trackIterator >= trackData!!.roadList.size - 1){
+            if (trackIterator >= trackData!!.roadList.size - 1) {
                 LevelManager.changeLevel(RaceOverScene(stageResult))
             }
 
-            if(trackData!!.roadList[trackIterator].finishY < car.posY){
+            if (trackData!!.roadList[trackIterator].finishY < car.posY) {
                 trackIterator++
 
                 newRoadTile = true
@@ -251,8 +364,8 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
                 car.posY = trackData!!.roadList?.get(trackIterator)?.spawnY!!.toFloat()
             }
 
-            if(newRoadTile){
-                for(tts in trackData!!.roadList[trackIterator].speakerKeys){
+            if (newRoadTile) {
+                for (tts in trackData!!.roadList[trackIterator].speakerKeys) {
                     TextToSpeechManager.speakQueue(pilotTexts[tts].toString())
                 }
                 newRoadTile = false
@@ -278,15 +391,15 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
             }
         }
 
-        if(stopGameplay){
-            when(GestureManager.tapPositionDetect(event)){
-                GestureType.TAP_RIGHT->car.higherGear()
-                GestureType.TAP_LEFT->car.lowerGear()
+        if (stopGameplay) {
+            when (GestureManager.tapPositionDetect(event)) {
+                GestureType.TAP_RIGHT -> car.higherGear()
+                GestureType.TAP_LEFT -> car.lowerGear()
             }
 
         }
 
-        if(!stopGameplay){
+        if (!stopGameplay) {
             when (GestureManager.doubleTapDetect(event)) {
                 GestureType.DOUBLE_TAP -> {
                     TextToSpeechManager.stop()
@@ -297,14 +410,14 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
         }
     }
 
-    private fun startGame(){
+    private fun startGame() {
         startCountTime = System.currentTimeMillis()
         countDown = true
     }
 
     override fun redrawState(canvas: Canvas) {
         canvas.translate(0F, canvas.height.toFloat());   // reset where 0,0 is located
-        canvas.scale(1F,-1F);    // invert
+        canvas.scale(1F, -1F);    // invert
 
         drawCoordinates(canvas)
         car.draw(canvas, coordinateDisplayManager)
@@ -315,7 +428,7 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
 
         if (trackData != null) {
 
-            for(left in trackData!!.roadList?.get(trackIterator)?.leftPoints!!){
+            for (left in trackData!!.roadList?.get(trackIterator)?.leftPoints!!) {
                 canvas.drawLine(
                     coordinateDisplayManager.convertToEnvironmentX(left.startX.toFloat()),
                     coordinateDisplayManager.convertToEnvironmentY(left.startY.toFloat()),
@@ -325,7 +438,7 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
                 )
             }
 
-            for(right in trackData!!.roadList?.get(trackIterator)?.rightPints!!){
+            for (right in trackData!!.roadList?.get(trackIterator)?.rightPints!!) {
                 canvas.drawLine(
                     coordinateDisplayManager.convertToEnvironmentX(right.startX.toFloat()),
                     coordinateDisplayManager.convertToEnvironmentY(right.startY.toFloat()),

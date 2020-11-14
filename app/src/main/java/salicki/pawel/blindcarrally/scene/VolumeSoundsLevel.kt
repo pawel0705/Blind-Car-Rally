@@ -55,7 +55,7 @@ class VolumeSoundsLevel : SurfaceView(Settings.CONTEXT), ILevel {
     override fun updateState(deltaTime: Int) {
         if(volumeIterator != lastOption){
 
-            TextToSpeechManager.speakNow(texts["SETTINGS_SOUNDS_VOLUME"].toString() + texts[volume[Settings.reader - 1]].toString())
+            TextToSpeechManager.speakNow(texts["SETTINGS_SOUNDS_VOLUME"].toString() + texts[volume[Settings.sounds - 1]].toString())
 
             lastOption = volumeIterator
         }
@@ -79,7 +79,10 @@ class VolumeSoundsLevel : SurfaceView(Settings.CONTEXT), ILevel {
                     volumeIterator = 0
                 }
 
-                Settings.reader = volumeIterator + 1
+                Settings.sounds = volumeIterator + 1
+
+                SharedPreferencesManager.saveConfiguration("sounds", Settings.sounds.toString())
+
                 TextToSpeechManager.speakNow(texts["SETTINGS_SOUNDS_VOLUME"].toString() + texts[volume[Settings.sounds - 1]].toString())
 
                 swipe = true
@@ -91,7 +94,10 @@ class VolumeSoundsLevel : SurfaceView(Settings.CONTEXT), ILevel {
                     volumeIterator = volume.size - 1
                 }
 
-                Settings.reader = volumeIterator + 1
+                Settings.sounds = volumeIterator + 1
+
+                SharedPreferencesManager.saveConfiguration("sounds", Settings.sounds.toString())
+
                 TextToSpeechManager.speakNow(texts["SETTINGS_SOUNDS_VOLUME"].toString() + texts[volume[Settings.sounds - 1]].toString())
 
                 swipe = true
@@ -141,7 +147,9 @@ class VolumeSoundsLevel : SurfaceView(Settings.CONTEXT), ILevel {
                     volumeIterator = 9
                 }
             }
-            Settings.reader = volumeIterator + 1
+            Settings.sounds = volumeIterator + 1
+
+            SharedPreferencesManager.saveConfiguration("sounds", Settings.sounds.toString())
         }
     }
 

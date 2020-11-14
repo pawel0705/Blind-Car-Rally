@@ -1,7 +1,9 @@
 package salicki.pawel.blindcarrally.scenemanager
 
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.PorterDuff
 import android.os.CountDownTimer
 import android.util.Log
 import android.view.MotionEvent
@@ -25,6 +27,8 @@ object LevelManager : SurfaceView(Settings.CONTEXT), SurfaceHolder.Callback {
     private var sceneTransitionTimer = Timer()
     private var activateTouch: Boolean = false
     private var gameLoop: GameLoop
+    private var canvasPaint = Paint()
+
 
     init {
         activeScene.add(SplashLevel())
@@ -34,11 +38,12 @@ object LevelManager : SurfaceView(Settings.CONTEXT), SurfaceHolder.Callback {
         surfaceHolder.addCallback(this)
 
         gameLoop = GameLoop(surfaceHolder)
+        canvasPaint.color = Color.BLACK
 
         startTouchTimer()
     }
 
-    fun stackLevel(level: ILevel){
+    fun stackLevel(level: ILevel) {
         this.resetTouchTimer()
         this.startTouchTimer()
 
@@ -46,16 +51,22 @@ object LevelManager : SurfaceView(Settings.CONTEXT), SurfaceHolder.Callback {
         initState()
     }
 
-    fun popLevel(){
+    fun popLevel() {
         this.resetTouchTimer()
         this.startTouchTimer()
 
-        activeScene.removeLast()
+        if (!activeScene.isEmpty()) {
+            activeScene.removeLast()
+        }
+
     }
 
     fun changeLevel(level: ILevel) {
 
-        activeScene.last()?.destroyState()
+        if (!activeScene.isEmpty()) {
+            activeScene.last()?.destroyState()
+        }
+
         activeScene.removeLast()
 
         this.resetTouchTimer()
@@ -81,19 +92,25 @@ object LevelManager : SurfaceView(Settings.CONTEXT), SurfaceHolder.Callback {
     }
 
     fun updateState(deltaTime: Int) {
-        activeScene?.last().updateState(deltaTime)
+        if (!activeScene.isEmpty()) {
+            activeScene?.last().updateState(deltaTime)
+        }
     }
 
     fun destroyState() {
-        activeScene?.last().destroyState()
+        if (!activeScene.isEmpty()) {
+            activeScene?.last().destroyState()
+        }
     }
 
     private fun initState() {
-        activeScene?.last().initState()
+        if (!activeScene.isEmpty()) {
+            activeScene?.last().initState()
+        }
     }
 
     private fun respondTouchState(motionEvent: MotionEvent) {
-        if (activateTouch) {
+        if (activateTouch && !activeScene.isEmpty()) {
             activeScene?.last().respondTouchState(motionEvent)
         }
     }
@@ -101,10 +118,22 @@ object LevelManager : SurfaceView(Settings.CONTEXT), SurfaceHolder.Callback {
     fun redrawState(canvas: Canvas) {
         super.draw(canvas)
 
-        this.drawUPS(canvas)
-        this.drawFPS(canvas)
+        canvas.drawRect(
+            0F,
+            0F,
+            Settings.SCREEN_WIDTH.toFloat() + 1F,
+            Settings.SCREEN_HEIGHT.toFloat() + 1F,
+            canvasPaint
+        )
 
-        activeScene?.last().redrawState(canvas)
+        if(Settings.display){
+            this.drawUPS(canvas)
+            this.drawFPS(canvas)
+
+            if (!activeScene.isEmpty()) {
+                activeScene?.last().redrawState(canvas)
+            }
+        }
     }
 
     private fun drawUPS(canvas: Canvas) {

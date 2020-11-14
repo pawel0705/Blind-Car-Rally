@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <track>
-    <tts_key key="VERY_LONG"/>
+    <tts_key key="STRAIGHT"/>
     <tts_key key="LENGTH_100"/>
-    <spawn x="25" y="50"/>
-    <finish x="50" y="100"/>
+    <spawn x="50" y="0"/>
+    <finish x="50" y="200"/>
     <left></left>
     <point x="0" y="0"/>
-    <point x="0" y="100"/>
+    <point x="0" y="200"/>
     <right></right>
     <point x="100" y="0"/>
-    <point x="100" y="100"/>
+    <point x="100" y="200"/>
 </track>

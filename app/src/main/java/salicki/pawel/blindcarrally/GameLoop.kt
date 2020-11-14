@@ -6,6 +6,9 @@ import android.graphics.PorterDuff
 import android.util.Log
 import android.view.SurfaceHolder
 import salicki.pawel.blindcarrally.scenemanager.LevelManager
+import java.lang.Exception
+import java.util.logging.Level
+import kotlin.system.measureTimeMillis
 
 class GameLoop(surfaceHolder: SurfaceHolder) : Thread() {
     private val surfaceHolder: SurfaceHolder = surfaceHolder
@@ -28,10 +31,55 @@ class GameLoop(surfaceHolder: SurfaceHolder) : Thread() {
         // Declare time and cycle count variables
         var updateCount = 0
         var frameCount = 0
-        var startTime: Int = 0
+        var startTime: Long = 0
         var elapsedTime: Int = 0
         var sleepTime: Int = 0
+        var canvas: Canvas? = null
+        var timeMilis: Long = 0
 
+        while (isRunning) {
+            startTime = System.nanoTime()
+            canvas = null
+
+            try {
+                canvas = this.surfaceHolder.lockCanvas()
+                synchronized(surfaceHolder) {
+                    LevelManager.updateState(0)
+                    LevelManager.redrawState(canvas)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                if (canvas != null) {
+                    try {
+                        surfaceHolder.unlockCanvasAndPost(canvas)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+            }
+            timeMilis = (System.currentTimeMillis() - startTime)
+            sleepTime = (updateCount * UPS_PERIOD - elapsedTime).toLong().toInt()
+
+            try{
+                if(timeMilis > 0){
+                    sleep(timeMilis.toLong())
+                }
+            } catch(e: Exception){
+                e.printStackTrace()
+            }
+            elapsedTime += (System.nanoTime() - startTime).toInt()
+            frameCount++
+
+            if(frameCount >= 30){
+                frameCount = 0
+                elapsedTime = 0
+            }
+
+
+        }
+
+        /*
         // Game loop
         var canvas: Canvas? = null
         startTime = System.currentTimeMillis().toInt()
@@ -44,12 +92,10 @@ class GameLoop(surfaceHolder: SurfaceHolder) : Thread() {
                     LevelManager.updateState(elapsedTime)
                     updateCount++
 
-                //    Log.d("MPO", Settings.display.toString())
-                    if(Settings.display){
-                        canvas.drawColor(
-                            Color.TRANSPARENT,
-                            PorterDuff.Mode.CLEAR);
-                        LevelManager.redrawState(canvas)
+                    if (canvas != null) {
+                        if (Settings.display) {
+                            LevelManager.redrawState(canvas)
+                        }
                     }
                 }
             } catch (e: IllegalArgumentException) {
@@ -96,6 +142,8 @@ class GameLoop(surfaceHolder: SurfaceHolder) : Thread() {
 
         //    Log.d("TIME", elapsedTime.toString())
         }
+        */
+
     }
 
     fun stopLoop() {

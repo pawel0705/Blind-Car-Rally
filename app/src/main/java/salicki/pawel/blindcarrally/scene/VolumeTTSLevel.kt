@@ -92,6 +92,9 @@ class VolumeTTSLevel : SurfaceView(Settings.CONTEXT), ILevel {
                 }
 
                 Settings.reader = volumeIterator + 1
+
+                SharedPreferencesManager.saveConfiguration("reader", Settings.reader.toString())
+
                 TextToSpeechManager.speakNow(texts["SETTINGS_TTS_VOLUME"].toString() + texts[volume[Settings.reader - 1]].toString())
 
                 swipe = true
@@ -104,6 +107,9 @@ class VolumeTTSLevel : SurfaceView(Settings.CONTEXT), ILevel {
                 }
 
                 Settings.reader = volumeIterator + 1
+
+                SharedPreferencesManager.saveConfiguration("reader", Settings.reader.toString())
+
                 TextToSpeechManager.speakNow(texts["SETTINGS_TTS_VOLUME"].toString() + texts[volume[Settings.reader - 1]].toString())
 
                 swipe = true
@@ -154,6 +160,7 @@ class VolumeTTSLevel : SurfaceView(Settings.CONTEXT), ILevel {
                 }
             }
             Settings.reader = volumeIterator + 1
+            SharedPreferencesManager.saveConfiguration("reader", Settings.reader.toString())
         }
 
 

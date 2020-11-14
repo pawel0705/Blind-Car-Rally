@@ -48,11 +48,6 @@ class CalibrationLevel : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun updateState(deltaTime: Int) {
-        time++
-
-        if (time % 30 == 0) {
-            timeSeconds++
-        }
 
         if (!TextToSpeechManager.isSpeaking() && !leftEar) {
             TextToSpeechManager.speakNow(textsCalibration["CALIBRATION_LEFT"].toString())
@@ -70,6 +65,21 @@ class CalibrationLevel : SurfaceView(Settings.CONTEXT), ILevel {
             TextToSpeechManager.speakNow(textsCalibration["CALIBRATION_TUTORIAL"].toString())
             wheel = true
         }
+
+        if(!TextToSpeechManager.isSpeaking()){
+            time++
+
+            if (time % 30 == 0) {
+                timeSeconds++
+            }
+
+            if(timeSeconds >= 10){
+                rightEar = false
+                leftEar = false
+                wheel = false
+            }
+        }
+
     }
 
     override fun destroyState() {

@@ -18,10 +18,11 @@ class SettingsLevel : SurfaceView(Settings.CONTEXT), ILevel {
     private var settingsSelectionData = arrayListOf<OptionSelectionData>()
     private var selectBoxManager: SelectBoxManager = SelectBoxManager()
     private var lastOption = -1
-    private var optionText = TextObject()
+   // private var optionText = TextObject()
 
     private var idleTime: Int = 0
     private var idleTimeSeconds: Int = 0
+
 
     init {
         isFocusable = true
@@ -49,7 +50,7 @@ class SettingsLevel : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     private fun initTextOption(){
-        optionText.initText(R.font.hemi, Settings.SCREEN_WIDTH / 2F, Settings.SCREEN_HEIGHT / 3F)
+  //      optionText.initText(R.font.hemi, Settings.SCREEN_WIDTH / 2F, Settings.SCREEN_HEIGHT / 3F)
     }
 
     private fun initSettingsOptions() {
@@ -184,6 +185,13 @@ class SettingsLevel : SurfaceView(Settings.CONTEXT), ILevel {
                     0 -> {
                         Settings.vibrations = !Settings.vibrations
 
+                        var saveOption = "0"
+                        if(Settings.display){
+                            saveOption = "1"
+                        }
+
+                        SharedPreferencesManager.saveConfiguration("vibrations", saveOption)
+
                         if (Settings.vibrations) {
                             TextToSpeechManager.speakNow(texts["SETTINGS_VIBRATION_ON"].toString())
                         } else {
@@ -193,6 +201,13 @@ class SettingsLevel : SurfaceView(Settings.CONTEXT), ILevel {
                     1 -> {
                         Settings.display = !Settings.display
 
+                        var saveOption = "0"
+                        if(Settings.display){
+                            saveOption = "1"
+                        }
+
+                        SharedPreferencesManager.saveConfiguration("display", saveOption)
+
                         if (Settings.display) {
                             TextToSpeechManager.speakNow(texts["SETTINGS_DISPLAY_ON"].toString())
                         } else {
@@ -201,6 +216,13 @@ class SettingsLevel : SurfaceView(Settings.CONTEXT), ILevel {
                     }
                     2->{
                         Settings.introduction = !Settings.introduction
+
+                        var saveOption = "0"
+                        if(Settings.introduction){
+                            saveOption = "1"
+                        }
+
+                        SharedPreferencesManager.saveConfiguration("introduction", saveOption)
 
                         if (Settings.introduction) {
                             TextToSpeechManager.speakNow(texts["SETTINGS_INTRODUCTION_ON"].toString())
@@ -258,6 +280,7 @@ class SettingsLevel : SurfaceView(Settings.CONTEXT), ILevel {
 
     override fun redrawState(canvas: Canvas) {
         selectBoxManager.drawSelectBox(canvas)
-        optionText.drawText(canvas, settingsSelectionData[settingsIterator].textValue)
+  //      optionText.drawText(canvas, settingsSelectionData[settingsIterator].textValue)
+
     }
 }

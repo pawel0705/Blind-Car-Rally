@@ -69,10 +69,10 @@ class Car(posX: Float, posY: Float, rect: RectF) : EnvironmentObject(posX, posY)
         var gearMinValue : Float = 0.0F
         var gearMaxValue : Float = 0.0F
 
-        if(gear == 0){
-            gearMinValue = 0F
+        gearMinValue = if(gear == 0){
+            0F
         } else {
-            gearMinValue = gearRatio[gear-1].toFloat()
+            gearRatio[gear-1].toFloat()
         }
         gearMaxValue = gearRatio[gear].toFloat()
 
@@ -109,12 +109,7 @@ class Car(posX: Float, posY: Float, rect: RectF) : EnvironmentObject(posX, posY)
             (posY + carView.carHalfHeight)
         )
 
-        val bitmap: Bitmap = BitmapFactory.decodeResource(
-            Settings.CONTEXT?.resources,
-            R.drawable.car
-        )
 
-        carView.carTexture = Texture(bitmap)
     }
 
     private fun initCarHitbox() {
@@ -245,11 +240,10 @@ class Car(posX: Float, posY: Float, rect: RectF) : EnvironmentObject(posX, posY)
 
                 velX = 2 * roll * Settings.SCREEN_SCALE
 
-                if(pitch<0){
-                    velY = -pitch * Settings.SCREEN_SCALE * 0.00005F
-                }
-                else {
-                    velY = -pitch * Settings.SCREEN_SCALE * 0.0005F
+                velY = if(pitch<0){
+                    -pitch * Settings.SCREEN_SCALE * 0.00005F * carParameters.acceleration
+                } else {
+                    -pitch * Settings.SCREEN_SCALE * 0.0005F * carParameters.acceleration
                 }
 
                 //    Log.d("VELX", velX.toString())

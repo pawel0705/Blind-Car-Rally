@@ -191,19 +191,25 @@ class TrackSelectionLevel : SurfaceView(Settings.CONTEXT), ILevel {
 
     private fun changeLevel(option: Int) {
         when (trackSelectionData[option].levelType) {
+
             NationEnum.ARGENTINA -> {
+                GameOptions.nation = NationEnum.ARGENTINA
                 LevelManager.changeLevel(StageSelectionLevel(NationEnum.ARGENTINA))
             }
             NationEnum.AUSTRALIA -> {
+                GameOptions.nation = NationEnum.AUSTRALIA
                 LevelManager.changeLevel(StageSelectionLevel(NationEnum.AUSTRALIA))
             }
             NationEnum.POLAND -> {
+                GameOptions.nation = NationEnum.POLAND
                 LevelManager.changeLevel(StageSelectionLevel(NationEnum.POLAND))
             }
             NationEnum.SPAIN -> {
+                GameOptions.nation = NationEnum.SPAIN
                 LevelManager.changeLevel(StageSelectionLevel(NationEnum.SPAIN))
             }
             NationEnum.NEW_ZEALAND -> {
+                GameOptions.nation = NationEnum.NEW_ZEALAND
                 LevelManager.changeLevel(StageSelectionLevel(NationEnum.NEW_ZEALAND))
             }
         }

@@ -21,11 +21,11 @@ class MenuLevel : SurfaceView(Settings.CONTEXT), ILevel {
 
     private var swipe: Boolean = false
 
-    private var startImage = OptionImage()
-    private var settingsImage = OptionImage()
-    private var languageImage = OptionImage()
-    private var authorsImage = OptionImage()
-    private var exitImage = OptionImage()
+  //  private var startImage = OptionImage()
+ //   private var settingsImage = OptionImage()
+  //  private var languageImage = OptionImage()
+  //  private var authorsImage = OptionImage()
+   // private var exitImage = OptionImage()
 
     private var optionText = TextObject()
 
@@ -50,11 +50,11 @@ class MenuLevel : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     private fun initOptionImages(){
-        startImage.setImage(R.drawable.start, Settings.SCREEN_WIDTH / 10, (Settings.SCREEN_HEIGHT / 1.5F).toInt(), R.dimen.optionSize)
-        settingsImage.setImage(R.drawable.options, (Settings.SCREEN_WIDTH / 3.3F).toInt(), (Settings.SCREEN_HEIGHT / 1.5F).toInt(),R.dimen.optionSize)
-        languageImage.setImage(R.drawable.language, Settings.SCREEN_WIDTH / 2, (Settings.SCREEN_HEIGHT / 1.5F).toInt(),R.dimen.optionSize)
-        authorsImage.setImage(R.drawable.author, (Settings.SCREEN_WIDTH / 1.425F).toInt(), (Settings.SCREEN_HEIGHT / 1.5F).toInt(),R.dimen.optionSize)
-        exitImage.setImage(R.drawable.exit, (Settings.SCREEN_WIDTH / 1.1F).toInt(), (Settings.SCREEN_HEIGHT / 1.5F).toInt(),R.dimen.optionSize)
+   //     startImage.setImage(R.drawable.start, Settings.SCREEN_WIDTH / 10, (Settings.SCREEN_HEIGHT / 1.5F).toInt(), R.dimen.optionSize)
+ //       settingsImage.setImage(R.drawable.options, (Settings.SCREEN_WIDTH / 3.3F).toInt(), (Settings.SCREEN_HEIGHT / 1.5F).toInt(),R.dimen.optionSize)
+   //     languageImage.setImage(R.drawable.language, Settings.SCREEN_WIDTH / 2, (Settings.SCREEN_HEIGHT / 1.5F).toInt(),R.dimen.optionSize)
+   //     authorsImage.setImage(R.drawable.author, (Settings.SCREEN_WIDTH / 1.425F).toInt(), (Settings.SCREEN_HEIGHT / 1.5F).toInt(),R.dimen.optionSize)
+    //    exitImage.setImage(R.drawable.exit, (Settings.SCREEN_WIDTH / 1.1F).toInt(), (Settings.SCREEN_HEIGHT / 1.5F).toInt(),R.dimen.optionSize)
     }
 
     private fun initSelectBoxModel(){
@@ -154,6 +154,12 @@ class MenuLevel : SurfaceView(Settings.CONTEXT), ILevel {
         isFocusable = false
 
         this.soundManager.destroy()
+
+    //    startImage.freeMemory()
+   //     settingsImage.freeMemory()
+    //    languageImage.freeMemory()
+    //    authorsImage.freeMemory()
+     //   exitImage.freeMemory()
     }
 
     override fun respondTouchState(event: MotionEvent) {
@@ -244,14 +250,14 @@ class MenuLevel : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun redrawState(canvas: Canvas) {
-        selectBoxManager.drawSelectBox(canvas)
+  //      selectBoxManager.drawSelectBox(canvas)
 
 
-        startImage.drawImage(canvas)
-        settingsImage.drawImage(canvas)
-        languageImage.drawImage(canvas)
-        authorsImage.drawImage(canvas)
-        exitImage.drawImage(canvas)
+   //     startImage.drawImage(canvas)
+   //     settingsImage.drawImage(canvas)
+   //     languageImage.drawImage(canvas)
+    //    authorsImage.drawImage(canvas)
+    //    exitImage.drawImage(canvas)
 
         optionText.drawText(canvas, menuSelectionData[menuIterator].textValue)
     }

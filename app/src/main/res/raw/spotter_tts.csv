@@ -29,6 +29,7 @@ LENGTH_70;Seventy;Siedemdziesiąt
 LENGTH_80;Eighty;Osiemdziesiąt
 LENGTH_90;Ninety;Dziewięćdziesiąt
 LENGTH_100;One hundred;Sto
+STRAIGHT;Straight;Prosto
 SHORT;Short;Krórki
 VERY_SHORT;Very short;Bardzo krótki
 LONG;Long;Długi
@@ -45,10 +46,15 @@ INTO;Into;Do
 MAYBE;Maybe;Może
 OVER_CREST;Over crest;Przez szczyt
 UNSEEN;Unseen;Ukryty
-KEEP_LEFT;Keep left;Lewą
-KEEP_RIGHT;Keep right;Prawą
+KEEP_LEFT;Keep left;Trzymaj się lewej
+KEEP_RIGHT;Keep right;Trzymaj się prawej
 FLAT;Flat;Płasko
 CHICANE;Chicane;Szykana
 CUT;Cut;Tnij
 SQUARE;Square;Dziewięćdziesiąt stopni
 HAIRPIN;Hairpin;Nawrót
+TIGHTLY;Tightly;Ciasno
+GATE;Through gate;Przez bramę
+BRIDGE;Through bridge;Przez most
+TO_LEFT;To the left;W lewo
+TO_RIGHT;To the right;W prawo

@@ -1,0 +1,18 @@
+TEXT_KEY;ENGLISH;POLISH
+PERFORMANCE_TUTORIAL;Car performance.;Osiągi pojazdu.
+TOP_SPEED;Top speed:;Prędkość maksymalna:;
+ACCELERATION;Acceleration:;Przyśpieszenie:;
+MANEUVERABILITY;Maneuverability:;Manewrowość:;
+PERFORMANCE_10; ten percent.; dziesięć procent.
+PERFORMANCE_20; twenty percent.; dwadzieścia procent.
+PERFORMANCE_30; thirty percent.; trzydzieści procent.
+PERFORMANCE_40; forty percent.; czterdzieśći procent.
+PERFORMANCE_50; fifty percent.; pięćdziesiąt procent.
+PERFORMANCE_60; sixty percent.; sześćdziesiąt procent.
+PERFORMANCE_70; seventy percent.; siememdziesiąt procent.
+PERFORMANCE_80; eighty percent.; osiemdziesiąt procent.
+PERFORMANCE_90; ninety percent.; dziewięćdziesiąt procent.
+PERFORMANCE_100; one hundred percent.; sto procent.
+READ;Read car performance.;Przeczytaj osiągi pojazdu.
+BACK;Return to car selection;Powróć do wyboru pojazdu.
+ACCEPT;Accept and go to the race.;Zaakceptuj i przejdź do wyścigu.

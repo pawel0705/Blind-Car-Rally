@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<track>
+    <tts_key key="CAUTION"/>
+    <tts_key key="KEEP_RIGHT"/>
+    <spawn x="40" y="0"/>
+    <finish x="20" y="200"/>
+    <left></left>
+    <point x="0" y="0"/>
+    <point x="0" y="60"/>
+    <point x="40" y="70"/>
+    <point x="0" y="80"/>
+    <point x="0" y="120"/>
+    <point x="40" y="130"/>
+    <point x="0" y="140"/>
+    <point x="0" y="170"/>
+    <point x="40" y="180"/>
+    <point x="0" y="190"/>
+    <point x="0" y="200"/>
+    <right></right>
+    <point x="80" y="0"/>
+    <point x="80" y="200"/>
+</track>

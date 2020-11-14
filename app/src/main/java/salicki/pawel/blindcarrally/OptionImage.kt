@@ -44,4 +44,8 @@ class OptionImage {
     fun drawImage(canvas: Canvas){
         canvas.drawBitmap(image, null, rectangle, paint)
     }
+
+    fun freeMemory(){
+        image.recycle()
+    }
 }

@@ -8,6 +8,7 @@ import android.text.StaticLayout
 import android.text.TextPaint
 import android.view.MotionEvent
 import android.view.SurfaceView
+import androidx.core.content.res.ResourcesCompat
 import salicki.pawel.blindcarrally.*
 import salicki.pawel.blindcarrally.scenemanager.ILevel
 import salicki.pawel.blindcarrally.scenemanager.LevelManager
@@ -33,21 +34,27 @@ class InformationLevel : SurfaceView(Settings.CONTEXT), ILevel {
 
     private fun initInformationText(){
 
-        infoTextPaint.color = Color.WHITE
+        infoTextPaint.color = Color.GRAY
         infoTextPaint.textAlign = Paint.Align.CENTER
 
+        val customTypeface = Settings.CONTEXT?.let { ResourcesCompat.getFont(it, R.font.montserrat) }
+
+        infoTextPaint.typeface = customTypeface
+        infoTextPaint.isAntiAlias = true
+        infoTextPaint.isFilterBitmap = true
+
         posX = Settings.SCREEN_WIDTH / 2F
-        posY = (0 - (infoTextPaint.descent() + infoTextPaint.ascent()) / 2)
+        posY = (Settings.SCREEN_HEIGHT / 8F - (infoTextPaint.descent() + infoTextPaint.ascent()) / 2)
 
         infoTextPaint.textSize = Settings.CONTEXT?.resources?.getDimensionPixelSize(R.dimen.informationSize)!!.toFloat()
 
         textLayout =  StaticLayout(texts["INTRODUCTION_TUTORIAL"].toString(),
-            infoTextPaint, Settings.SCREEN_WIDTH, Layout.Alignment.ALIGN_NORMAL,
+            infoTextPaint, (Settings.SCREEN_WIDTH * 0.8F).toInt(), Layout.Alignment.ALIGN_NORMAL,
             1.0f, 0.0f, false);
     }
 
     private fun readTTSTextFile() {
-        texts.putAll(OpenerCSV.readData(R.raw.introduction_tts, LanguageTTS.ENGLISH))
+        texts.putAll(OpenerCSV.readData(R.raw.introduction_tts, Settings.languageTTS))
     }
 
     override fun initState() {

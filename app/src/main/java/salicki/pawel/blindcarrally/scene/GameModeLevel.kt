@@ -181,10 +181,15 @@ class GameModeLevel: SurfaceView(Settings.CONTEXT), ILevel {
     private fun changeLevel(option: Int) {
         when (modeSelectionData[option].levelType) {
             LevelType.SINGLE -> {
+
+                GameOptions.gamemode = RacingModeEnum.SINGLE_RACE
+
                 LevelManager.changeLevel(TrackSelectionLevel())
             }
             LevelType.TOURNAMENT -> {
-                LevelManager.changeLevel(CalibrationLevel())
+                GameOptions.gamemode = RacingModeEnum.TOURNAMENT_MODE
+
+                LevelManager.changeLevel(TournamentLevel())
             }
             LevelType.MODE_DESCRIPTION -> {
                 TextToSpeechManager.speakNow(texts["MODE_DESCRIPTION_CLICKED"].toString())

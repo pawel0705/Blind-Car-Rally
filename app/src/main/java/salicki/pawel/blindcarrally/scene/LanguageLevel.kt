@@ -1,6 +1,5 @@
 package salicki.pawel.blindcarrally.scene
 
-import android.gesture.Gesture
 import android.graphics.Canvas
 import android.view.MotionEvent
 import android.view.SurfaceView
@@ -98,7 +97,7 @@ class LanguageLevel(flow: LanguageLevelFlowEnum) : SurfaceView(Settings.CONTEXT)
                 Settings.globalSounds.playSound(Resources.acceptSound)
                 SharedPreferencesManager.saveConfiguration("language", languageIterator.toString())
 
-                if(languageLevelFlow == LanguageLevelFlowEnum.INTRODUCTION){
+                if(languageLevelFlow == LanguageLevelFlowEnum.INTRODUCTION && Settings.introduction){
                     LevelManager.changeLevel(InformationLevel())
                 }
                 else {

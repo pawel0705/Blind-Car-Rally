@@ -14,7 +14,7 @@ class TextObject {
     fun initText(fontId: Int, positionX: Float, positionY: Float) {
 
         textPaint.textAlign = Paint.Align.CENTER
-        textPaint.color = Color.WHITE
+        textPaint.color = Color.GRAY
         textPaint.isAntiAlias = true
         textPaint.isFilterBitmap = true
 

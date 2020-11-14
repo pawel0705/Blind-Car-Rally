@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<track>
+    <tts_key key="LEFT_6"/>
+    <tts_key key="TIGHTLY"/>
+    <tts_key key="LONG"/>
+    <spawn x="40" y="0"/>
+    <finish x="10" y="210"/>
+    <left></left>
+    <point x="0" y="0"/>
+    <point x="0" y="60"/>
+    <point x="0" y="80"/>
+    <point x="-30" y="180"/>
+    <point x="-30" y="210"/>
+    <right></right>
+    <point x="80" y="0"/>
+    <point x="80" y="60"/>
+    <point x="80" y="80"/>
+    <point x="50" y="180"/>
+    <point x="50" y="210"/>
+</track>

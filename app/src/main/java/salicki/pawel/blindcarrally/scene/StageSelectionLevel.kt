@@ -60,22 +60,6 @@ class StageSelectionLevel(nation: NationEnum) : SurfaceView(Settings.CONTEXT), I
                 false
             )
         )
-        stageSelectionData.add(
-            OptionSelectionData(
-                StageEnum.STAGE_4,
-                stageName  + "_4",
-                "Hiszpania",
-                false
-            )
-        )
-        stageSelectionData.add(
-            OptionSelectionData(
-                StageEnum.STAGE_5,
-                stageName  + "_5",
-                "Nowa Zelania",
-                false
-            )
-        )
     }
 
     private fun initSoundManager() {
@@ -173,20 +157,14 @@ class StageSelectionLevel(nation: NationEnum) : SurfaceView(Settings.CONTEXT), I
         val holdPosition = GestureManager.holdPositionDetect(event).first
         if (holdPosition > 0 && !swipe) {
             when {
-                holdPosition < Settings.SCREEN_WIDTH / 5 -> {
+                holdPosition < Settings.SCREEN_WIDTH / 3 -> {
                     stageIterator = 0
                 }
-                holdPosition < Settings.SCREEN_WIDTH / 5 * 2 -> {
+                holdPosition < Settings.SCREEN_WIDTH / 3 * 2 -> {
                     stageIterator = 1
                 }
-                holdPosition < Settings.SCREEN_WIDTH / 5 * 3 -> {
+                holdPosition < Settings.SCREEN_WIDTH / 3 * 3 -> {
                     stageIterator = 2
-                }
-                holdPosition < Settings.SCREEN_WIDTH / 5 * 4 -> {
-                    stageIterator = 3
-                }
-                holdPosition < Settings.SCREEN_WIDTH / 5 * 5 -> {
-                    stageIterator = 4
                 }
             }
             idleTimeSeconds = 0
@@ -200,23 +178,8 @@ class StageSelectionLevel(nation: NationEnum) : SurfaceView(Settings.CONTEXT), I
     }
 
     private fun changeLevel(option: Int) {
-        when (stageSelectionData[option].levelType) {
-            StageEnum.STAGE_1 -> {
-                LevelManager.changeLevel(CalibrationLevel())
-            }
-            StageEnum.STAGE_2 -> {
-
-            }
-            StageEnum.STAGE_3 -> {
-
-            }
-            StageEnum.STAGE_4 -> {
-
-            }
-            StageEnum.STAGE_5 -> {
-
-            }
-        }
+        GameOptions.stage = stageSelectionData[option].levelType as StageEnum
+        LevelManager.changeLevel(CarSelectionLevel())
     }
 
     override fun redrawState(canvas: Canvas) {

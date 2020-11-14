@@ -2,15 +2,17 @@
 <track>
     <tts_key key="LEFT_5"/>
     <spawn x="40" y="0"/>
-    <finish x="20" y="90"/>
+    <finish x="30" y="190"/>
     <left></left>
     <point x="0" y="0"/>
-    <point x="0" y="0"/>
-    <point x="-60" y="60"/>
-    <point x="-60" y="90"/>
-    <right></right>
-    <point x="60" y="0"/>
-    <point x="60" y="30"/>
     <point x="0" y="60"/>
-    <point x="0" y="90"/>
+    <point x="0" y="80"/>
+    <point x="-40" y="160"/>
+    <point x="-40" y="190"/>
+    <right></right>
+    <point x="80" y="0"/>
+    <point x="80" y="60"/>
+    <point x="80" y="90"/>
+    <point x="40" y="160"/>
+    <point x="40" y="190"/>
 </track>

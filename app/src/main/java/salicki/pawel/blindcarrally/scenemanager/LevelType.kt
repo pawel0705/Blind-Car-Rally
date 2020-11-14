@@ -18,7 +18,10 @@ enum class LevelType {
     GAME_MODE,
     SINGLE,
     TOURNAMENT,
-    MODE_DESCRIPTION
+    MODE_DESCRIPTION,
+    RETURN,
+    NEW_TOURNAMENT,
+    CONTINUE_TOURNAMENT,
 }
 
 enum class AnswerEnum {

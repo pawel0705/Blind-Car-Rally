@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<track>
+    <tts_key key="LEFT_4"/>
+    <tts_key key="CUT"/>
+    <spawn x="40" y="0"/>
+    <finish x="20" y="260"/>
+    <left></left>
+    <point x="0" y="0"/>
+    <point x="0" y="60"/>
+    <point x="-60" y="200"/>
+    <point x="-60" y="230"/>
+    <point x="-60" y="260"/>
+    <right></right>
+    <point x="80" y="0"/>
+    <point x="80" y="60"/>
+    <point x="80" y="100"/>
+    <point x="20" y="170"/>
+    <point x="20" y="260"/>
+</track>

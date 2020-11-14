@@ -16,10 +16,12 @@ class SplashLevel() : SurfaceView(Settings.CONTEXT), ILevel {
     private var texts: HashMap<String, String> = HashMap()
     private var languageTypeData: ArrayList<LanguageTTS> =
         arrayListOf(LanguageTTS.ENGLISH, LanguageTTS.POLISH)
-
+    private var soundManager: SoundManager = SoundManager()
     private var splashImage = OptionImage()
 
     private var languageSelection: Boolean = true
+
+    private var loading: Boolean = false
 
     init {
         isFocusable = true
@@ -27,11 +29,23 @@ class SplashLevel() : SurfaceView(Settings.CONTEXT), ILevel {
         readTTSTextFile()
 
         initSplashScreen()
+        initSoundManager()
         checkLanguageOption()
+        checkVibrationOption()
+        checkInformationOption()
+        checkVolumeTTSOption()
+        checkVolumeSoundsOption()
+        checkDisplayScreenOption()
         initScreenTransitionTimer()
     }
 
-    private fun initSplashScreen(){
+    private fun initSoundManager(){
+        soundManager.initSoundManager()
+
+        soundManager.addSound(R.raw.loading)
+    }
+
+    private fun initSplashScreen() {
         splashImage.setImage(
             R.drawable.logo,
             Settings.SCREEN_WIDTH / 2,
@@ -42,18 +56,22 @@ class SplashLevel() : SurfaceView(Settings.CONTEXT), ILevel {
 
     private fun initScreenTransitionTimer() {
         if (languageSelection) {
-                 var timer = object : CountDownTimer(5000, 5000) {
-                    override fun onTick(millisUntilFinished: Long) {}
-                    override fun onFinish() {
-                        LevelManager.changeLevel(LanguageLevel(LanguageLevelFlowEnum.INTRODUCTION))
-                    }
-                }
-                timer.start()
-        } else {
-            var timer = object : CountDownTimer(5000, 5000) {
+            var timer = object : CountDownTimer(10000, 10000) {
                 override fun onTick(millisUntilFinished: Long) {}
                 override fun onFinish() {
-                    LevelManager.changeLevel(InformationLevel())
+                    LevelManager.changeLevel(LanguageLevel(LanguageLevelFlowEnum.INTRODUCTION))
+                }
+            }
+            timer.start()
+        } else {
+            var timer = object : CountDownTimer(10000, 10000) {
+                override fun onTick(millisUntilFinished: Long) {}
+                override fun onFinish() {
+                    if (Settings.introduction) {
+                        LevelManager.changeLevel(InformationLevel())
+                    } else {
+                        LevelManager.changeLevel(MenuLevel())
+                    }
                 }
             }
             timer.start()
@@ -66,13 +84,21 @@ class SplashLevel() : SurfaceView(Settings.CONTEXT), ILevel {
 
     override fun initState() {
         TextToSpeechManager.speakNow(texts["SPLASH_LOGO"].toString())
+
     }
 
     override fun updateState(deltaTime: Int) {
+
+        if(!loading){
+            soundManager.playSound(R.raw.loading)
+            loading = true
+        }
     }
 
     override fun destroyState() {
         isFocusable = false
+
+
     }
 
     override fun respondTouchState(event: MotionEvent) {
@@ -89,6 +115,41 @@ class SplashLevel() : SurfaceView(Settings.CONTEXT), ILevel {
             languageSelection = false
             Settings.languageTTS = languageTypeData[language.toInt()]
             TextToSpeechManager.setLanguage(Settings.languageTTS)
+        }
+    }
+
+    private fun checkDisplayScreenOption() {
+        var display = SharedPreferencesManager.loadConfiguration("display")
+        if (display != null && display != "") {
+            Settings.display = display == "1"
+        }
+    }
+
+    private fun checkVibrationOption() {
+        var vibrations = SharedPreferencesManager.loadConfiguration("vibrations")
+        if (vibrations != null && vibrations != "") {
+            Settings.vibrations = vibrations == "1"
+        }
+    }
+
+    private fun checkInformationOption() {
+        var introduction = SharedPreferencesManager.loadConfiguration("introduction")
+        if (introduction != null && introduction != "") {
+            Settings.introduction = introduction == "1"
+        }
+    }
+
+    private fun checkVolumeSoundsOption() {
+        var sounds = SharedPreferencesManager.loadConfiguration("sounds")
+        if (sounds != null && sounds != "") {
+            Settings.sounds = sounds.toInt()
+        }
+    }
+
+    private fun checkVolumeTTSOption() {
+        var reader = SharedPreferencesManager.loadConfiguration("reader")
+        if(reader != null && reader != ""){
+            Settings.reader = reader.toInt()
         }
     }
 
