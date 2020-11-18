@@ -1,16 +1,17 @@
 package salicki.pawel.blindcarrally
 
 import android.content.res.Configuration
-import android.hardware.SensorManager
 import android.os.Bundle
 import android.os.Vibrator
 import android.util.Log
-import android.view.OrientationEventListener
 import android.view.Surface
 import android.view.Window
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import salicki.pawel.blindcarrally.gameresources.TextToSpeechManager
+import salicki.pawel.blindcarrally.information.Settings
+import salicki.pawel.blindcarrally.resources.RawResources
 import salicki.pawel.blindcarrally.scenemanager.LevelManager
 import kotlin.system.exitProcess
 
@@ -26,8 +27,8 @@ class MainActivity : AppCompatActivity() {
         Settings.CONTEXT = this
 
         Settings.SCREEN_SCALE = displayMetrics.densityDpi.toFloat()
-        Settings.globalSounds.addSound(Resources.acceptSound)
-        Settings.globalSounds.addSound(Resources.swapSound)
+        Settings.globalSounds.addSound(RawResources.acceptSound)
+        Settings.globalSounds.addSound(RawResources.swapSound)
 
         TextToSpeechManager.initTextToSpeech()
 

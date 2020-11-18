@@ -5,7 +5,7 @@ import android.view.MotionEvent
 
 interface ILevel {
     fun initState()
-    fun updateState(deltaTime: Int)
+    fun updateState()
     fun destroyState()
     fun respondTouchState(motionEvent: MotionEvent)
     fun redrawState(canvas: Canvas)
