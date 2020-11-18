@@ -1,0 +1,14 @@
+TEXT_KEY;ENGLISH;POLISH
+STAGE_OVER;Stage completed.;Etap zakończony.
+TIME;Your time is: ; Twój czas wynosi: ;
+SECONDS; seconds.; sekund.
+SCORE;Your score is: ; Twój wynik to:
+POINTS; points.; punktów.;
+CAR_DAMAGE;The condition of the car is: ;Sprawność pojazdu wynosi:
+GARAGE;Return to the service area.;Powrót do strefy serwisowej.
+READ;Read the result.;Odczytaj wynik.
+MENU;Exit to the menu.;Wyjdź do menu.
+DEFEAT;Defeat. It took you too long to complete the stage. You must repeat a stage of the raid.;Porażka. Pokonanie etapu zajęło ci zbyt dużo czasu. Musisz powtórzyć etap rajdu.
+SUCCESS;Success. You made it within the time limit.;Sukces. Zmieściłeś się w określonym czasie.
+NEXT_STAGE;Return to the service area to start the next stage of the rally!;Wróć do strefy serwisowej, by rozpocząć kolejny etap rajdu!
+END_TOURNAMENT;You have finished tournament mode. You managed to complete all stages within the given time limit. Congratulations!;Zakończyłeś tryb turniejowy. Udało ci się pokonać wszystkie etapy w określonym czasie. Gratulacje!

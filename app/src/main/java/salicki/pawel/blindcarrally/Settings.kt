@@ -8,6 +8,7 @@ object Settings {
     var SCREEN_SCALE: Float = 0F
 
     var CONTEXT: Context? = null
+    var rotation: Int = -1
 
     var languageTTS: LanguageTTS = LanguageTTS.ENGLISH
 

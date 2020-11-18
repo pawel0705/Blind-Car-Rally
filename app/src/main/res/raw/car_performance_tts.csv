@@ -1,18 +1,10 @@
 TEXT_KEY;ENGLISH;POLISH
 PERFORMANCE_TUTORIAL;Car performance.;Osiągi pojazdu.
-TOP_SPEED;Top speed:;Prędkość maksymalna:;
-ACCELERATION;Acceleration:;Przyśpieszenie:;
-MANEUVERABILITY;Maneuverability:;Manewrowość:;
-PERFORMANCE_10; ten percent.; dziesięć procent.
-PERFORMANCE_20; twenty percent.; dwadzieścia procent.
-PERFORMANCE_30; thirty percent.; trzydzieści procent.
-PERFORMANCE_40; forty percent.; czterdzieśći procent.
-PERFORMANCE_50; fifty percent.; pięćdziesiąt procent.
-PERFORMANCE_60; sixty percent.; sześćdziesiąt procent.
-PERFORMANCE_70; seventy percent.; siememdziesiąt procent.
-PERFORMANCE_80; eighty percent.; osiemdziesiąt procent.
-PERFORMANCE_90; ninety percent.; dziewięćdziesiąt procent.
-PERFORMANCE_100; one hundred percent.; sto procent.
 READ;Read car performance.;Przeczytaj osiągi pojazdu.
 BACK;Return to car selection;Powróć do wyboru pojazdu.
 ACCEPT;Accept and go to the race.;Zaakceptuj i przejdź do wyścigu.
+CAR_1;Top speed: ten percent. Acceleration: twenty percent. Maneuverability: thirty percent.;Prędkość maksymalna: dziesięć procent. Przyśpieszenie: dwadzieścia procent. Prędkość maksymalna: trzydzieści procent.
+CAR_2;Top speed: twenty percent. Acceleration: thirty percent. Maneuverability: fifty percent.;Prędkość maksymalna: dwadzieścia procent. Przyśpieszenie: trzydzieści procent. Prędkość maksymalna: pięćdziesiąt procent.
+CAR_3;Top speed: fifty percent. Acceleration: forty percent. Maneuverability: fifty percent.;Prędkość maksymalna: pięćdziesiąt procent. Przyśpieszenie: czterdzieści procent. Prędkość maksymalna: pięćdziesiąt procent.
+CAR_4;Top speed: ninety percent. Acceleration: sixty percent. Maneuverability: siememdziesiąt procent.;Prędkość maksymalna: dziewięćdziesiąt procent. Przyśpieszenie: sześćdziesiąt procent. Prędkość maksymalna: siedemdziesiąt procent.
+CAR_5;Top speed: one hundred percent. Acceleration: one hundred percent. Maneuverability: one hundred percent.;Prędkość maksymalna: sto procent. Przyśpieszenie: sto procent. Prędkość maksymalna: sto procent.

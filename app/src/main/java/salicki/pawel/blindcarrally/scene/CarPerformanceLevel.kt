@@ -16,7 +16,7 @@ class CarPerformanceLevel : SurfaceView(Settings.CONTEXT), ILevel {
     private var performanceSelectionData = arrayListOf<OptionSelectionData>()
     private var performanceIterator: Int = 0
     private var lastOption: Int = -1
-
+    private var carNumber: Int = 1
     private var idleTime: Int = 0
     private var idleTimeSeconds: Int = 0
 
@@ -29,6 +29,8 @@ class CarPerformanceLevel : SurfaceView(Settings.CONTEXT), ILevel {
         readTTSTextFile()
         initPerformanceSelectionOptions()
         initCarDescription()
+
+  //      GameOptions.carDescription = carDescription
     }
 
     private fun initCarDescription() {
@@ -37,56 +39,36 @@ class CarPerformanceLevel : SurfaceView(Settings.CONTEXT), ILevel {
                 GameOptions.carTopSpeed = 0.1F
                 GameOptions.carAcceleration = 0.2F
                 GameOptions.carManeuverability = 0.3F
-
-                carDescription = ""
-                carDescription =
-                    textsPerformanceSelection["TOP_SPEED"] + textsPerformanceSelection["PERFORMANCE_10"] +
-                            textsPerformanceSelection["ACCELERATION"] + textsPerformanceSelection["PERFORMANCE_20"] +
-                            textsPerformanceSelection["MANEUVERABILITY"] + textsPerformanceSelection["PERFORMANCE_30"]
+                carNumber = 1
+                carDescription = textsPerformanceSelection["CAR_1"].toString()
             }
             CarEnum.CAR_2 -> {
                 GameOptions.carTopSpeed = 0.2F
                 GameOptions.carAcceleration = 0.3F
                 GameOptions.carManeuverability = 0.5F
-
-                carDescription = ""
-                carDescription =
-                    textsPerformanceSelection["TOP_SPEED"] + textsPerformanceSelection["PERFORMANCE_20"] +
-                            textsPerformanceSelection["ACCELERATION"] + textsPerformanceSelection["PERFORMANCE_30"] +
-                            textsPerformanceSelection["MANEUVERABILITY"] + textsPerformanceSelection["PERFORMANCE_50"]
+                carNumber = 2
+                carDescription = textsPerformanceSelection["CAR_2"].toString()
             }
             CarEnum.CAR_3 -> {
                 GameOptions.carTopSpeed = 0.5F
                 GameOptions.carAcceleration = 0.4F
                 GameOptions.carManeuverability = 0.5F
-
-                carDescription = ""
-                carDescription =
-                    textsPerformanceSelection["TOP_SPEED"] + textsPerformanceSelection["PERFORMANCE_50"] +
-                            textsPerformanceSelection["ACCELERATION"] + textsPerformanceSelection["PERFORMANCE_40"] +
-                            textsPerformanceSelection["MANEUVERABILITY"] + textsPerformanceSelection["PERFORMANCE_50"]
+                carNumber = 3
+                carDescription = textsPerformanceSelection["CAR_3"].toString()
             }
             CarEnum.CAR_4 -> {
                 GameOptions.carTopSpeed = 0.9F
                 GameOptions.carAcceleration = 0.6F
                 GameOptions.carManeuverability = 0.7F
-
-                carDescription = ""
-                carDescription =
-                    textsPerformanceSelection["TOP_SPEED"] + textsPerformanceSelection["PERFORMANCE_90"] +
-                            textsPerformanceSelection["ACCELERATION"] + textsPerformanceSelection["PERFORMANCE_60"] +
-                            textsPerformanceSelection["MANEUVERABILITY"] + textsPerformanceSelection["PERFORMANCE_70"]
+                carNumber = 4
+                carDescription = textsPerformanceSelection["CAR_4"].toString()
             }
             CarEnum.CAR_5 -> {
                 GameOptions.carTopSpeed = 1F
                 GameOptions.carAcceleration = 1F
                 GameOptions.carManeuverability = 1F
-
-                carDescription = ""
-                carDescription =
-                    textsPerformanceSelection["TOP_SPEED"] + textsPerformanceSelection["PERFORMANCE_100"] +
-                            textsPerformanceSelection["ACCELERATION"] + textsPerformanceSelection["PERFORMANCE_100"] +
-                            textsPerformanceSelection["MANEUVERABILITY"] + textsPerformanceSelection["PERFORMANCE_100"]
+                carNumber = 5
+                carDescription = textsPerformanceSelection["CAR_5"].toString()
             }
         }
     }
@@ -242,6 +224,10 @@ class CarPerformanceLevel : SurfaceView(Settings.CONTEXT), ILevel {
                     LevelManager.changeLevel(CalibrationLevel())
                 }
                 else if(GameOptions.gamemode == RacingModeEnum.TOURNAMENT_MODE){
+                    SharedPreferencesManager.saveConfiguration("carTournamentNumber", carNumber.toString())
+                    SharedPreferencesManager.saveConfiguration("carTournamentTopSpeed", GameOptions.carTopSpeed.toString())
+                    SharedPreferencesManager.saveConfiguration("carTournamentAcceleration", GameOptions.carAcceleration.toString())
+                    SharedPreferencesManager.saveConfiguration("carTournamentManeuverability", GameOptions.carManeuverability.toString())
                     LevelManager.changeLevel(TournamentGarageLevel())
                 } else {
                     LevelManager.changeLevel(CalibrationLevel())

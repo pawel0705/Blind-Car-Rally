@@ -1,8 +1,20 @@
 package salicki.pawel.blindcarrally
 
+import java.util.*
 import kotlin.math.sqrt
 
 object Mathematics {
+
+    private val random = Random()
+
+    fun randFloat(from: Float, to: Float) : Float {
+        return random.nextFloat() * (to - from) + from;
+    }
+
+    fun randInt(from: Int, to: Int) : Int {
+        return (from..to).random()
+    }
+
     fun distancePointToLine(
         pointX: Float,
         pointY: Float,

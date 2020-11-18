@@ -45,9 +45,9 @@ class TournamentQuestionLevel : SurfaceView(Settings.CONTEXT), ILevel {
     override fun updateState(deltaTime: Int) {
         if(tournamentQuestionIterator != lastOption){
             if (newTournament) {
-                texts["NO"]?.let { TextToSpeechManager.speakNow(it) }
-            } else {
                 texts["YES"]?.let { TextToSpeechManager.speakNow(it) }
+            } else {
+                texts["NO"]?.let { TextToSpeechManager.speakNow(it) }
             }
 
             lastOption = tournamentQuestionIterator
@@ -99,6 +99,8 @@ class TournamentQuestionLevel : SurfaceView(Settings.CONTEXT), ILevel {
                 if (!newTournament) {
                     LevelManager.changeLevel(TournamentLevel())
                 } else {
+                    SharedPreferencesManager.saveConfiguration("isTournament", "1")
+                    SharedPreferencesManager.saveConfiguration("tournamentStageNumber", "0")
                     LevelManager.changeLevel(CarSelectionLevel())
                 }
             }

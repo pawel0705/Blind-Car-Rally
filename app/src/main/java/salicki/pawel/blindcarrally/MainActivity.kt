@@ -1,9 +1,12 @@
 package salicki.pawel.blindcarrally
 
 import android.content.res.Configuration
+import android.hardware.SensorManager
 import android.os.Bundle
 import android.os.Vibrator
-import android.view.View
+import android.util.Log
+import android.view.OrientationEventListener
+import android.view.Surface
 import android.view.Window
 import android.view.WindowManager
 import android.widget.Toast
@@ -33,7 +36,11 @@ class MainActivity : AppCompatActivity() {
         WindowManager.LayoutParams.FLAG_FULLSCREEN)
 
         setContentView(LevelManager);
+
+
     }
+
+
 
     fun exit() {
         TextToSpeechManager.destroy()
@@ -59,6 +66,28 @@ class MainActivity : AppCompatActivity() {
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
+
+        Log.d("ROT", "TOR")
+
+        val rotation = windowManager.defaultDisplay.rotation
+        Toast.makeText(this, "TOAS", Toast.LENGTH_SHORT).show()
+        when (rotation) {
+            Surface.ROTATION_90 -> {
+                Toast.makeText(this, "90", Toast.LENGTH_SHORT).show()
+            }
+            Surface.ROTATION_180 -> {
+                Toast.makeText(this, "180", Toast.LENGTH_SHORT).show()
+
+            }
+            Surface.ROTATION_270 -> {
+
+                Toast.makeText(this, "270", Toast.LENGTH_SHORT).show()
+            }
+            else -> {
+
+                Toast.makeText(this, "0", Toast.LENGTH_SHORT).show()
+            }
+        }
 
         // Checks the orientation of the screen
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {

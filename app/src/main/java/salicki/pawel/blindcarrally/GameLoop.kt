@@ -28,6 +28,9 @@ class GameLoop(surfaceHolder: SurfaceHolder) : Thread() {
     override fun run() {
         super.run()
 
+
+
+
         // Declare time and cycle count variables
         var updateCount = 0
         var frameCount = 0

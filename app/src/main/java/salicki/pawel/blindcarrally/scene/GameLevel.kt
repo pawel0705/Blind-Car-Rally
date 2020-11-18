@@ -4,6 +4,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
+import android.os.Looper
 import android.util.Log
 import android.view.MotionEvent
 import android.view.SurfaceView
@@ -49,6 +50,11 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
     private var idleTime: Int = 0
     private var idleTimeSeconds: Int = 0
 
+    private var windLeft: Float = 0F
+    private var windFasterLeft: Boolean = true
+    private var windRight: Float = 0F
+    private var windFasterRight: Boolean = true
+
     private var car: Car = Car(
         Settings.SCREEN_WIDTH / 2F,
         Settings.SCREEN_HEIGHT / 2F,
@@ -64,8 +70,11 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
     private var trackData: TrackData? = null
 
     init {
-        trackData = trackReader.readRacingTrack(getStageFileName())
-        //   Log.d("SKALA", scale.toString())
+        trackData = if (GameOptions.gamemode == RacingModeEnum.TOURNAMENT_MODE) {
+            trackReader.readRacingTrack(StagesResources.stageList[GameOptions.stageNumber].stageFileName)
+        } else {
+            trackReader.readRacingTrack(getStageFileName())
+        }
 
         coordinateDisplayManager = CoordinateDisplayManager(car)
 
@@ -76,17 +85,31 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
         readTTSTextFile()
         initSpeakerSpecial()
         initSoundManager()
+
+        if(weather == WeatherEnum.WIND){
+            MediaPlayerManager.initMediaPlayer(R.raw.hurricane)
+            MediaPlayerManager.changeVolume(0.1F, 0.1F)
+            MediaPlayerManager.loopSound()
+            MediaPlayerManager.startSound()
+        }
+        else if(weather == WeatherEnum.RAIN){
+            MediaPlayerManager.initMediaPlayer(R.raw.rain)
+            MediaPlayerManager.changeVolume(0.4F, 0.4F)
+            MediaPlayerManager.loopSound()
+            MediaPlayerManager.startSound()
+        }
+
     }
 
-    private fun setWeather(){
-        weather = when(GameOptions.stage){
-            StageEnum.STAGE_1->{
+    private fun setWeather() {
+        weather = when (GameOptions.stage) {
+            StageEnum.STAGE_1 -> {
                 WeatherEnum.SUN
             }
-            StageEnum.STAGE_2->{
+            StageEnum.STAGE_2 -> {
                 WeatherEnum.RAIN
             }
-            StageEnum.STAGE_3->{
+            StageEnum.STAGE_3 -> {
                 WeatherEnum.WIND
             }
         }
@@ -97,65 +120,65 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
             NationEnum.ARGENTINA -> {
                 return when (GameOptions.stage) {
                     StageEnum.STAGE_1 -> {
-                        Resources.argentina_1
+                        StagesResources.argentina_1
                     }
                     StageEnum.STAGE_2 -> {
-                        Resources.argentina_2
+                        StagesResources.argentina_2
                     }
                     StageEnum.STAGE_3 -> {
-                        Resources.argentina_3
+                        StagesResources.argentina_3
                     }
                 }
             }
             NationEnum.AUSTRALIA -> {
                 return when (GameOptions.stage) {
                     StageEnum.STAGE_1 -> {
-                        Resources.australia_1
+                        StagesResources.australia_1
                     }
                     StageEnum.STAGE_2 -> {
-                        Resources.australia_2
+                        StagesResources.australia_2
                     }
                     StageEnum.STAGE_3 -> {
-                        Resources.australia_3
+                        StagesResources.australia_3
                     }
                 }
             }
             NationEnum.POLAND -> {
                 return when (GameOptions.stage) {
                     StageEnum.STAGE_1 -> {
-                        Resources.poland_1
+                        StagesResources.poland_1
                     }
                     StageEnum.STAGE_2 -> {
-                        Resources.poland_2
+                        StagesResources.poland_2
                     }
                     StageEnum.STAGE_3 -> {
-                        Resources.poland_3
+                        StagesResources.poland_3
                     }
                 }
             }
             NationEnum.SPAIN -> {
                 return when (GameOptions.stage) {
                     StageEnum.STAGE_1 -> {
-                        Resources.spain_1
+                        StagesResources.spain_1
                     }
                     StageEnum.STAGE_2 -> {
-                        Resources.spain_2
+                        StagesResources.spain_2
                     }
                     StageEnum.STAGE_3 -> {
-                        Resources.spain_3
+                        StagesResources.spain_3
                     }
                 }
             }
             NationEnum.NEW_ZEALAND -> {
                 return when (GameOptions.stage) {
                     StageEnum.STAGE_1 -> {
-                        Resources.zealand_1
+                        StagesResources.zealand_1
                     }
                     StageEnum.STAGE_2 -> {
-                        Resources.zealand_2
+                        StagesResources.zealand_2
                     }
                     StageEnum.STAGE_3 -> {
-                        Resources.zealand_3
+                        StagesResources.zealand_3
                     }
                 }
             }
@@ -190,9 +213,12 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
 
     private fun drawCoordinates(canvas: Canvas) {
         if (MovementManager.getOrientation() != null && MovementManager.getStartOrientation() != null) {
-            val test1 = MovementManager.getOrientation()!![0].toDouble().toString()
-            val test2 = MovementManager.getOrientation()!![1].toDouble().toString()
-            val test3 = MovementManager.getOrientation()!![2].toDouble().toString()
+            val test1 =
+                MovementManager.getOrientation()!![0].toDouble() - MovementManager.getStartOrientation()!![0].toDouble()
+            val test2 =
+                MovementManager.getOrientation()!![1].toDouble() - MovementManager.getStartOrientation()!![1].toDouble()
+            val test3 =
+                MovementManager.getOrientation()!![2].toDouble() - MovementManager.getStartOrientation()!![2].toDouble()
             val paint = Paint()
             val color = ContextCompat.getColor(context, R.color.colorPrimary)
             paint.color = color
@@ -207,7 +233,17 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
         car.posX = trackData!!.roadList?.get(trackIterator)?.spawnX!!.toFloat()
         car.posY = trackData!!.roadList?.get(trackIterator)?.spawnY!!.toFloat()
 
-        TextToSpeechManager.speakNow(pilotTexts["INSTRUCTION"].toString())
+        if(weather == WeatherEnum.SUN){
+            TextToSpeechManager.speakNow(pilotTexts["WEATHER_SUNNY"].toString())
+        }
+        else if(weather == WeatherEnum.RAIN){
+            TextToSpeechManager.speakNow(pilotTexts["WEATHER_RAIN"].toString())
+        }
+        else if(weather == WeatherEnum.WIND){
+            TextToSpeechManager.speakNow(pilotTexts["WEATHER_WIND"].toString())
+        }
+
+        TextToSpeechManager.speakQueue(pilotTexts["INSTRUCTION"].toString())
     }
 
     private fun checkCollistion() {
@@ -276,27 +312,27 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
 
         if (durationCount > 1000 && speakerCountDown["COUNTDOWN_5"] == false) {
             TextToSpeechManager.speakNow(pilotTexts["COUNTDOWN_5"].toString())
-            soundManagerGame.playSound(R.raw.countdown)
+            soundManagerGame.playSound(R.raw.countdown, 0.6F, 0.6F)
             speakerCountDown["COUNTDOWN_5"] = true
         } else if (durationCount > 2000 && speakerCountDown["COUNTDOWN_4"] == false) {
             TextToSpeechManager.speakNow(pilotTexts["COUNTDOWN_4"].toString())
-            soundManagerGame.playSound(R.raw.countdown)
+            soundManagerGame.playSound(R.raw.countdown, 0.6F, 0.6F)
             speakerCountDown["COUNTDOWN_4"] = true
         } else if (durationCount > 3000 && speakerCountDown["COUNTDOWN_3"] == false) {
             TextToSpeechManager.speakNow(pilotTexts["COUNTDOWN_3"].toString())
-            soundManagerGame.playSound(R.raw.countdown)
+            soundManagerGame.playSound(R.raw.countdown, 0.6F, 0.6F)
             speakerCountDown["COUNTDOWN_3"] = true
         } else if (durationCount > 4000 && speakerCountDown["COUNTDOWN_2"] == false) {
             TextToSpeechManager.speakNow(pilotTexts["COUNTDOWN_2"].toString())
-            soundManagerGame.playSound(R.raw.countdown)
+            soundManagerGame.playSound(R.raw.countdown, 0.6F, 0.6F)
             speakerCountDown["COUNTDOWN_2"] = true
         } else if (durationCount > 5000 && speakerCountDown["COUNTDOWN_1"] == false) {
             TextToSpeechManager.speakNow(pilotTexts["COUNTDOWN_1"].toString())
-            soundManagerGame.playSound(R.raw.countdown)
+            soundManagerGame.playSound(R.raw.countdown, 0.6F, 0.6F)
             speakerCountDown["COUNTDOWN_1"] = true
         } else if (durationCount > MAX_DURATION_COUNT && countDown) {
             TextToSpeechManager.speakNow(pilotTexts["START"].toString())
-            soundManagerGame.playSound(R.raw.start)
+            soundManagerGame.playSound(R.raw.start, 0.6F, 0.6F)
             newRoadTile = true
         }
 
@@ -338,7 +374,7 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
         }
 
         raceTime++
-        if (raceTime % 30 == 0) {
+        if (raceTime % 60 == 0) {
             raceTimeSeconds++
             updateStageResult()
         }
@@ -352,7 +388,16 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
         if (trackData != null) {
 
             if (trackIterator >= trackData!!.roadList.size - 1) {
-                LevelManager.changeLevel(RaceOverScene(stageResult))
+                Log.d("KONIEC", "KONIEC")
+                if (Looper.myLooper() == null) {
+                    Looper.prepare()
+                }
+
+                if (GameOptions.gamemode == RacingModeEnum.TOURNAMENT_MODE) {
+                    LevelManager.changeLevel(TournamentStageOverLevel(stageResult))
+                } else {
+                    LevelManager.changeLevel(RaceOverScene(stageResult))
+                }
             }
 
             if (trackData!!.roadList[trackIterator].finishY < car.posY) {
@@ -371,6 +416,58 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
                 newRoadTile = false
             }
         }
+
+
+        if(weather == WeatherEnum.WIND){
+            if (Mathematics.randInt(0, 500) == 1) {
+                windFasterRight = !windFasterRight
+            }
+
+            if (windFasterRight) {
+
+                windRight = windRight - 0.05F + Mathematics.randFloat(0.0F, 0.1F);
+
+                if (windRight > 1F) {
+                    windRight = 1F
+                }
+
+                if (windRight < 0F) {
+                    windRight = 0F
+                }
+
+            } else {
+
+                windLeft = windLeft - 0.05F + Mathematics.randFloat(0.0F, 0.1F);
+
+                if (windLeft > 1F) {
+                    windLeft = 1F
+                }
+
+                if (windLeft < 0F) {
+                    windLeft = 0F
+                }
+
+            }
+
+
+            if (windFasterRight) {
+                car.pushCar(
+                    0F,
+                    windRight * Settings.SCREEN_SCALE * 0.004F
+                )
+
+                MediaPlayerManager.changeVolume(0F, windRight)
+            } else {
+                car.pushCar(
+                    windLeft * Settings.SCREEN_SCALE * 0.004F,
+                    0F
+                )
+                MediaPlayerManager.changeVolume(windLeft, 0F)
+            }
+        }
+
+
+
     }
 
     override fun destroyState() {
@@ -451,5 +548,11 @@ class GameLevel() : SurfaceView(Settings.CONTEXT), ILevel {
 
         paint.textSize = 50F
         canvas.drawText(car.getCarSpeed().toString(), 500F, 500F, paint)
+
+        canvas.drawText(this.raceTimeSeconds.toString(), 500F, 800F, paint)
+
+        canvas.drawText(windLeft.toString(), 500F, 900F, paint)
+
+        canvas.drawText(windRight.toString(), 900F, 900F, paint)
     }
 }

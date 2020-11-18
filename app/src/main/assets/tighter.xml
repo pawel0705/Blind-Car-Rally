@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<track>
+    <tts_key key="TIGHTER"/>
+    <spawn x="40" y="0"/>
+    <finish x="20" y="320"/>
+    <left></left>
+    <point x="0" y="0"/>
+    <point x="0" y="60"/>
+    <point x="20" y="120"/>
+    <point x="20" y="280"/>
+    <point x="0" y="300"/>
+    <point x="0" y="320"/>
+    <right></right>
+    <point x="80" y="0"/>
+    <point x="80" y="60"/>
+    <point x="60" y="120"/>
+    <point x="60" y="280"/>
+    <point x="80" y="300"/>
+    <point x="80" y="320"/>
+</track>

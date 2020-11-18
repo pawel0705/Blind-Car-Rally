@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <track>
     <tts_key key="LEFT_4"/>
-    <tts_key key="TIGHTLY"/>
     <spawn x="40" y="0"/>
     <finish x="40" y="190"/>
     <left></left>

@@ -19,3 +19,15 @@ enum class WeatherEnum {
     RAIN,
     WIND
 }
+
+enum class TournamentGarageEnum {
+    CAR_INFORMATION,
+    STAGE_INFORMATION,
+    PUNCTATION,
+    START_STAGE,
+    MENU,
+    NEXT_STAGE_INFORMATION,
+    RETURN,
+    MY_POINTS,
+    ENEMY_POINTS,
+}

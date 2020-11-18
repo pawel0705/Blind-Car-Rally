@@ -7,9 +7,15 @@ import salicki.pawel.blindcarrally.*
 import salicki.pawel.blindcarrally.data.OptionSelectionData
 import salicki.pawel.blindcarrally.scenemanager.ILevel
 import salicki.pawel.blindcarrally.scenemanager.LevelManager
+import salicki.pawel.blindcarrally.scenemanager.LevelType
 
 class TournamentGarageLevel : SurfaceView(Settings.CONTEXT), ILevel {
     private var textsTournamentGarageSelection: HashMap<String, String> = HashMap()
+
+    private var textsNations: HashMap<String, String> = HashMap()
+    private var textsStages: HashMap<String, String> = HashMap()
+
+    private var textsCarDescriptions: HashMap<String, String> = HashMap()
 
     private var soundManager: SoundManager = SoundManager()
     private var swipe: Boolean = false
@@ -20,55 +26,86 @@ class TournamentGarageLevel : SurfaceView(Settings.CONTEXT), ILevel {
     private var idleTime: Int = 0
     private var idleTimeSeconds: Int = 0
 
+    private var carDescription: String = ""
+    private var nextStageDescription: String = ""
+
+    private var stageIterator: Int = 0
+
+
     init {
         isFocusable = true
 
         initSoundManager()
         readTTSTextFile()
         initCarSelectionOptions()
+        getStageNumber()
+        loadCarDescription()
+        loadStageDescription()
+    }
+
+    private fun getStageNumber(){
+        var stage = SharedPreferencesManager.loadConfiguration("tournamentStageNumber")
+        if (stage != null && stage != "") {
+            stageIterator = stage.toInt()
+        }
     }
 
     private fun initCarSelectionOptions() {
-        carsSelectionData.add(
+        garageSelectionData.add(
             OptionSelectionData(
-                CarEnum.CAR_1,
-                "CAR_1",
+                TournamentGarageEnum.CAR_INFORMATION,
+                "CAR_INFORMATION",
                 "Argentyna",
                 false
             )
         )
-        carsSelectionData.add(
+        garageSelectionData.add(
             OptionSelectionData(
-                CarEnum.CAR_2,
-                "CAR_2",
+                TournamentGarageEnum.STAGE_INFORMATION,
+                "STAGE_INFORMATION",
                 "Argentyna",
                 false
             )
         )
-        carsSelectionData.add(
+        garageSelectionData.add(
             OptionSelectionData(
-                CarEnum.CAR_3,
-                "CAR_3",
+                TournamentGarageEnum.START_STAGE,
+                "NEXT_STAGE",
                 "Argentyna",
                 false
             )
         )
-        carsSelectionData.add(
+        garageSelectionData.add(
             OptionSelectionData(
-                CarEnum.CAR_4,
-                "CAR_4",
+                TournamentGarageEnum.MENU,
+                "MENU",
                 "Argentyna",
                 false
             )
         )
-        carsSelectionData.add(
-            OptionSelectionData(
-                CarEnum.CAR_5,
-                "CAR_5",
-                "Argentyna",
-                false
-            )
-        )
+    }
+
+    private fun loadCarDescription() {
+
+        var number = SharedPreferencesManager.loadConfiguration("carTournamentNumber")
+        if (number != null && number != "") {
+            carDescription = textsCarDescriptions["CAR_$number"].toString()
+        }
+
+        GameOptions.carTopSpeed =
+            SharedPreferencesManager.loadConfiguration("carTournamentTopSpeed")?.toFloat() ?: 1F
+
+        GameOptions.carAcceleration =
+            SharedPreferencesManager.loadConfiguration("carTournamentAcceleration")?.toFloat() ?: 1F
+
+        GameOptions.carManeuverability =
+            SharedPreferencesManager.loadConfiguration("carTournamentManeuverability")?.toFloat() ?: 1F
+    }
+
+    private fun loadStageDescription(){
+        nextStageDescription = textsTournamentGarageSelection["STAGE_DESCRIPTION"] +
+                textsNations[StagesResources.stageList[stageIterator].nationKey] +
+                textsStages[StagesResources.stageList[stageIterator].stageKey]
     }
 
     private fun initSoundManager() {
@@ -79,35 +116,61 @@ class TournamentGarageLevel : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     private fun readTTSTextFile() {
-        textsCarsSelection.putAll(OpenerCSV.readData(R.raw.car_selection_tts, Settings.languageTTS))
+        textsTournamentGarageSelection.putAll(
+            OpenerCSV.readData(
+                R.raw.tournament_garage_tts,
+                Settings.languageTTS
+            )
+        )
+
+        textsCarDescriptions.putAll(
+            OpenerCSV.readData(
+                R.raw.car_performance_tts,
+                Settings.languageTTS
+            )
+        )
+
+        textsNations.putAll(
+            OpenerCSV.readData(
+                R.raw.tracks_tts,
+                Settings.languageTTS
+            )
+        )
+
+        textsStages.putAll(
+            OpenerCSV.readData(
+                R.raw.nation_roads_tts,
+                Settings.languageTTS
+            )
+        )
     }
 
     override fun initState() {
-        TextToSpeechManager.speakNow(textsCarsSelection["CAR_TUTORIAL"].toString())
-        TextToSpeechManager.speakQueue(textsCarsSelection["CAR_1"].toString())
+        TextToSpeechManager.speakNow(textsTournamentGarageSelection["GARAGE_TUTORIAL"].toString())
+        TextToSpeechManager.speakQueue(textsTournamentGarageSelection["CAR_INFORMATION"].toString())
     }
 
     override fun updateState(deltaTime: Int) {
-        if (carsSelectionData[carIterator].selected && lastOption != carIterator) {
-            textsCarsSelection[carsSelectionData[carIterator].textKey]?.let {
+        if (garageSelectionData[garageIterator].selected && lastOption != garageIterator) {
+            textsTournamentGarageSelection[garageSelectionData[garageIterator].textKey]?.let {
                 TextToSpeechManager.speakNow(
                     it
                 )
             }
 
-            lastOption = carIterator
+            lastOption = garageIterator
         }
 
-        if(!TextToSpeechManager.isSpeaking()){
+        if (!TextToSpeechManager.isSpeaking()) {
             idleTime++
 
-            if(idleTime % 30 == 0){
+            if (idleTime % 30 == 0) {
                 idleTimeSeconds++
             }
         }
 
-        if(idleTimeSeconds > 10){
-            TextToSpeechManager.speakNow(textsCarsSelection["CAR_TUTORIAL"].toString())
+        if (idleTimeSeconds > 10) {
+            TextToSpeechManager.speakNow(textsTournamentGarageSelection["GARAGE_TUTORIAL"].toString())
 
             idleTimeSeconds = 0
         }
@@ -126,19 +189,19 @@ class TournamentGarageLevel : SurfaceView(Settings.CONTEXT), ILevel {
         when (GestureManager.swipeDetect(event)) {
             GestureType.SWIPE_RIGHT -> {
                 soundManager.playSound(Resources.swapSound)
-                carIterator++
+                garageIterator++
 
-                if (carIterator >= carsSelectionData.size) {
-                    carIterator = 0
+                if (garageIterator >= garageSelectionData.size) {
+                    garageIterator = 0
                 }
 
                 swipe = true
             }
             GestureType.SWIPE_LEFT -> {
                 soundManager.playSound(Resources.swapSound)
-                carIterator--
-                if (carIterator < 0) {
-                    carIterator = carsSelectionData.size - 1
+                garageIterator--
+                if (garageIterator < 0) {
+                    garageIterator = garageSelectionData.size - 1
                 }
 
                 swipe = true
@@ -150,41 +213,53 @@ class TournamentGarageLevel : SurfaceView(Settings.CONTEXT), ILevel {
             GestureType.DOUBLE_TAP -> {
                 TextToSpeechManager.stop()
                 Settings.globalSounds.playSound(Resources.acceptSound)
-                changeLevel(carIterator)
+                changeLevel(garageIterator)
             }
         }
 
         val holdPosition = GestureManager.holdPositionDetect(event).first
         if (holdPosition > 0 && !swipe) {
             when {
-                holdPosition < Settings.SCREEN_WIDTH / 5 -> {
-                    carIterator = 0
+                holdPosition < Settings.SCREEN_WIDTH / 4 -> {
+                    garageIterator = 0
                 }
-                holdPosition < Settings.SCREEN_WIDTH / 5 * 2 -> {
-                    carIterator = 1
+                holdPosition < Settings.SCREEN_WIDTH / 4 * 2 -> {
+                    garageIterator = 1
                 }
-                holdPosition < Settings.SCREEN_WIDTH / 5 * 3 -> {
-                    carIterator = 2
+                holdPosition < Settings.SCREEN_WIDTH / 4 * 3 -> {
+                    garageIterator = 2
                 }
-                holdPosition < Settings.SCREEN_WIDTH / 5 * 4 -> {
-                    carIterator = 3
-                }
-                holdPosition < Settings.SCREEN_WIDTH / 5 * 5 -> {
-                    carIterator = 4
+                holdPosition < Settings.SCREEN_WIDTH / 4 * 4 -> {
+                    garageIterator = 3
                 }
             }
         }
 
-        carsSelectionData.forEach {
+        garageSelectionData.forEach {
             it.selected = false
         }
 
-        carsSelectionData[carIterator].selected = true
+        garageSelectionData[garageIterator].selected = true
     }
 
     private fun changeLevel(option: Int) {
-        GameOptions.car = carsSelectionData[option].levelType as CarEnum
-        LevelManager.stackLevel(CarPerformanceLevel())
+        when (garageSelectionData[option].levelType) {
+            TournamentGarageEnum.CAR_INFORMATION -> {
+                TextToSpeechManager.speakNow(carDescription)
+            }
+            TournamentGarageEnum.STAGE_INFORMATION -> {
+                TextToSpeechManager.speakNow(nextStageDescription)
+            }
+            TournamentGarageEnum.START_STAGE -> {
+                GameOptions.stage = StagesResources.stageList[stageIterator].stageEnum
+                GameOptions.nation = StagesResources.stageList[stageIterator].nation
+                GameOptions.gamemode = RacingModeEnum.TOURNAMENT_MODE
+                LevelManager.changeLevel(CalibrationLevel())
+            }
+            TournamentGarageEnum.MENU -> {
+                LevelManager.stackLevel(ReturnMenuLevel())
+            }
+        }
     }
 
     override fun redrawState(canvas: Canvas) {

@@ -83,7 +83,7 @@ class TournamentLevel : SurfaceView(Settings.CONTEXT), ILevel {
 
     override fun updateState(deltaTime: Int) {
         if (tournamentSelectionData[tournamentIterator].selected && lastOption != tournamentIterator) {
-            tournamentSelectionData[tournamentIterator].textKey?.let {
+            textsTournament[tournamentSelectionData[tournamentIterator].textKey]?.let {
                 TextToSpeechManager.speakNow(
                     it
                 )
@@ -180,7 +180,17 @@ class TournamentLevel : SurfaceView(Settings.CONTEXT), ILevel {
                 LevelManager.changeLevel(TournamentQuestionLevel())
             }
             LevelType.CONTINUE_TOURNAMENT -> {
+                var tmp: Boolean = false
+                var isTournament = SharedPreferencesManager.loadConfiguration("isTournament")
+                if (isTournament != null && isTournament != "") {
+                    tmp = isTournament == "1"
+                }
 
+                if(tmp){
+                    LevelManager.changeLevel(TournamentGarageLevel())
+                } else{
+                    TextToSpeechManager.speakNow(textsTournament["CANT_CONTINUE"].toString())
+                }
             }
             LevelType.RETURN -> {
                 LevelManager.changeLevel(GameModeLevel())

@@ -8,7 +8,7 @@ import salicki.pawel.blindcarrally.data.OptionSelectionData
 import salicki.pawel.blindcarrally.scenemanager.ILevel
 import salicki.pawel.blindcarrally.scenemanager.LevelManager
 
-class CarSelectionLevel : SurfaceView(Settings.CONTEXT), ILevel {
+class CarSelectionLevel() : SurfaceView(Settings.CONTEXT), ILevel {
     private var textsCarsSelection: HashMap<String, String> = HashMap()
 
     private var soundManager: SoundManager = SoundManager()

@@ -1,12 +1,16 @@
 package salicki.pawel.blindcarrally
 
-import android.graphics.*
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.RectF
+
 import android.util.Log
-import salicki.pawel.blindcarrally.data.CarCoordinates
+import android.view.Display
+import android.view.Surface
 import salicki.pawel.blindcarrally.data.CarParameters
-import salicki.pawel.blindcarrally.data.CarPositionSensors
 import salicki.pawel.blindcarrally.data.CarView
-import kotlin.math.*
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 class Car(posX: Float, posY: Float, rect: RectF) : EnvironmentObject(posX, posY) {
 
@@ -38,6 +42,10 @@ class Car(posX: Float, posY: Float, rect: RectF) : EnvironmentObject(posX, posY)
         initCarView(rect)
         initCarHitbox()
         initCarDistanceSensors()
+
+        // test
+
+
     }
 
     private fun initSoundManager(){
@@ -81,17 +89,19 @@ class Car(posX: Float, posY: Float, rect: RectF) : EnvironmentObject(posX, posY)
      //   Log.d("SPED", carParameters.speed.toString())
      //   Log.d("PITCH", (carParameters.speed / carParameters.maxSpeed + 1).toString())
 
-        if(engineIterator > 2 && carParameters.gear != 6){
-            engineIterator = 0
-            engineLoop = false
-            soundManagerEngine.playSound(R.raw.engine_03, 1F, 1F, 0, carParameters.speed / carParameters.maxSpeed + 1)
-        } else if(carParameters.gear == 6){
+        if(carParameters.speed > 0.1){
+            if(engineIterator > 2){
+                engineIterator = 0
+                engineLoop = false
+                soundManagerEngine.playSound(R.raw.engine_03, 0.2F, 0.2F, 0, carParameters.speed / carParameters.maxSpeed + 1)
+            }
+        } else {
             if(!engineLoop){
-                soundManagerEngine.playSound(R.raw.engine_03, 1F, 1F, -1)
+                soundManagerEngine.playSound(R.raw.engine_03, 0.5F, 0.5F, -1)
                 engineLoop = true
             }
-
         }
+
 
 
     }
@@ -157,29 +167,28 @@ class Car(posX: Float, posY: Float, rect: RectF) : EnvironmentObject(posX, posY)
 
         if (sensorDistance.left) {
 
-            val volume = 1 / (sensorDistance.leftLength * Settings.SCREEN_SCALE * 0.0001F + 1)
-
-
+            val volume = 1 / (sensorDistance.leftLength * 0.1F + 1)
 
             if (sensorBeepIteratorLeft > 2 * 1 / volume) {
-       //         Log.d("VOLUME LEFT", volume.toString())
                 sensorBeepIteratorLeft = 0
                 soundManagerLeft.playSound(R.raw.beep, volume, 0F)
             }
         }
 
         if (sensorDistance.right) {
-            val volume = 1 / (sensorDistance.rightLength * Settings.SCREEN_SCALE * 0.0001F + 1)
-
-
+            val volume = 1 / (sensorDistance.rightLength * 0.1F + 1)
 
             if (sensorBeepIteratorRight > 2 * 1 / volume) {
-            //    Log.d("VOLUME RIGHT", volume.toString())
                 sensorBeepIteratorRight = 0
                 soundManagerRight.playSound(R.raw.beep, 0F, volume)
             }
         }
         return sensorDistance.right || sensorDistance.left
+    }
+
+    fun pushCar(left: Float, right: Float){
+        posX += left
+        posX -= right
     }
 
     fun collisionCheck(x1: Float, y1: Float, x2: Float, y2: Float): Boolean {
@@ -188,6 +197,7 @@ class Car(posX: Float, posY: Float, rect: RectF) : EnvironmentObject(posX, posY)
 
         if(collision){
             this.carParameters.health -= 5
+            VibratorManager.vibrate(500)
 
             return true
         }
@@ -231,19 +241,28 @@ class Car(posX: Float, posY: Float, rect: RectF) : EnvironmentObject(posX, posY)
 
     private fun updateCarMovement() {
 
+
         if (MovementManager != null) {
             if (MovementManager.getOrientation() != null && MovementManager.getStartOrientation() != null) {
-                val pitch: Float =
+                var pitch: Float =
                     MovementManager?.getOrientation()!![2] - MovementManager.getStartOrientation()!![2]
-                val roll: Float =
+                var roll: Float =
                     MovementManager?.getOrientation()!![1] - MovementManager.getStartOrientation()!![1]
+
+                val phonePosition = MovementManager?.getOrientation()!![0]
+                Log.d("pos", phonePosition.toString())
+                if(phonePosition > -0.5F){
+                    pitch *= -1
+                } else {
+                    roll *= -1
+                }
 
                 velX = 2 * roll * Settings.SCREEN_SCALE
 
                 velY = if(pitch<0){
-                    -pitch * Settings.SCREEN_SCALE * 0.00005F * carParameters.acceleration
+                    pitch * Settings.SCREEN_SCALE * 0.00005F * carParameters.acceleration
                 } else {
-                    -pitch * Settings.SCREEN_SCALE * 0.0005F * carParameters.acceleration
+                    pitch * Settings.SCREEN_SCALE * 0.0005F * carParameters.acceleration
                 }
 
                 //    Log.d("VELX", velX.toString())
@@ -261,6 +280,10 @@ class Car(posX: Float, posY: Float, rect: RectF) : EnvironmentObject(posX, posY)
             carParameters.speed = -2F
         }
 */
+
+        // test
+
+
         carParameters.speed += velY
         carParameters.angle += carParameters.turnSpeed * carParameters.speed / carParameters.maxSpeed * velX
 
