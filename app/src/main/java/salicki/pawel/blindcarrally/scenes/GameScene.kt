@@ -61,6 +61,7 @@ class GameScene() : SurfaceView(Settings.CONTEXT), ILevel {
     private var windFasterLeft: Boolean = true
     private var windRight: Float = 0F
     private var windFasterRight: Boolean = true
+    private var disableTap: Boolean = false
 
     private var car: Car =
         Car(
@@ -318,6 +319,7 @@ class GameScene() : SurfaceView(Settings.CONTEXT), ILevel {
     private fun countDown() {
         durationCount += System.currentTimeMillis() - startCountTime - durationCount
 
+        disableTap = true
 
         if (durationCount > 1000 && speakerCountDown["COUNTDOWN_5"] == false) {
             TextToSpeechManager.speakNow(pilotTexts["COUNTDOWN_5"].toString())
@@ -397,7 +399,7 @@ class GameScene() : SurfaceView(Settings.CONTEXT), ILevel {
         if (trackData != null) {
 
             if (trackIterator >= trackData!!.roadList.size - 1) {
-                Log.d("KONIEC", "KONIEC")
+
                 if (Looper.myLooper() == null) {
                     Looper.prepare()
                 }
@@ -482,6 +484,9 @@ class GameScene() : SurfaceView(Settings.CONTEXT), ILevel {
     override fun destroyState() {
         isFocusable = false
 
+        car.destroyCar()
+        soundManagerGame.destroy()
+        MediaPlayerManager.stopSound()
         // dodac sound managery
     }
 
@@ -505,7 +510,7 @@ class GameScene() : SurfaceView(Settings.CONTEXT), ILevel {
 
         }
 
-        if (!stopGameplay) {
+        if (!disableTap) {
             when (GestureManager.doubleTapDetect(event)) {
                 GestureTypeEnum.DOUBLE_TAP -> {
                     TextToSpeechManager.stop()

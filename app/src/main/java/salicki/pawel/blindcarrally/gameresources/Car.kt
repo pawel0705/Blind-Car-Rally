@@ -150,6 +150,13 @@ class Car(posX: Float, posY: Float, rect: RectF) : EnvironmentObject(posX, posY)
         }
     }
 
+    fun destroyCar(){
+        soundManagerLeft.destroy()
+        soundManagerRight.destroy()
+        soundManagerEngine.destroy()
+        soundManagerGears.destroy()
+    }
+
     private fun drawCarSensors(
         canvas: Canvas?,
         coordinateDisplayManager: CoordinateDisplayManager?

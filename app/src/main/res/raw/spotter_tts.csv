@@ -1,5 +1,5 @@
 TEXT_KEY;ENGLISH;POLISH
-WEATHER_SUNNY;The weather is very sunny. The sky is clear.;The weather is very sunny. The sky is clear.
+WEATHER_SUNNY;The weather is very sunny. The sky is clear.;Pogoda jest bardzo słoneczna. Niebo jest bezchmurne.
 WEATHER_RAIN;Thunderstorm and heavy rainfall.. The entire sky is obscured by clouds.;Burza i silne opady deszczu. Całe niebo jest przysłonięte chmurami.
 WEATHER_WIND;A very strong hurricane. The trees are bending.;Bardzo silny huragan. Drzewa się wyginają.
 INSTRUCTION;Instruction. To speed up, tilt the phone forward. To slow down, bring the phone closer to you. Rotate the phone left or right to turn the car. Tap the left half of the acran with your finger to downshift. Tap on the right half of the screen to increase the gear. Swipe up to pause or exit the game. Double-tap to start the race!;Instrukcja. Aby przyśpieszyć przechyl telefon do przodu. Aby zwolnić przybliż telefon do siebie. Obracaj telefonem w lewo lub prawo, aby skręcać samochodem. Stuknij palcem w lewą połowę akranu, by zmniejszyć bieg. Stuknij w prawą połowę ekranu, by zwiększyć bieg. Przesuń palcem w górę, aby zapauzować lub wyjść z gry. Stuknij dwukrotnie palcem, by rozpocząć wyścig!
@@ -33,7 +33,7 @@ LENGTH_80;Eighty;Osiemdziesiąt
 LENGTH_90;Ninety;Dziewięćdziesiąt
 LENGTH_100;One hundred;Sto
 STRAIGHT;Straight;Prosto
-SHORT;Short;Krórki
+SHORT;Short;Krótki
 VERY_SHORT;Very short;Bardzo krótki
 LONG;Long;Długi
 VERY_LONG;Very long;Bardzo długi

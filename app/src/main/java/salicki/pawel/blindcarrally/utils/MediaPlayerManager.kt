@@ -5,26 +5,41 @@ import salicki.pawel.blindcarrally.information.Settings
 
 object MediaPlayerManager {
 
-    lateinit var mediaPlayer: MediaPlayer
+    var mediaPlayer: MediaPlayer = MediaPlayer()
 
-    fun initMediaPlayer(soundId: Int){
+    fun initMediaPlayer(soundId: Int) {
         mediaPlayer = MediaPlayer.create(
-            Settings.CONTEXT, soundId)
+            Settings.CONTEXT, soundId
+        )
     }
 
-    fun startSound(){
+    fun startSound() {
+
         mediaPlayer.start()
+
     }
 
-    fun loopSound(){
+    fun loopSound() {
+
         mediaPlayer.isLooping = true
+
     }
 
-    fun unLoopSound(){
+    fun unLoopSound() {
+
         mediaPlayer.isLooping = false
+
+    }
+
+    fun stopSound() {
+
+        mediaPlayer.stop()
+
     }
 
     fun changeVolume(left: Float, right: Float) {
-        mediaPlayer.setVolume(left, right)
+        if (mediaPlayer != null) {
+            mediaPlayer.setVolume(left, right)
+        }
     }
 }

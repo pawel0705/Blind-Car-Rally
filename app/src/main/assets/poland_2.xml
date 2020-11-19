@@ -1,5 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <track>
-    <road name="bridge_1.xml" />
+    <road name="left_5.xml" />
+    <road name="left_6_long.xml" />
+    <road name="tightens.xml" />
+    <road name="left_6_long_t.xml" />
+    <road name="right_4_long_t.xml" />
+    <road name="right_3_t.xml" />
+    <road name="left_3_t.xml" />
+    <road name="right_3_very_long_t.xml" />
+    <road name="right_5_very_long_t.xml" />
+    <road name="straight_60_t.xml" />
+    <road name="left_4_very_long_t.xml" />
+    <road name="opens.xml"/>
+    <road name="straight_80.xml"/>
+    <road name="right_3_very_short.xml" />
+    <road name="left_3_very_long.xml" />
+    <road name="left_6_very_long.xml" />
+    <road name="left_5_long.xml" />
+    <road name="right_3_long.xml" />
     <road name="keep_right_1.xml" />
+    <road name="straight_80.xml"/>
+    <road name="tightens.xml" />
+    <road name="straight_50_t.xml"/>
+    <road name="right_3_long_t.xml" />
+    <road name="straight_60_t.xml"/>
+    <road name="opens.xml"/>
+    <road name="left_3_very_long.xml" />
+    <road name="straight_80.xml"/>
 </track>

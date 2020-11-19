@@ -10,7 +10,7 @@
     <road name="right_5.xml"/>
     <road name="keep_right_1.xml"/>
     <road name="straight_90.xml"/>
-    <road name="tighter.xml"/>
+    <road name="tightens.xml"/>
     <road name="straight_60_t.xml"/>
     <road name="left_6_t.xml"/>
     <road name="right_5_very_long_t.xml"/>
@@ -20,7 +20,7 @@
     <road name="straight_80.xml"/>
     <road name="straight_60.xml"/>
     <road name="right_5_long.xml"/>
-    <road name="tighter.xml"/>
+    <road name="tightens.xml"/>
     <road name="right_6_t.xml"/>
     <road name="right_5_t.xml"/>
     <road name="straight_60_t.xml"/>
