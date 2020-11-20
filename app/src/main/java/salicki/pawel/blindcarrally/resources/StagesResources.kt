@@ -29,19 +29,19 @@ object StagesResources {
 
     val stageList: List<StageTournamentData> = listOf(
         StageTournamentData(argentina_1, "ARGENTINA", "ARGENTINA_1", NationEnum.ARGENTINA, StageEnum.STAGE_1, WeatherEnum.SUN),
-        StageTournamentData(argentina_2, "ARGENTINA", "ARGENTINA_1", NationEnum.ARGENTINA, StageEnum.STAGE_2, WeatherEnum.RAIN),
-        StageTournamentData(argentina_3, "ARGENTINA", "ARGENTINA_1", NationEnum.ARGENTINA, StageEnum.STAGE_3, WeatherEnum.WIND),
+        StageTournamentData(argentina_2, "ARGENTINA", "ARGENTINA_2", NationEnum.ARGENTINA, StageEnum.STAGE_2, WeatherEnum.RAIN),
+        StageTournamentData(argentina_3, "ARGENTINA", "ARGENTINA_3", NationEnum.ARGENTINA, StageEnum.STAGE_3, WeatherEnum.WIND),
         StageTournamentData(australia_1, "AUSTRALIA", "AUSTRALIA_1", NationEnum.AUSTRALIA, StageEnum.STAGE_1, WeatherEnum.SUN),
-        StageTournamentData(australia_2, "AUSTRALIA", "AUSTRALIA_1", NationEnum.AUSTRALIA, StageEnum.STAGE_2, WeatherEnum.RAIN),
-        StageTournamentData(australia_3, "AUSTRALIA", "AUSTRALIA_1", NationEnum.ARGENTINA, StageEnum.STAGE_3, WeatherEnum.WIND),
+        StageTournamentData(australia_2, "AUSTRALIA", "AUSTRALIA_2", NationEnum.AUSTRALIA, StageEnum.STAGE_2, WeatherEnum.RAIN),
+        StageTournamentData(australia_3, "AUSTRALIA", "AUSTRALIA_3", NationEnum.ARGENTINA, StageEnum.STAGE_3, WeatherEnum.WIND),
         StageTournamentData(poland_1, "POLAND", "POLAND_1", NationEnum.POLAND, StageEnum.STAGE_1, WeatherEnum.SUN),
-        StageTournamentData(poland_2, "POLAND", "POLAND_1", NationEnum.POLAND, StageEnum.STAGE_2, WeatherEnum.RAIN),
-        StageTournamentData(poland_3, "POLAND", "POLAND_1", NationEnum.POLAND, StageEnum.STAGE_3, WeatherEnum.WIND),
+        StageTournamentData(poland_2, "POLAND", "POLAND_2", NationEnum.POLAND, StageEnum.STAGE_2, WeatherEnum.RAIN),
+        StageTournamentData(poland_3, "POLAND", "POLAND_3", NationEnum.POLAND, StageEnum.STAGE_3, WeatherEnum.WIND),
         StageTournamentData(spain_1, "SPAIN", "SPAIN_1", NationEnum.SPAIN, StageEnum.STAGE_1, WeatherEnum.SUN),
-        StageTournamentData(spain_2, "SPAIN", "SPAIN_1", NationEnum.SPAIN, StageEnum.STAGE_2, WeatherEnum.RAIN),
-        StageTournamentData(spain_3, "SPAIN", "SPAIN_1", NationEnum.SPAIN, StageEnum.STAGE_3, WeatherEnum.WIND),
+        StageTournamentData(spain_2, "SPAIN", "SPAIN_2", NationEnum.SPAIN, StageEnum.STAGE_2, WeatherEnum.RAIN),
+        StageTournamentData(spain_3, "SPAIN", "SPAIN_3", NationEnum.SPAIN, StageEnum.STAGE_3, WeatherEnum.WIND),
         StageTournamentData(zealand_1, "NEW_ZEALAND_1", "NEW_ZEALAND_1", NationEnum.NEW_ZEALAND, StageEnum.STAGE_1, WeatherEnum.SUN),
-        StageTournamentData(zealand_2, "NEW_ZEALAND_1", "NEW_ZEALAND_1", NationEnum.NEW_ZEALAND, StageEnum.STAGE_2, WeatherEnum.RAIN),
-        StageTournamentData(zealand_3, "NEW_ZEALAND_1", "NEW_ZEALAND_1", NationEnum.NEW_ZEALAND, StageEnum.STAGE_3, WeatherEnum.WIND)
+        StageTournamentData(zealand_2, "NEW_ZEALAND_1", "NEW_ZEALAND_2", NationEnum.NEW_ZEALAND, StageEnum.STAGE_2, WeatherEnum.RAIN),
+        StageTournamentData(zealand_3, "NEW_ZEALAND_1", "NEW_ZEALAND_3", NationEnum.NEW_ZEALAND, StageEnum.STAGE_3, WeatherEnum.WIND)
     )
 }

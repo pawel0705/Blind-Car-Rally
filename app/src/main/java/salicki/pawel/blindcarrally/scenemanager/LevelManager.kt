@@ -125,7 +125,7 @@ object LevelManager : SurfaceView(Settings.CONTEXT), SurfaceHolder.Callback {
             0F,
             0F,
             Settings.SCREEN_WIDTH.toFloat() + 1F,
-            Settings.SCREEN_HEIGHT.toFloat() + 1F,
+            Settings.SCREEN_HEIGHT.toFloat() + 200F,
             canvasPaint
         )
     }
