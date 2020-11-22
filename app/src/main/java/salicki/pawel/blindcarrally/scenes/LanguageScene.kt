@@ -8,6 +8,7 @@ import salicki.pawel.blindcarrally.datas.LanguageSelectionData
 import salicki.pawel.blindcarrally.enums.GestureTypeEnum
 import salicki.pawel.blindcarrally.enums.LanguageLevelFlowEnum
 import salicki.pawel.blindcarrally.enums.LanguageTtsEnum
+import salicki.pawel.blindcarrally.gameresources.OptionImage
 import salicki.pawel.blindcarrally.gameresources.SelectBoxManager
 import salicki.pawel.blindcarrally.gameresources.TextToSpeechManager
 import salicki.pawel.blindcarrally.information.Settings
@@ -18,11 +19,12 @@ import salicki.pawel.blindcarrally.utils.GestureManager
 import salicki.pawel.blindcarrally.utils.OpenerCSV
 import salicki.pawel.blindcarrally.utils.SharedPreferencesManager
 import salicki.pawel.blindcarrally.utils.SoundManager
+import java.security.cert.PKIXRevocationChecker
 
 class LanguageScene(flow: LanguageLevelFlowEnum) : SurfaceView(Settings.CONTEXT), ILevel {
 
     private val languageLevelFlow = flow
-
+    private var languageImage: OptionImage = OptionImage()
     private var soundManager: SoundManager =
         SoundManager()
     private var languageSelectionData: LinkedHashMap<LanguageTtsEnum, LanguageSelectionData> =
@@ -46,6 +48,8 @@ class LanguageScene(flow: LanguageLevelFlowEnum) : SurfaceView(Settings.CONTEXT)
         initSoundManager()
         readTTSTextFile()
         initSelectBoxModel()
+
+        languageImage.setFullScreenImage(R.drawable.language)
     }
 
     private fun initSelectBoxModel(){
@@ -169,6 +173,6 @@ class LanguageScene(flow: LanguageLevelFlowEnum) : SurfaceView(Settings.CONTEXT)
     }
 
     override fun redrawState(canvas: Canvas) {
-        selectBoxManager.drawSelectBox(canvas)
+        languageImage.drawImage(canvas)
     }
 }

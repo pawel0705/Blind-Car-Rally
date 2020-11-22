@@ -5,6 +5,7 @@ import android.view.MotionEvent
 import android.view.SurfaceView
 import salicki.pawel.blindcarrally.*
 import salicki.pawel.blindcarrally.enums.GestureTypeEnum
+import salicki.pawel.blindcarrally.gameresources.OptionImage
 import salicki.pawel.blindcarrally.gameresources.TextToSpeechManager
 import salicki.pawel.blindcarrally.information.Settings
 import salicki.pawel.blindcarrally.resources.RawResources
@@ -14,11 +15,13 @@ import salicki.pawel.blindcarrally.utils.GestureManager
 import salicki.pawel.blindcarrally.utils.OpenerCSV
 import salicki.pawel.blindcarrally.utils.SharedPreferencesManager
 import salicki.pawel.blindcarrally.utils.SoundManager
+import java.security.cert.PKIXRevocationChecker
 
-class TournamentQuestionLevel : SurfaceView(Settings.CONTEXT), ILevel {
+class TournamentQuestionScene : SurfaceView(Settings.CONTEXT), ILevel {
 
     private var texts: HashMap<String, String> = HashMap()
     private var newTournament: Boolean = true
+    private var tournamentQuestionImage: OptionImage = OptionImage()
     private var soundManager: SoundManager =
         SoundManager()
     private var tournamentQuestionIterator: Int = 0
@@ -32,6 +35,8 @@ class TournamentQuestionLevel : SurfaceView(Settings.CONTEXT), ILevel {
 
         initSoundManager()
         readTTSTextFile()
+
+        tournamentQuestionImage.setFullScreenImage(R.drawable.yes_no)
     }
 
     override fun initState() {
@@ -132,6 +137,6 @@ class TournamentQuestionLevel : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun redrawState(canvas: Canvas) {
-
+        tournamentQuestionImage.drawImage(canvas)
     }
 }

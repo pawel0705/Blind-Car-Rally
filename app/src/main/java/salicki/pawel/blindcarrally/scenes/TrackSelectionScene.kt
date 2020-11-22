@@ -7,6 +7,7 @@ import salicki.pawel.blindcarrally.*
 import salicki.pawel.blindcarrally.datas.OptionSelectionData
 import salicki.pawel.blindcarrally.enums.GestureTypeEnum
 import salicki.pawel.blindcarrally.enums.NationEnum
+import salicki.pawel.blindcarrally.gameresources.OptionImage
 import salicki.pawel.blindcarrally.gameresources.TextToSpeechManager
 import salicki.pawel.blindcarrally.information.GameOptions
 import salicki.pawel.blindcarrally.information.Settings
@@ -20,6 +21,7 @@ import salicki.pawel.blindcarrally.utils.SoundManager
 class TrackSelectionScene : SurfaceView(Settings.CONTEXT), ILevel {
     private var textsTrackSelection: HashMap<String, String> = HashMap()
     private var textsNations: HashMap<String, String> = HashMap()
+    private var trackSelectionImage: OptionImage = OptionImage()
     private var soundManager: SoundManager =
         SoundManager()
     private var swipe: Boolean = false
@@ -36,6 +38,8 @@ class TrackSelectionScene : SurfaceView(Settings.CONTEXT), ILevel {
         initSoundManager()
         readTTSTextFile()
         initTrackSelectionOptions()
+
+        trackSelectionImage.setFullScreenImage(R.drawable.select_nation)
     }
 
     private fun initTrackSelectionOptions() {
@@ -225,6 +229,6 @@ class TrackSelectionScene : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun redrawState(canvas: Canvas) {
-
+        trackSelectionImage.drawImage(canvas)
     }
 }

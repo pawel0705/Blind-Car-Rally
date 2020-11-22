@@ -27,6 +27,6 @@
     <road name="right_5_short.xml"/>
     <road name="right_6_long.xml"/>
     <road name="right_6_long.xml"/>
-    <road name="straight_70.xml"/>
     <road name="straight_60.xml"/>
+    <road name="finish.xml"/>
 </track>

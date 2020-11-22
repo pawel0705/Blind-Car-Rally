@@ -28,4 +28,5 @@
     <road name="straight_50.xml"/>
     <road name="left_1.xml"/>
     <road name="straight_70.xml"/>
+    <road name="finish.xml"/>
 </track>

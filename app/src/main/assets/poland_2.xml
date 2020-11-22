@@ -27,4 +27,5 @@
     <road name="opens.xml"/>
     <road name="left_3_very_long.xml" />
     <road name="straight_80.xml"/>
+    <road name="finish.xml"/>
 </track>

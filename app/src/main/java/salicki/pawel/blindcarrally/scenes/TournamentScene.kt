@@ -7,6 +7,7 @@ import salicki.pawel.blindcarrally.*
 import salicki.pawel.blindcarrally.datas.OptionSelectionData
 import salicki.pawel.blindcarrally.enums.GestureTypeEnum
 import salicki.pawel.blindcarrally.enums.LevelTypeEnum
+import salicki.pawel.blindcarrally.gameresources.OptionImage
 import salicki.pawel.blindcarrally.gameresources.TextToSpeechManager
 import salicki.pawel.blindcarrally.information.Settings
 import salicki.pawel.blindcarrally.resources.RawResources
@@ -21,7 +22,7 @@ class TournamentScene : SurfaceView(Settings.CONTEXT), ILevel {
 
     private var textsTournamentSelection: HashMap<String, String> = HashMap()
     private var textsTournament: HashMap<String, String> = HashMap()
-
+    private var tournamentImage: OptionImage = OptionImage()
     private var soundManager: SoundManager =
         SoundManager()
     private var swipe: Boolean = false
@@ -38,6 +39,8 @@ class TournamentScene : SurfaceView(Settings.CONTEXT), ILevel {
         initSoundManager()
         readTTSTextFile()
         initTournamentSelectionOptions()
+
+        tournamentImage.setFullScreenImage(R.drawable.tournament_mode)
     }
 
     private fun initTournamentSelectionOptions() {
@@ -185,7 +188,7 @@ class TournamentScene : SurfaceView(Settings.CONTEXT), ILevel {
     private fun changeLevel(option: Int) {
         when (tournamentSelectionData[option].levelType) {
             LevelTypeEnum.NEW_TOURNAMENT -> {
-                LevelManager.changeLevel(TournamentQuestionLevel())
+                LevelManager.changeLevel(TournamentQuestionScene())
             }
             LevelTypeEnum.CONTINUE_TOURNAMENT -> {
                 var tmp: Boolean = false
@@ -207,6 +210,6 @@ class TournamentScene : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun redrawState(canvas: Canvas) {
-
+        tournamentImage.drawImage(canvas)
     }
 }

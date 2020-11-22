@@ -9,6 +9,7 @@ import salicki.pawel.blindcarrally.datas.OptionSelectionData
 import salicki.pawel.blindcarrally.enums.GestureTypeEnum
 import salicki.pawel.blindcarrally.enums.LevelTypeEnum
 import salicki.pawel.blindcarrally.enums.RacingModeEnum
+import salicki.pawel.blindcarrally.gameresources.OptionImage
 import salicki.pawel.blindcarrally.gameresources.TextToSpeechManager
 import salicki.pawel.blindcarrally.information.GameOptions
 import salicki.pawel.blindcarrally.information.Settings
@@ -22,6 +23,7 @@ import salicki.pawel.blindcarrally.utils.SoundManager
 class GameModeScene: SurfaceView(Settings.CONTEXT), ILevel {
     private var texts: HashMap<String, String> = HashMap()
     private var infoTextPaint = TextPaint()
+    private var gameModeImage: OptionImage = OptionImage()
     private var modeSelectionData = arrayListOf<OptionSelectionData>()
     private var modeIterator: Int = 0
     private var swipe: Boolean = false
@@ -38,6 +40,8 @@ class GameModeScene: SurfaceView(Settings.CONTEXT), ILevel {
         readTTSTextFile()
         initModeOptions()
         initSoundManager()
+
+        gameModeImage.setFullScreenImage(R.drawable.select_mode)
     }
 
     private fun initSoundManager() {
@@ -211,6 +215,7 @@ class GameModeScene: SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun redrawState(canvas: Canvas) {
+        gameModeImage.drawImage(canvas)
 
     }
 

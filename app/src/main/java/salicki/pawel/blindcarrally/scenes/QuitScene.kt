@@ -5,6 +5,7 @@ import android.view.MotionEvent
 import android.view.SurfaceView
 import salicki.pawel.blindcarrally.*
 import salicki.pawel.blindcarrally.enums.GestureTypeEnum
+import salicki.pawel.blindcarrally.gameresources.OptionImage
 import salicki.pawel.blindcarrally.gameresources.TextToSpeechManager
 import salicki.pawel.blindcarrally.information.Settings
 import salicki.pawel.blindcarrally.resources.RawResources
@@ -18,6 +19,7 @@ class QuitScene : SurfaceView(Settings.CONTEXT), ILevel {
 
     private var texts: HashMap<String, String> = HashMap()
     private var exit: Boolean = true
+    private var quitImage: OptionImage = OptionImage()
     private var soundManager: SoundManager =
         SoundManager()
     private var exitIterator: Int = 0
@@ -31,6 +33,8 @@ class QuitScene : SurfaceView(Settings.CONTEXT), ILevel {
 
         initSoundManager()
         readTTSTextFile()
+
+        quitImage.setFullScreenImage(R.drawable.yes_no)
     }
 
     override fun initState() {
@@ -129,6 +133,6 @@ class QuitScene : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun redrawState(canvas: Canvas) {
-
+        quitImage.drawImage(canvas)
     }
 }

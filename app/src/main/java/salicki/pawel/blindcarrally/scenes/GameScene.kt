@@ -396,6 +396,11 @@ class GameScene() : SurfaceView(Settings.CONTEXT), ILevel {
         checkCollistion()
         checkDistance()
 
+        if(car.getCarHealth() <= 0){
+            TextToSpeechManager.stop()
+            LevelManager.changeLevel(CarDestroyedScene())
+        }
+
         if (trackData != null) {
 
             if (trackIterator >= trackData!!.roadList.size - 1) {
@@ -487,7 +492,6 @@ class GameScene() : SurfaceView(Settings.CONTEXT), ILevel {
         car.destroyCar()
         soundManagerGame.destroy()
         MediaPlayerManager.stopSound()
-        // dodac sound managery
     }
 
     override fun respondTouchState(event: MotionEvent) {

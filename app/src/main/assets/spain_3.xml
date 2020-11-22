@@ -28,4 +28,5 @@
     <road name="keep_left_1.xml"/>
     <road name="keep_left_1.xml"/>
     <road name="keep_right_1.xml"/>
+    <road name="finish.xml"/>
 </track>

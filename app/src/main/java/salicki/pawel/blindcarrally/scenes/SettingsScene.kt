@@ -7,6 +7,7 @@ import salicki.pawel.blindcarrally.*
 import salicki.pawel.blindcarrally.datas.OptionSelectionData
 import salicki.pawel.blindcarrally.enums.GestureTypeEnum
 import salicki.pawel.blindcarrally.enums.LevelTypeEnum
+import salicki.pawel.blindcarrally.gameresources.OptionImage
 import salicki.pawel.blindcarrally.gameresources.SelectBoxManager
 import salicki.pawel.blindcarrally.gameresources.TextToSpeechManager
 import salicki.pawel.blindcarrally.information.Settings
@@ -17,11 +18,13 @@ import salicki.pawel.blindcarrally.utils.GestureManager
 import salicki.pawel.blindcarrally.utils.OpenerCSV
 import salicki.pawel.blindcarrally.utils.SharedPreferencesManager
 import salicki.pawel.blindcarrally.utils.SoundManager
+import java.security.cert.PKIXRevocationChecker
 
 class SettingsScene : SurfaceView(Settings.CONTEXT), ILevel {
 
     private var texts: HashMap<String, String> = HashMap()
     private var settingsIterator = 0
+    private var settingsImage: OptionImage = OptionImage()
     private var soundManager: SoundManager =
         SoundManager()
     private var swipe: Boolean = false
@@ -43,6 +46,8 @@ class SettingsScene : SurfaceView(Settings.CONTEXT), ILevel {
         initSettingsOptions()
         initSelectBoxModel()
         initTextOption()
+
+        settingsImage.setFullScreenImage(R.drawable.settings)
     }
 
     private fun initSoundManager(){
@@ -290,8 +295,9 @@ class SettingsScene : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun redrawState(canvas: Canvas) {
-        selectBoxManager.drawSelectBox(canvas)
+
   //      optionText.drawText(canvas, settingsSelectionData[settingsIterator].textValue)
 
+        settingsImage.drawImage(canvas)
     }
 }

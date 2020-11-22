@@ -38,6 +38,8 @@ class Car(posX: Float, posY: Float, rect: RectF) : EnvironmentObject(posX, posY)
         SoundManager()
     private var soundManagerGears =
         SoundManager()
+    private var soundManagerCollition =
+        SoundManager()
 
     private var canCollide = false
 
@@ -61,10 +63,12 @@ class Car(posX: Float, posY: Float, rect: RectF) : EnvironmentObject(posX, posY)
         soundManagerRight.initSoundManager()
         soundManagerEngine.initSoundManager()
         soundManagerGears.initSoundManager()
+        soundManagerCollition.initSoundManager()
 
         soundManagerLeft.addSound(R.raw.beep)
         soundManagerRight.addSound(R.raw.beep)
         soundManagerEngine.addSound(R.raw.engine_03)
+        soundManagerCollition.addSound(R.raw.collision)
 
         soundManagerGears.addSound(R.raw.gear_up)
         soundManagerGears.addSound(R.raw.gear_down)
@@ -155,6 +159,7 @@ class Car(posX: Float, posY: Float, rect: RectF) : EnvironmentObject(posX, posY)
         soundManagerRight.destroy()
         soundManagerEngine.destroy()
         soundManagerGears.destroy()
+        soundManagerCollition.destroy()
     }
 
     private fun drawCarSensors(
@@ -212,6 +217,7 @@ class Car(posX: Float, posY: Float, rect: RectF) : EnvironmentObject(posX, posY)
 
         if(collision){
             this.carParameters.health -= 5
+            soundManagerCollition.playSound(R.raw.collision)
             VibratorManager.vibrate(500)
 
             return true

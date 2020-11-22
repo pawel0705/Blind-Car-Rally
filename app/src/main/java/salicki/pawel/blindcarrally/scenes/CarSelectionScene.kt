@@ -7,6 +7,7 @@ import salicki.pawel.blindcarrally.*
 import salicki.pawel.blindcarrally.datas.OptionSelectionData
 import salicki.pawel.blindcarrally.enums.CarEnum
 import salicki.pawel.blindcarrally.enums.GestureTypeEnum
+import salicki.pawel.blindcarrally.gameresources.OptionImage
 import salicki.pawel.blindcarrally.gameresources.TextToSpeechManager
 import salicki.pawel.blindcarrally.information.GameOptions
 import salicki.pawel.blindcarrally.information.Settings
@@ -19,7 +20,7 @@ import salicki.pawel.blindcarrally.utils.SoundManager
 
 class CarSelectionScene() : SurfaceView(Settings.CONTEXT), ILevel {
     private var textsCarsSelection: HashMap<String, String> = HashMap()
-
+    private var selectionImage: OptionImage = OptionImage()
     private var soundManager: SoundManager =
         SoundManager()
     private var swipe: Boolean = false
@@ -36,6 +37,8 @@ class CarSelectionScene() : SurfaceView(Settings.CONTEXT), ILevel {
         initSoundManager()
         readTTSTextFile()
         initCarSelectionOptions()
+
+        selectionImage.setFullScreenImage(R.drawable.select_car)
     }
 
     private fun initCarSelectionOptions() {
@@ -194,10 +197,10 @@ class CarSelectionScene() : SurfaceView(Settings.CONTEXT), ILevel {
 
     private fun changeLevel(option: Int) {
         GameOptions.car = carsSelectionData[option].levelType as CarEnum
-        LevelManager.stackLevel(CarPerformanceScene())
+        LevelManager.changeLevel(CarPerformanceScene())
     }
 
     override fun redrawState(canvas: Canvas) {
-
+        selectionImage.drawImage(canvas)
     }
 }

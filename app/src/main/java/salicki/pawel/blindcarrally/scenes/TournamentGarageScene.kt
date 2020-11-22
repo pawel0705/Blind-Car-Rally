@@ -8,6 +8,7 @@ import salicki.pawel.blindcarrally.datas.OptionSelectionData
 import salicki.pawel.blindcarrally.enums.GestureTypeEnum
 import salicki.pawel.blindcarrally.enums.RacingModeEnum
 import salicki.pawel.blindcarrally.enums.TournamentGarageEnum
+import salicki.pawel.blindcarrally.gameresources.OptionImage
 import salicki.pawel.blindcarrally.gameresources.TextToSpeechManager
 import salicki.pawel.blindcarrally.information.GameOptions
 import salicki.pawel.blindcarrally.information.Settings
@@ -22,7 +23,7 @@ import salicki.pawel.blindcarrally.utils.SoundManager
 
 class TournamentGarageScene : SurfaceView(Settings.CONTEXT), ILevel {
     private var textsTournamentGarageSelection: HashMap<String, String> = HashMap()
-
+    private var garageImage: OptionImage = OptionImage()
     private var textsNations: HashMap<String, String> = HashMap()
     private var textsStages: HashMap<String, String> = HashMap()
 
@@ -53,6 +54,8 @@ class TournamentGarageScene : SurfaceView(Settings.CONTEXT), ILevel {
         getStageNumber()
         loadCarDescription()
         loadStageDescription()
+
+        garageImage.setFullScreenImage(R.drawable.garage)
     }
 
     private fun getStageNumber(){
@@ -275,6 +278,6 @@ class TournamentGarageScene : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun redrawState(canvas: Canvas) {
-
+        garageImage.drawImage(canvas)
     }
 }

@@ -42,6 +42,13 @@ class OptionImage {
         }
     }
 
+    fun setFullScreenImage(imageId: Int){
+        paint.isAntiAlias = true
+        paint.isFilterBitmap = true
+        image = BitmapFactory.decodeResource(Settings.CONTEXT?.resources, imageId)
+        rectangle.set(0, 0, Settings.SCREEN_WIDTH, Settings.SCREEN_HEIGHT )
+    }
+
     fun drawImage(canvas: Canvas){
         canvas.drawBitmap(image, null, rectangle, paint)
     }

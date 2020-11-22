@@ -8,6 +8,7 @@ import salicki.pawel.blindcarrally.datas.OptionSelectionData
 import salicki.pawel.blindcarrally.enums.GestureTypeEnum
 import salicki.pawel.blindcarrally.enums.LanguageLevelFlowEnum
 import salicki.pawel.blindcarrally.enums.LevelTypeEnum
+import salicki.pawel.blindcarrally.gameresources.OptionImage
 import salicki.pawel.blindcarrally.gameresources.SelectBoxManager
 import salicki.pawel.blindcarrally.gameresources.TextObject
 import salicki.pawel.blindcarrally.gameresources.TextToSpeechManager
@@ -26,7 +27,8 @@ class MenuScene : SurfaceView(Settings.CONTEXT), ILevel {
         SoundManager()
     private var menuSelectionData = arrayListOf<OptionSelectionData>()
     private var menuIterator: Int = 0
-
+    private var menuImage =
+        OptionImage()
     private var selectBoxManager: SelectBoxManager =
         SelectBoxManager()
 
@@ -55,6 +57,11 @@ class MenuScene : SurfaceView(Settings.CONTEXT), ILevel {
         initSelectBoxModel()
         initOptionImages()
         initTextOption()
+        initMenuScreen()
+    }
+
+    private fun initMenuScreen() {
+        menuImage.setFullScreenImage(R.drawable.main_menu)
     }
 
     private fun initTextOption(){
@@ -270,7 +277,7 @@ class MenuScene : SurfaceView(Settings.CONTEXT), ILevel {
    //     languageImage.drawImage(canvas)
     //    authorsImage.drawImage(canvas)
     //    exitImage.drawImage(canvas)
-
+        menuImage.drawImage(canvas)
         optionText.drawText(canvas, menuSelectionData[menuIterator].textValue)
     }
 }
