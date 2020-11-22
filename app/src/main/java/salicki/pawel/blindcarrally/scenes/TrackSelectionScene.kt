@@ -8,6 +8,7 @@ import salicki.pawel.blindcarrally.datas.OptionSelectionData
 import salicki.pawel.blindcarrally.enums.GestureTypeEnum
 import salicki.pawel.blindcarrally.enums.NationEnum
 import salicki.pawel.blindcarrally.gameresources.OptionImage
+import salicki.pawel.blindcarrally.gameresources.TextObject
 import salicki.pawel.blindcarrally.gameresources.TextToSpeechManager
 import salicki.pawel.blindcarrally.information.GameOptions
 import salicki.pawel.blindcarrally.information.Settings
@@ -21,6 +22,8 @@ import salicki.pawel.blindcarrally.utils.SoundManager
 class TrackSelectionScene : SurfaceView(Settings.CONTEXT), ILevel {
     private var textsTrackSelection: HashMap<String, String> = HashMap()
     private var textsNations: HashMap<String, String> = HashMap()
+    private var screenTexts: HashMap<String, String> = HashMap()
+    private var optionText: TextObject = TextObject()
     private var trackSelectionImage: OptionImage = OptionImage()
     private var soundManager: SoundManager =
         SoundManager()
@@ -47,7 +50,7 @@ class TrackSelectionScene : SurfaceView(Settings.CONTEXT), ILevel {
             OptionSelectionData(
                 NationEnum.ARGENTINA,
                 "ARGENTINA",
-                "Argentyna",
+                "ARGENTINA",
                 false
             )
         )
@@ -55,7 +58,7 @@ class TrackSelectionScene : SurfaceView(Settings.CONTEXT), ILevel {
             OptionSelectionData(
                 NationEnum.AUSTRALIA,
                 "AUSTRALIA",
-                "Australia",
+                "AUSTRALIA",
                 false
             )
         )
@@ -63,7 +66,7 @@ class TrackSelectionScene : SurfaceView(Settings.CONTEXT), ILevel {
             OptionSelectionData(
                 NationEnum.POLAND,
                 "POLAND",
-                "Polska",
+                "POLAND",
                 false
             )
         )
@@ -71,7 +74,7 @@ class TrackSelectionScene : SurfaceView(Settings.CONTEXT), ILevel {
             OptionSelectionData(
                 NationEnum.SPAIN,
                 "SPAIN",
-                "Hiszpania",
+                "SPAIN",
                 false
             )
         )
@@ -79,7 +82,7 @@ class TrackSelectionScene : SurfaceView(Settings.CONTEXT), ILevel {
             OptionSelectionData(
                 NationEnum.NEW_ZEALAND,
                 "NEW_ZEALAND",
-                "Nowa Zelania",
+                "NEW_ZEALAND",
                 false
             )
         )
@@ -100,11 +103,23 @@ class TrackSelectionScene : SurfaceView(Settings.CONTEXT), ILevel {
             )
         )
         textsNations.putAll(OpenerCSV.readData(R.raw.tracks_tts, Settings.languageTtsEnum))
+
+        screenTexts.putAll(OpenerCSV.readData(R.raw.tracks_texts, Settings.languageTtsEnum))
     }
 
     override fun initState() {
         TextToSpeechManager.speakNow(textsTrackSelection["TRACK_SELECTION_TUTORIAL"].toString())
         TextToSpeechManager.speakQueue(textsNations["ARGENTINA"].toString())
+
+        screenTexts[trackSelectionData[trackIterator].textValue]?.let {
+            optionText.initMultiLineText(
+                R.font.hemi,
+                R.dimen.selectFontSize,
+                Settings.SCREEN_WIDTH / 2F,
+                Settings.SCREEN_HEIGHT / 3F,
+                it
+            )
+        }
     }
 
     override fun updateState() {
@@ -115,18 +130,28 @@ class TrackSelectionScene : SurfaceView(Settings.CONTEXT), ILevel {
                 )
             }
 
+            screenTexts[trackSelectionData[trackIterator].textValue]?.let {
+                optionText.initMultiLineText(
+                    R.font.hemi,
+                    R.dimen.selectFontSize,
+                    Settings.SCREEN_WIDTH / 2F,
+                    Settings.SCREEN_HEIGHT / 3F,
+                    it
+                )
+            }
+
             lastOption = trackIterator
         }
 
-        if(!TextToSpeechManager.isSpeaking()){
+        if (!TextToSpeechManager.isSpeaking()) {
             idleTime++
 
-            if(idleTime % 30 == 0){
+            if (idleTime % 30 == 0) {
                 idleTimeSeconds++
             }
         }
 
-        if(idleTimeSeconds > 10){
+        if (idleTimeSeconds > 10) {
             TextToSpeechManager.speakNow(textsTrackSelection["TRACK_SELECTION_TUTORIAL"].toString())
 
             idleTimeSeconds = 0
@@ -230,5 +255,7 @@ class TrackSelectionScene : SurfaceView(Settings.CONTEXT), ILevel {
 
     override fun redrawState(canvas: Canvas) {
         trackSelectionImage.drawImage(canvas)
+
+        optionText.drawMultilineText(canvas)
     }
 }

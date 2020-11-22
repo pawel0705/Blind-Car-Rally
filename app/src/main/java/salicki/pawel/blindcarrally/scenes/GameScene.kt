@@ -398,6 +398,11 @@ class GameScene() : SurfaceView(Settings.CONTEXT), ILevel {
 
         if(car.getCarHealth() <= 0){
             TextToSpeechManager.stop()
+
+            if (Looper.myLooper() == null) {
+                Looper.prepare()
+            }
+
             LevelManager.changeLevel(CarDestroyedScene())
         }
 

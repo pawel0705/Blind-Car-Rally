@@ -8,6 +8,7 @@ import salicki.pawel.blindcarrally.datas.OptionSelectionData
 import salicki.pawel.blindcarrally.enums.CarEnum
 import salicki.pawel.blindcarrally.enums.GestureTypeEnum
 import salicki.pawel.blindcarrally.gameresources.OptionImage
+import salicki.pawel.blindcarrally.gameresources.TextObject
 import salicki.pawel.blindcarrally.gameresources.TextToSpeechManager
 import salicki.pawel.blindcarrally.information.GameOptions
 import salicki.pawel.blindcarrally.information.Settings
@@ -21,6 +22,8 @@ import salicki.pawel.blindcarrally.utils.SoundManager
 class CarSelectionScene() : SurfaceView(Settings.CONTEXT), ILevel {
     private var textsCarsSelection: HashMap<String, String> = HashMap()
     private var selectionImage: OptionImage = OptionImage()
+    private var screenTexts: HashMap<String, String> = HashMap()
+    private var optionText: TextObject = TextObject()
     private var soundManager: SoundManager =
         SoundManager()
     private var swipe: Boolean = false
@@ -39,6 +42,7 @@ class CarSelectionScene() : SurfaceView(Settings.CONTEXT), ILevel {
         initCarSelectionOptions()
 
         selectionImage.setFullScreenImage(R.drawable.select_car)
+        optionText.initText(R.font.hemi, Settings.SCREEN_WIDTH / 2F, Settings.SCREEN_HEIGHT / 3F)
     }
 
     private fun initCarSelectionOptions() {
@@ -46,7 +50,7 @@ class CarSelectionScene() : SurfaceView(Settings.CONTEXT), ILevel {
             OptionSelectionData(
                 CarEnum.CAR_1,
                 "CAR_1",
-                "Argentyna",
+                "CAR_1",
                 false
             )
         )
@@ -54,7 +58,7 @@ class CarSelectionScene() : SurfaceView(Settings.CONTEXT), ILevel {
             OptionSelectionData(
                 CarEnum.CAR_2,
                 "CAR_2",
-                "Argentyna",
+                "CAR_2",
                 false
             )
         )
@@ -62,7 +66,7 @@ class CarSelectionScene() : SurfaceView(Settings.CONTEXT), ILevel {
             OptionSelectionData(
                 CarEnum.CAR_3,
                 "CAR_3",
-                "Argentyna",
+                "CAR_3",
                 false
             )
         )
@@ -70,7 +74,7 @@ class CarSelectionScene() : SurfaceView(Settings.CONTEXT), ILevel {
             OptionSelectionData(
                 CarEnum.CAR_4,
                 "CAR_4",
-                "Argentyna",
+                "CAR_4",
                 false
             )
         )
@@ -78,7 +82,7 @@ class CarSelectionScene() : SurfaceView(Settings.CONTEXT), ILevel {
             OptionSelectionData(
                 CarEnum.CAR_5,
                 "CAR_5",
-                "Argentyna",
+                "CAR_5",
                 false
             )
         )
@@ -92,7 +96,13 @@ class CarSelectionScene() : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     private fun readTTSTextFile() {
-        textsCarsSelection.putAll(OpenerCSV.readData(R.raw.car_selection_tts, Settings.languageTtsEnum))
+        textsCarsSelection.putAll(
+            OpenerCSV.readData(
+                R.raw.car_selection_tts,
+                Settings.languageTtsEnum
+            )
+        )
+        screenTexts.putAll(OpenerCSV.readData(R.raw.car_selection_texts, Settings.languageTtsEnum))
     }
 
     override fun initState() {
@@ -111,15 +121,15 @@ class CarSelectionScene() : SurfaceView(Settings.CONTEXT), ILevel {
             lastOption = carIterator
         }
 
-        if(!TextToSpeechManager.isSpeaking()){
+        if (!TextToSpeechManager.isSpeaking()) {
             idleTime++
 
-            if(idleTime % 30 == 0){
+            if (idleTime % 30 == 0) {
                 idleTimeSeconds++
             }
         }
 
-        if(idleTimeSeconds > 10){
+        if (idleTimeSeconds > 10) {
             TextToSpeechManager.speakNow(textsCarsSelection["CAR_TUTORIAL"].toString())
 
             idleTimeSeconds = 0
@@ -202,5 +212,10 @@ class CarSelectionScene() : SurfaceView(Settings.CONTEXT), ILevel {
 
     override fun redrawState(canvas: Canvas) {
         selectionImage.drawImage(canvas)
+        textsCarsSelection[carsSelectionData[carIterator].textValue]?.let {
+            optionText.drawText(canvas,
+                it
+            )
+        }
     }
 }

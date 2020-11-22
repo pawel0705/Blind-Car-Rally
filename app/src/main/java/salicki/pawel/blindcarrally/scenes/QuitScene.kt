@@ -6,6 +6,7 @@ import android.view.SurfaceView
 import salicki.pawel.blindcarrally.*
 import salicki.pawel.blindcarrally.enums.GestureTypeEnum
 import salicki.pawel.blindcarrally.gameresources.OptionImage
+import salicki.pawel.blindcarrally.gameresources.TextObject
 import salicki.pawel.blindcarrally.gameresources.TextToSpeechManager
 import salicki.pawel.blindcarrally.information.Settings
 import salicki.pawel.blindcarrally.resources.RawResources
@@ -18,6 +19,8 @@ import salicki.pawel.blindcarrally.utils.SoundManager
 class QuitScene : SurfaceView(Settings.CONTEXT), ILevel {
 
     private var texts: HashMap<String, String> = HashMap()
+    private var screenTexts: HashMap<String, String> = HashMap()
+    private var optionText: TextObject = TextObject()
     private var exit: Boolean = true
     private var quitImage: OptionImage = OptionImage()
     private var soundManager: SoundManager =
@@ -35,6 +38,7 @@ class QuitScene : SurfaceView(Settings.CONTEXT), ILevel {
         readTTSTextFile()
 
         quitImage.setFullScreenImage(R.drawable.yes_no)
+        optionText.initText(R.font.hemi, Settings.SCREEN_WIDTH / 2F, Settings.SCREEN_HEIGHT / 3F)
     }
 
     override fun initState() {
@@ -51,6 +55,7 @@ class QuitScene : SurfaceView(Settings.CONTEXT), ILevel {
 
     private fun readTTSTextFile() {
         texts.putAll(OpenerCSV.readData(R.raw.quit_tts, Settings.languageTtsEnum))
+        screenTexts.putAll(OpenerCSV.readData(R.raw.quit_texts, Settings.languageTtsEnum))
     }
 
     override fun updateState() {
@@ -134,5 +139,12 @@ class QuitScene : SurfaceView(Settings.CONTEXT), ILevel {
 
     override fun redrawState(canvas: Canvas) {
         quitImage.drawImage(canvas)
+
+        if(exit){
+            screenTexts["QUIT_YES"]?.let { optionText.drawText(canvas, it) }
+        }
+        else {
+            screenTexts["QUIT_NO"]?.let { optionText.drawText(canvas, it) }
+        }
     }
 }

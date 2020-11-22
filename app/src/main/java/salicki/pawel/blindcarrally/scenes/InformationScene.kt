@@ -11,6 +11,7 @@ import android.view.SurfaceView
 import androidx.core.content.res.ResourcesCompat
 import salicki.pawel.blindcarrally.*
 import salicki.pawel.blindcarrally.enums.GestureTypeEnum
+import salicki.pawel.blindcarrally.gameresources.TextObject
 import salicki.pawel.blindcarrally.gameresources.TextToSpeechManager
 import salicki.pawel.blindcarrally.information.Settings
 import salicki.pawel.blindcarrally.resources.RawResources
@@ -23,10 +24,7 @@ class InformationScene : SurfaceView(Settings.CONTEXT), ILevel {
 
     private var texts: HashMap<String, String> = HashMap()
 
-    private var infoTextPaint = TextPaint()
-    private lateinit var textLayout: StaticLayout
-    private var posX = 0F
-    private var posY = 0F
+    private var text: TextObject = TextObject()
 
     private var idleTime: Int = 0
     private var idleTimeSeconds: Int = 0
@@ -38,25 +36,14 @@ class InformationScene : SurfaceView(Settings.CONTEXT), ILevel {
         initInformationText()
     }
 
-    private fun initInformationText(){
+    private fun initInformationText() {
+        text.initMultiLineText(
+            R.font.montserrat, R.dimen.informationSize,
+            Settings.SCREEN_WIDTH / 2F,
+            Settings.SCREEN_HEIGHT / 8F,
+            texts["INTRODUCTION_TUTORIAL"].toString()
+        )
 
-        infoTextPaint.color = Color.GRAY
-        infoTextPaint.textAlign = Paint.Align.CENTER
-
-        val customTypeface = Settings.CONTEXT?.let { ResourcesCompat.getFont(it, R.font.montserrat) }
-
-        infoTextPaint.typeface = customTypeface
-        infoTextPaint.isAntiAlias = true
-        infoTextPaint.isFilterBitmap = true
-
-        posX = Settings.SCREEN_WIDTH / 2F
-        posY = (Settings.SCREEN_HEIGHT / 8F - (infoTextPaint.descent() + infoTextPaint.ascent()) / 2)
-
-        infoTextPaint.textSize = Settings.CONTEXT?.resources?.getDimensionPixelSize(R.dimen.informationSize)!!.toFloat()
-
-        textLayout =  StaticLayout(texts["INTRODUCTION_TUTORIAL"].toString(),
-            infoTextPaint, (Settings.SCREEN_WIDTH * 0.8F).toInt(), Layout.Alignment.ALIGN_NORMAL,
-            1.0f, 0.0f, false);
     }
 
     private fun readTTSTextFile() {
@@ -68,17 +55,17 @@ class InformationScene : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun updateState() {
-        if(TextToSpeechManager.isSpeaking()){
+        if (TextToSpeechManager.isSpeaking()) {
             idleTime = 0
         }
 
         idleTime++
 
-        if(idleTime % 30 == 0){
+        if (idleTime % 30 == 0) {
             idleTimeSeconds++
         }
 
-        if(idleTimeSeconds > 10 && !TextToSpeechManager.isSpeaking()){
+        if (idleTimeSeconds > 10 && !TextToSpeechManager.isSpeaking()) {
             TextToSpeechManager.speakNow(texts["INTRODUCTION_TUTORIAL"].toString())
             idleTimeSeconds = 0
         }
@@ -98,11 +85,7 @@ class InformationScene : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun redrawState(canvas: Canvas) {
-        canvas.save()
-        canvas.translate(posX.toFloat(), posY.toFloat())
-        textLayout.draw(canvas);
-
-        canvas.restore()
+        text.drawMultilineText(canvas)
     }
 
 }

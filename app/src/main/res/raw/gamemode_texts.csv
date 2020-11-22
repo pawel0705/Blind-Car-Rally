@@ -1,0 +1,6 @@
+TEXT_KEY;ENGLISH;POLISH
+MODE_SINGLE;Single race;Pojedyńczy wyścig
+MODE_TOURNAMENT;Tournament mode;Tryb turniejowy
+MODE_MENU;Return;Powrót
+MODE_DESCRIPTION;Description;Opis
+MODE_DESCRIPTION_CLICKED;In single race mode, you can choose any race route and vehicle. The tournament mode is about collecting points. Points are earned by finishing the race. The shorter the route completion time and the less vehicle damage, the more points. Points are needed to qualify for the next route. You win if you have the most points among your rivals after the last run.;W trybie pojedyńczego wyścigu możesz wybrać dowolną trasę wyścigową oraz pojazd. Tryb turniejowy polega na zbieraniu punktów. Punkty zdobywa się poprzez kończenie wyścigu. Im krótszy czas ukończenia trasy i mniejsze uszkodzenia pojazdu, tym więcej punktów. Punkty są potrzebne do kwalifikacji na kolejną trasę. Wygrywasz jeżeli po ostatniej trasie będziesz miał najwięcej punktów spośród rywali.

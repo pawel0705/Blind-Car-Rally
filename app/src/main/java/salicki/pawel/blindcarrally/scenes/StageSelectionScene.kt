@@ -9,6 +9,7 @@ import salicki.pawel.blindcarrally.enums.GestureTypeEnum
 import salicki.pawel.blindcarrally.enums.NationEnum
 import salicki.pawel.blindcarrally.enums.StageEnum
 import salicki.pawel.blindcarrally.gameresources.OptionImage
+import salicki.pawel.blindcarrally.gameresources.TextObject
 import salicki.pawel.blindcarrally.gameresources.TextToSpeechManager
 import salicki.pawel.blindcarrally.information.GameOptions
 import salicki.pawel.blindcarrally.information.Settings
@@ -26,6 +27,8 @@ class StageSelectionScene(nation: NationEnum) : SurfaceView(Settings.CONTEXT), I
     private var stageImage: OptionImage = OptionImage()
     private var textsStageSelection: HashMap<String, String> = HashMap()
     private var textsNations: HashMap<String, String> = HashMap()
+    private var screenTexts: HashMap<String, String> = HashMap()
+    private var optionText: TextObject = TextObject()
     private var soundManager: SoundManager =
         SoundManager()
     private var swipe: Boolean = false
@@ -43,6 +46,8 @@ class StageSelectionScene(nation: NationEnum) : SurfaceView(Settings.CONTEXT), I
         readTTSTextFile()
         initStageSelectionOptions()
 
+        optionText.initText(R.font.hemi, Settings.SCREEN_WIDTH / 2F, Settings.SCREEN_HEIGHT / 3F)
+
         stageImage.setFullScreenImage(R.drawable.select_track)
     }
 
@@ -54,7 +59,7 @@ class StageSelectionScene(nation: NationEnum) : SurfaceView(Settings.CONTEXT), I
             OptionSelectionData(
                 StageEnum.STAGE_1,
                 stageName + "_1",
-                "Argentyna",
+                stageName + "_1",
                 false
             )
         )
@@ -62,7 +67,7 @@ class StageSelectionScene(nation: NationEnum) : SurfaceView(Settings.CONTEXT), I
             OptionSelectionData(
                 StageEnum.STAGE_2,
                 stageName + "_2",
-                "Australia",
+                stageName + "_2",
                 false
             )
         )
@@ -70,7 +75,7 @@ class StageSelectionScene(nation: NationEnum) : SurfaceView(Settings.CONTEXT), I
             OptionSelectionData(
                 StageEnum.STAGE_3,
                 stageName + "_3",
-                "Polska",
+                stageName + "_3",
                 false
             )
         )
@@ -91,6 +96,8 @@ class StageSelectionScene(nation: NationEnum) : SurfaceView(Settings.CONTEXT), I
             )
         )
         textsNations.putAll(OpenerCSV.readData(R.raw.nation_roads_tts, Settings.languageTtsEnum))
+
+        screenTexts.putAll(OpenerCSV.readData(R.raw.nation_roads_texts, Settings.languageTtsEnum))
     }
 
     override fun initState() {
@@ -198,5 +205,11 @@ class StageSelectionScene(nation: NationEnum) : SurfaceView(Settings.CONTEXT), I
 
     override fun redrawState(canvas: Canvas) {
         stageImage.drawImage(canvas)
+
+        screenTexts[ stageSelectionData[stageIterator].textValue]?.let {
+            optionText.drawText(canvas,
+                it
+            )
+        }
     }
 }

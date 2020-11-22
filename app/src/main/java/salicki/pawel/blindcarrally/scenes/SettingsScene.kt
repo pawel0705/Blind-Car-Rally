@@ -9,6 +9,7 @@ import salicki.pawel.blindcarrally.enums.GestureTypeEnum
 import salicki.pawel.blindcarrally.enums.LevelTypeEnum
 import salicki.pawel.blindcarrally.gameresources.OptionImage
 import salicki.pawel.blindcarrally.gameresources.SelectBoxManager
+import salicki.pawel.blindcarrally.gameresources.TextObject
 import salicki.pawel.blindcarrally.gameresources.TextToSpeechManager
 import salicki.pawel.blindcarrally.information.Settings
 import salicki.pawel.blindcarrally.resources.RawResources
@@ -21,7 +22,7 @@ import salicki.pawel.blindcarrally.utils.SoundManager
 import java.security.cert.PKIXRevocationChecker
 
 class SettingsScene : SurfaceView(Settings.CONTEXT), ILevel {
-
+    private var screenTexts: HashMap<String, String> = HashMap()
     private var texts: HashMap<String, String> = HashMap()
     private var settingsIterator = 0
     private var settingsImage: OptionImage = OptionImage()
@@ -32,7 +33,7 @@ class SettingsScene : SurfaceView(Settings.CONTEXT), ILevel {
     private var selectBoxManager: SelectBoxManager =
         SelectBoxManager()
     private var lastOption = -1
-   // private var optionText = TextObject()
+    private var optionText = TextObject()
 
     private var idleTime: Int = 0
     private var idleTimeSeconds: Int = 0
@@ -63,10 +64,11 @@ class SettingsScene : SurfaceView(Settings.CONTEXT), ILevel {
 
     private fun readTTSTextFile() {
         texts.putAll(OpenerCSV.readData(R.raw.settings_tts, Settings.languageTtsEnum))
+        screenTexts.putAll(OpenerCSV.readData(R.raw.settings_texts, Settings.languageTtsEnum))
     }
 
     private fun initTextOption(){
-  //      optionText.initText(R.font.hemi, Settings.SCREEN_WIDTH / 2F, Settings.SCREEN_HEIGHT / 3F)
+        optionText.initText(R.font.hemi, Settings.SCREEN_WIDTH / 2F, Settings.SCREEN_HEIGHT / 3F)
     }
 
     private fun initSettingsOptions() {
@@ -74,7 +76,7 @@ class SettingsScene : SurfaceView(Settings.CONTEXT), ILevel {
             OptionSelectionData(
                 LevelTypeEnum.VIBRATION,
                 if(Settings.vibrations) "SETTINGS_VIBRATION_ON" else "SETTINGS_VIBRATION_OFF",
-                "Wibracje",
+                if(Settings.vibrations) "VIBRATION_ON" else "VIBRATION_OFF",
                 false
             )
         )
@@ -82,15 +84,15 @@ class SettingsScene : SurfaceView(Settings.CONTEXT), ILevel {
             OptionSelectionData(
                 LevelTypeEnum.DISPLAY,
                 if(Settings.display) "SETTINGS_DISPLAY_ON" else "SETTINGS_DISPLAY_OFF",
-                "Wyświetlanie ekranu",
+                if(Settings.display) "DISPLAY_ON" else "DISPLAY_OFF",
                 false
             )
         )
         settingsSelectionData.add(
             OptionSelectionData(
                 LevelTypeEnum.INTRODUCTION,
-                if(Settings.display) "SETTINGS_INTRODUCTION_ON" else "SETTINGS_INTRODUCTION_OFF",
-                "Wstępna informacja",
+                if(Settings.introduction) "SETTINGS_INTRODUCTION_ON" else "SETTINGS_INTRODUCTION_OFF",
+                if(Settings.introduction) "INFORMATION_ON" else "INFORMATION_OFF",
                 false
             )
         )
@@ -98,7 +100,7 @@ class SettingsScene : SurfaceView(Settings.CONTEXT), ILevel {
             OptionSelectionData(
                 LevelTypeEnum.VOLUME_TTS,
                 "SETTINGS_TTS",
-                "Głośność lektora",
+                "VOLUME_TTS",
                 false
             )
         )
@@ -106,7 +108,7 @@ class SettingsScene : SurfaceView(Settings.CONTEXT), ILevel {
             OptionSelectionData(
                 LevelTypeEnum.VOLUME_SOUNDS,
                 "SETTINGS_SOUNDS",
-                "Głośność dźwięków",
+                "VOLUME_SOUNDS",
                 false
             )
         )
@@ -114,7 +116,7 @@ class SettingsScene : SurfaceView(Settings.CONTEXT), ILevel {
             OptionSelectionData(
                 LevelTypeEnum.MENU,
                 "SETTINGS_EXIT",
-                "Wyjdź do menu",
+                "MENU",
                 false
             )
         )
@@ -210,8 +212,11 @@ class SettingsScene : SurfaceView(Settings.CONTEXT), ILevel {
 
                         if (Settings.vibrations) {
                             TextToSpeechManager.speakNow(texts["SETTINGS_VIBRATION_ON"].toString())
+                            settingsSelectionData[settingsIterator].textValue = "VIBRATION_ON"
+
                         } else {
                             TextToSpeechManager.speakNow(texts["SETTINGS_VIBRATION_OFF"].toString())
+                            settingsSelectionData[settingsIterator].textValue = "VIBRATION_OFF"
                         }
                     }
                     1 -> {
@@ -226,8 +231,10 @@ class SettingsScene : SurfaceView(Settings.CONTEXT), ILevel {
 
                         if (Settings.display) {
                             TextToSpeechManager.speakNow(texts["SETTINGS_DISPLAY_ON"].toString())
+                            settingsSelectionData[settingsIterator].textValue = "DISPLAY_ON"
                         } else {
                             TextToSpeechManager.speakNow(texts["SETTINGS_DISPLAY_OFF"].toString())
+                            settingsSelectionData[settingsIterator].textValue = "DISPLAY_OFF"
                         }
                     }
                     2->{
@@ -242,8 +249,10 @@ class SettingsScene : SurfaceView(Settings.CONTEXT), ILevel {
 
                         if (Settings.introduction) {
                             TextToSpeechManager.speakNow(texts["SETTINGS_INTRODUCTION_ON"].toString())
+                            settingsSelectionData[settingsIterator].textValue = "INFORMATION_ON"
                         } else {
                             TextToSpeechManager.speakNow(texts["SETTINGS_INTRODUCTION_OFF"].toString())
+                            settingsSelectionData[settingsIterator].textValue = "INFORMATION_OFF"
                         }
                     }
                     3 -> {
@@ -295,9 +304,11 @@ class SettingsScene : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun redrawState(canvas: Canvas) {
-
-  //      optionText.drawText(canvas, settingsSelectionData[settingsIterator].textValue)
-
         settingsImage.drawImage(canvas)
+        screenTexts[settingsSelectionData[settingsIterator].textValue]?.let {
+            optionText.drawText(canvas,
+                it
+            )
+        }
     }
 }

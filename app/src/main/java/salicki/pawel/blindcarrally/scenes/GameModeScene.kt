@@ -10,6 +10,7 @@ import salicki.pawel.blindcarrally.enums.GestureTypeEnum
 import salicki.pawel.blindcarrally.enums.LevelTypeEnum
 import salicki.pawel.blindcarrally.enums.RacingModeEnum
 import salicki.pawel.blindcarrally.gameresources.OptionImage
+import salicki.pawel.blindcarrally.gameresources.TextObject
 import salicki.pawel.blindcarrally.gameresources.TextToSpeechManager
 import salicki.pawel.blindcarrally.information.GameOptions
 import salicki.pawel.blindcarrally.information.Settings
@@ -20,9 +21,11 @@ import salicki.pawel.blindcarrally.utils.GestureManager
 import salicki.pawel.blindcarrally.utils.OpenerCSV
 import salicki.pawel.blindcarrally.utils.SoundManager
 
-class GameModeScene: SurfaceView(Settings.CONTEXT), ILevel {
+class GameModeScene : SurfaceView(Settings.CONTEXT), ILevel {
     private var texts: HashMap<String, String> = HashMap()
-    private var infoTextPaint = TextPaint()
+    private var descriptionText: TextObject = TextObject()
+    private var screenTexts: HashMap<String, String> = HashMap()
+    private var optionText: TextObject = TextObject()
     private var gameModeImage: OptionImage = OptionImage()
     private var modeSelectionData = arrayListOf<OptionSelectionData>()
     private var modeIterator: Int = 0
@@ -30,7 +33,7 @@ class GameModeScene: SurfaceView(Settings.CONTEXT), ILevel {
     private var soundManager: SoundManager =
         SoundManager()
     private var lastOption: Int = -1
-
+    private var drawDescription: Boolean = false
     private var idleTime: Int = 0
     private var idleTimeSeconds: Int = 0
 
@@ -41,7 +44,18 @@ class GameModeScene: SurfaceView(Settings.CONTEXT), ILevel {
         initModeOptions()
         initSoundManager()
 
+        screenTexts.putAll(OpenerCSV.readData(R.raw.gamemode_texts, Settings.languageTtsEnum))
         gameModeImage.setFullScreenImage(R.drawable.select_mode)
+        optionText.initText(R.font.hemi, Settings.SCREEN_WIDTH / 2F, Settings.SCREEN_HEIGHT / 3F)
+        screenTexts["MODE_DESCRIPTION_CLICKED"]?.let {
+            descriptionText.initMultiLineText(
+                R.font.montserrat,
+                R.dimen.informationSize,
+                Settings.SCREEN_WIDTH / 2F,
+                Settings.SCREEN_HEIGHT / 10F,
+                it
+            )
+        }
     }
 
     private fun initSoundManager() {
@@ -51,12 +65,12 @@ class GameModeScene: SurfaceView(Settings.CONTEXT), ILevel {
         soundManager.addSound(RawResources.acceptSound)
     }
 
-    private fun initModeOptions(){
+    private fun initModeOptions() {
         modeSelectionData.add(
             OptionSelectionData(
                 LevelTypeEnum.SINGLE,
                 "MODE_SINGLE",
-                "Pojedyńczy wyścig",
+                "MODE_SINGLE",
                 false
             )
         )
@@ -64,7 +78,7 @@ class GameModeScene: SurfaceView(Settings.CONTEXT), ILevel {
             OptionSelectionData(
                 LevelTypeEnum.TOURNAMENT,
                 "MODE_TOURNAMENT",
-                "Tryb turniejowy",
+                "MODE_TOURNAMENT",
                 false
             )
         )
@@ -72,7 +86,7 @@ class GameModeScene: SurfaceView(Settings.CONTEXT), ILevel {
             OptionSelectionData(
                 LevelTypeEnum.MODE_DESCRIPTION,
                 "MODE_DESCRIPTION",
-                "Opis trybów",
+                "MODE_DESCRIPTION",
                 false
             )
         )
@@ -80,7 +94,7 @@ class GameModeScene: SurfaceView(Settings.CONTEXT), ILevel {
             OptionSelectionData(
                 LevelTypeEnum.MENU,
                 "MODE_MENU",
-                "Powrót",
+                "MODE_MENU",
                 false
             )
         )
@@ -88,6 +102,7 @@ class GameModeScene: SurfaceView(Settings.CONTEXT), ILevel {
 
     private fun readTTSTextFile() {
         texts.putAll(OpenerCSV.readData(R.raw.gamemode_tts, Settings.languageTtsEnum))
+
     }
 
     override fun initState() {
@@ -103,18 +118,19 @@ class GameModeScene: SurfaceView(Settings.CONTEXT), ILevel {
                 )
             }
 
+            drawDescription = false
             lastOption = modeIterator
         }
 
-        if(!TextToSpeechManager.isSpeaking()){
+        if (!TextToSpeechManager.isSpeaking()) {
             idleTime++
 
-            if(idleTime % 30 == 0){
+            if (idleTime % 30 == 0) {
                 idleTimeSeconds++
             }
         }
 
-        if(idleTimeSeconds > 10){
+        if (idleTimeSeconds > 10) {
             TextToSpeechManager.speakNow(texts["MODE_TUTORIAL"].toString())
 
             idleTimeSeconds = 0
@@ -154,8 +170,7 @@ class GameModeScene: SurfaceView(Settings.CONTEXT), ILevel {
             }
         }
 
-        when(GestureManager.doubleTapDetect(event))
-        {
+        when (GestureManager.doubleTapDetect(event)) {
             GestureTypeEnum.DOUBLE_TAP -> {
                 TextToSpeechManager.stop()
                 Settings.globalSounds.playSound(RawResources.acceptSound)
@@ -197,7 +212,6 @@ class GameModeScene: SurfaceView(Settings.CONTEXT), ILevel {
             LevelTypeEnum.SINGLE -> {
 
                 GameOptions.gamemode = RacingModeEnum.SINGLE_RACE
-
                 LevelManager.changeLevel(TrackSelectionScene())
             }
             LevelTypeEnum.TOURNAMENT -> {
@@ -207,6 +221,7 @@ class GameModeScene: SurfaceView(Settings.CONTEXT), ILevel {
             }
             LevelTypeEnum.MODE_DESCRIPTION -> {
                 TextToSpeechManager.speakNow(texts["MODE_DESCRIPTION_CLICKED"].toString())
+                drawDescription = true
             }
             LevelTypeEnum.MENU -> {
                 LevelManager.changeLevel(MenuScene())
@@ -216,6 +231,17 @@ class GameModeScene: SurfaceView(Settings.CONTEXT), ILevel {
 
     override fun redrawState(canvas: Canvas) {
         gameModeImage.drawImage(canvas)
+
+        if(!drawDescription){
+            screenTexts[modeSelectionData[modeIterator].textValue]?.let {
+                optionText.drawText(
+                    canvas,
+                    it
+                )
+            }
+        } else {
+            descriptionText.drawMultilineText(canvas)
+        }
 
     }
 

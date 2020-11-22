@@ -10,6 +10,7 @@ import salicki.pawel.blindcarrally.enums.LanguageLevelFlowEnum
 import salicki.pawel.blindcarrally.enums.LanguageTtsEnum
 import salicki.pawel.blindcarrally.gameresources.OptionImage
 import salicki.pawel.blindcarrally.gameresources.SelectBoxManager
+import salicki.pawel.blindcarrally.gameresources.TextObject
 import salicki.pawel.blindcarrally.gameresources.TextToSpeechManager
 import salicki.pawel.blindcarrally.information.Settings
 import salicki.pawel.blindcarrally.resources.RawResources
@@ -25,6 +26,8 @@ class LanguageScene(flow: LanguageLevelFlowEnum) : SurfaceView(Settings.CONTEXT)
 
     private val languageLevelFlow = flow
     private var languageImage: OptionImage = OptionImage()
+    private var screenTexts: HashMap<String, String> = HashMap()
+    private var optionText: TextObject = TextObject()
     private var soundManager: SoundManager =
         SoundManager()
     private var languageSelectionData: LinkedHashMap<LanguageTtsEnum, LanguageSelectionData> =
@@ -50,6 +53,7 @@ class LanguageScene(flow: LanguageLevelFlowEnum) : SurfaceView(Settings.CONTEXT)
         initSelectBoxModel()
 
         languageImage.setFullScreenImage(R.drawable.language)
+        optionText.initText(R.font.hemi, Settings.SCREEN_WIDTH / 2F, Settings.SCREEN_HEIGHT / 3F)
     }
 
     private fun initSelectBoxModel(){
@@ -62,6 +66,8 @@ class LanguageScene(flow: LanguageLevelFlowEnum) : SurfaceView(Settings.CONTEXT)
             (LanguageSelectionData(OpenerCSV.readData(R.raw.language_tts, LanguageTtsEnum.ENGLISH)))
         languageSelectionData[LanguageTtsEnum.POLISH] =
             (LanguageSelectionData(OpenerCSV.readData(R.raw.language_tts, LanguageTtsEnum.POLISH)))
+
+        screenTexts.putAll(OpenerCSV.readData(R.raw.language_texts, Settings.languageTtsEnum))
     }
 
     private fun initSoundManager() {
@@ -174,5 +180,12 @@ class LanguageScene(flow: LanguageLevelFlowEnum) : SurfaceView(Settings.CONTEXT)
 
     override fun redrawState(canvas: Canvas) {
         languageImage.drawImage(canvas)
+
+        if(Settings.languageTtsEnum == LanguageTtsEnum.ENGLISH)
+        {
+            screenTexts["ENGLISH"]?.let { optionText.drawText(canvas, it) }
+        } else {
+            screenTexts["POLISH"]?.let { optionText.drawText(canvas, it) }
+        }
     }
 }

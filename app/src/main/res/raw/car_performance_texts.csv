@@ -1,0 +1,9 @@
+TEXT_KEY;ENGLISH;POLISH
+READ;Car performance;Osiągi pojazdu
+BACK;Return;Powrót
+ACCEPT;Accept car;Zaakceptuj pojazd
+CAR_1;Top speed: ten percent. Acceleration: twenty percent. Maneuverability: thirty percent.;Prędkość maksymalna: dziesięć procent. Przyśpieszenie: dwadzieścia procent. Prędkość maksymalna: trzydzieści procent.
+CAR_2;Top speed: twenty percent. Acceleration: thirty percent. Maneuverability: fifty percent.;Prędkość maksymalna: dwadzieścia procent. Przyśpieszenie: trzydzieści procent. Prędkość maksymalna: pięćdziesiąt procent.
+CAR_3;Top speed: fifty percent. Acceleration: forty percent. Maneuverability: fifty percent.;Prędkość maksymalna: pięćdziesiąt procent. Przyśpieszenie: czterdzieści procent. Prędkość maksymalna: pięćdziesiąt procent.
+CAR_4;Top speed: ninety percent. Acceleration: sixty percent. Maneuverability: siememdziesiąt procent.;Prędkość maksymalna: dziewięćdziesiąt procent. Przyśpieszenie: sześćdziesiąt procent. Prędkość maksymalna: siedemdziesiąt procent.
+CAR_5;Top speed: one hundred percent. Acceleration: one hundred percent. Maneuverability: one hundred percent.;Prędkość maksymalna: sto procent. Przyśpieszenie: sto procent. Prędkość maksymalna: sto procent.

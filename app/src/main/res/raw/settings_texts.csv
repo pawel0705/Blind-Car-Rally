@@ -1,7 +1,10 @@
 TEXT_KEY;ENGLISH;POLISH
-VIBRATION;Vibration;Wibracje
-DISPLAY;Screen display;Wyświetlanie ekranu
-INFORMATION;Initial information;Wstępna informacja
+VIBRATION_ON;Vibration:  On;Wibracje: Tak
+VIBRATION_OFF;Vibration: Off;Wibracje: Nie
+DISPLAY_ON;Screen display:  On;Wyświetlanie ekranu: Tak
+DISPLAY_OFF;Screen display: Off;Wyświetlanie ekranu: Nie
+INFORMATION_ON;Initial inf.:  On;Wstępna inf.: Tak
+INFORMATION_OFF;Initial inf.: Off;Wstępna inf.: Nie
 VOLUME_TTS;Synthesizer volume;Głośność syntezatora
 VOLUME_SOUNDS;Sounds volume;Głośność dźwięków
 MENU;Return;Powrót

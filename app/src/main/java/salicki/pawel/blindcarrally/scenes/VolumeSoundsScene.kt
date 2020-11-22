@@ -5,6 +5,7 @@ import android.view.MotionEvent
 import android.view.SurfaceView
 import salicki.pawel.blindcarrally.*
 import salicki.pawel.blindcarrally.enums.GestureTypeEnum
+import salicki.pawel.blindcarrally.gameresources.TextObject
 import salicki.pawel.blindcarrally.gameresources.TextToSpeechManager
 import salicki.pawel.blindcarrally.information.Settings
 import salicki.pawel.blindcarrally.resources.RawResources
@@ -17,6 +18,7 @@ import salicki.pawel.blindcarrally.utils.SoundManager
 
 class VolumeSoundsScene : SurfaceView(Settings.CONTEXT), ILevel {
     private var texts: HashMap<String, String> = HashMap()
+    private var optionText: TextObject = TextObject()
     private var volume: ArrayList<String> = ArrayList()
     private var volumeIterator = 0
     private var lastOption = 0
@@ -30,6 +32,8 @@ class VolumeSoundsScene : SurfaceView(Settings.CONTEXT), ILevel {
         initSoundManager()
         readTTSTextFile()
         initVolumeOptions()
+
+        optionText.initText(R.font.hemi, Settings.SCREEN_WIDTH / 2F, Settings.SCREEN_HEIGHT / 3F)
     }
 
     private fun initVolumeOptions() {
@@ -162,6 +166,6 @@ class VolumeSoundsScene : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun redrawState(canvas: Canvas) {
-
+        optionText.drawText(canvas, (Settings.sounds * 10).toString())
     }
 }

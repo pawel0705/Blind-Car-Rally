@@ -9,6 +9,8 @@ import salicki.pawel.blindcarrally.enums.CarEnum
 import salicki.pawel.blindcarrally.enums.GestureTypeEnum
 import salicki.pawel.blindcarrally.enums.RacingModeEnum
 import salicki.pawel.blindcarrally.enums.SelectionEnum
+import salicki.pawel.blindcarrally.gameresources.OptionImage
+import salicki.pawel.blindcarrally.gameresources.TextObject
 import salicki.pawel.blindcarrally.gameresources.TextToSpeechManager
 import salicki.pawel.blindcarrally.information.GameOptions
 import salicki.pawel.blindcarrally.information.Settings
@@ -22,17 +24,20 @@ import salicki.pawel.blindcarrally.utils.SoundManager
 
 class CarPerformanceScene : SurfaceView(Settings.CONTEXT), ILevel {
     private var textsPerformanceSelection: HashMap<String, String> = HashMap()
-
+    private var screenTexts: HashMap<String, String> = HashMap()
+    private var optionText: TextObject = TextObject()
+    private var optionCarDescription: TextObject = TextObject()
     private var soundManager: SoundManager =
         SoundManager()
     private var swipe: Boolean = false
+    private var selectionImage: OptionImage = OptionImage()
     private var performanceSelectionData = arrayListOf<OptionSelectionData>()
     private var performanceIterator: Int = 0
     private var lastOption: Int = -1
     private var carNumber: Int = 1
     private var idleTime: Int = 0
     private var idleTimeSeconds: Int = 0
-
+    private var drawDescription: Boolean = false
     private var carDescription: String = ""
 
     init {
@@ -42,8 +47,17 @@ class CarPerformanceScene : SurfaceView(Settings.CONTEXT), ILevel {
         readTTSTextFile()
         initPerformanceSelectionOptions()
         initCarDescription()
-
-  //      GameOptions.carDescription = carDescription
+        selectionImage.setFullScreenImage(R.drawable.car_performance)
+        optionText.initText(R.font.hemi, Settings.SCREEN_WIDTH / 2F, Settings.SCREEN_HEIGHT / 3F)
+        screenTexts["CAR_" + (GameOptions.car.ordinal + 1)]?.let {
+            optionCarDescription.initMultiLineText(
+                R.font.montserrat,
+                R.dimen.informationSize,
+                Settings.SCREEN_WIDTH / 2F,
+                Settings.SCREEN_HEIGHT / 10F,
+                it
+            )
+        }
     }
 
     private fun initCarDescription() {
@@ -91,7 +105,7 @@ class CarPerformanceScene : SurfaceView(Settings.CONTEXT), ILevel {
             OptionSelectionData(
                 SelectionEnum.SELECTION_1,
                 "READ",
-                "Argentyna",
+                "READ",
                 false
             )
         )
@@ -99,7 +113,7 @@ class CarPerformanceScene : SurfaceView(Settings.CONTEXT), ILevel {
             OptionSelectionData(
                 SelectionEnum.SELECTION_2,
                 "BACK",
-                "Argentyna",
+                "BACK",
                 false
             )
         )
@@ -107,7 +121,7 @@ class CarPerformanceScene : SurfaceView(Settings.CONTEXT), ILevel {
             OptionSelectionData(
                 SelectionEnum.SELECTION_3,
                 "ACCEPT",
-                "Argentyna",
+                "ACCEPT",
                 false
             )
         )
@@ -127,6 +141,13 @@ class CarPerformanceScene : SurfaceView(Settings.CONTEXT), ILevel {
                 Settings.languageTtsEnum
             )
         )
+
+        screenTexts.putAll(
+            OpenerCSV.readData(
+                R.raw.car_performance_texts,
+                Settings.languageTtsEnum
+            )
+        )
     }
 
     override fun initState() {
@@ -143,6 +164,7 @@ class CarPerformanceScene : SurfaceView(Settings.CONTEXT), ILevel {
             }
 
             lastOption = performanceIterator
+            drawDescription = false
         }
 
         if (!TextToSpeechManager.isSpeaking()) {
@@ -228,6 +250,7 @@ class CarPerformanceScene : SurfaceView(Settings.CONTEXT), ILevel {
         when (performanceSelectionData[option].levelType) {
             SelectionEnum.SELECTION_1, -> {
                 TextToSpeechManager.speakNow(carDescription)
+                drawDescription = true
             }
             SelectionEnum.SELECTION_2, -> {
                 LevelManager.popLevel()
@@ -250,6 +273,17 @@ class CarPerformanceScene : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun redrawState(canvas: Canvas) {
+        selectionImage.drawImage(canvas)
 
+        if(!drawDescription){
+            screenTexts[performanceSelectionData[performanceIterator].textValue]?.let {
+                optionText.drawText(
+                    canvas,
+                    it
+                )
+            }
+        } else {
+            optionCarDescription.drawMultilineText(canvas)
+        }
     }
 }
