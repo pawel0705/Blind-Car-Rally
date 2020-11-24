@@ -8,6 +8,8 @@ import salicki.pawel.blindcarrally.datas.OptionSelectionData
 import salicki.pawel.blindcarrally.datas.StageResultData
 import salicki.pawel.blindcarrally.enums.GestureTypeEnum
 import salicki.pawel.blindcarrally.enums.LevelTypeEnum
+import salicki.pawel.blindcarrally.gameresources.OptionImage
+import salicki.pawel.blindcarrally.gameresources.TextObject
 import salicki.pawel.blindcarrally.gameresources.TextToSpeechManager
 import salicki.pawel.blindcarrally.information.Settings
 import salicki.pawel.blindcarrally.resources.RawResources
@@ -26,11 +28,17 @@ class TournamentStageOverScene(raceData: StageResultData) : SurfaceView(Settings
     private var tournamentStageOverSelectionData= arrayListOf<OptionSelectionData>()
     private var soundManager: SoundManager =
         SoundManager()
+    private var tournamentStageOverImage: OptionImage = OptionImage()
     private var swipe: Boolean = false
     private var tournamentStageOverIterator: Int = 0
     private var lastOption: Int = -1
     private var tournamentStageNumber: Int = 0
     private var finishedTournament: Boolean = false
+
+    private var descriptionText: TextObject = TextObject()
+    private var screenTexts: HashMap<String, String> = HashMap()
+    private var optionText: TextObject = TextObject()
+    private var drawDescription: Boolean = false
 
     init {
         isFocusable = true
@@ -40,6 +48,20 @@ class TournamentStageOverScene(raceData: StageResultData) : SurfaceView(Settings
         updateStage()
         isTournamentFinished()
         initTournamentStageOverSelectionOptions()
+        tournamentStageOverImage.setFullScreenImage(R.drawable.tournament_stage_over)
+
+        screenTexts.putAll(OpenerCSV.readData(R.raw.tournament_stage_over_text, Settings.languageTtsEnum))
+        optionText.initText(R.font.hemi, Settings.SCREEN_WIDTH / 2F, Settings.SCREEN_HEIGHT / 3F)
+
+        descriptionText.initMultiLineText(
+            R.font.montserrat,
+            R.dimen.informationSize,
+            Settings.SCREEN_WIDTH / 2F,
+            Settings.SCREEN_HEIGHT / 10F,
+            textsTournamentStageOver["CAR_DAMAGE"].toString() + raceData.carDamage + "%." +
+                textsTournamentStageOver["TIME"].toString() + raceData.time + textsTournamentStageOver["SECONDS"].toString() +
+                textsTournamentStageOver["SCORE"].toString() + raceData.score + textsTournamentStageOver["POINTS"].toString()
+        )
     }
 
     private fun isTournamentFinished() {
@@ -65,7 +87,7 @@ class TournamentStageOverScene(raceData: StageResultData) : SurfaceView(Settings
             OptionSelectionData(
                 LevelTypeEnum.MODE_DESCRIPTION,
                 "READ",
-                "Wznów",
+                "READ",
                 false
             )
         )
@@ -74,7 +96,7 @@ class TournamentStageOverScene(raceData: StageResultData) : SurfaceView(Settings
                 OptionSelectionData(
                     LevelTypeEnum.TOURNAMENT,
                     "GARAGE",
-                    "Do menu",
+                    "GARAGE",
                     false
                 )
             )
@@ -83,7 +105,7 @@ class TournamentStageOverScene(raceData: StageResultData) : SurfaceView(Settings
             OptionSelectionData(
                 LevelTypeEnum.MENU,
                 "MENU",
-                "Do menu",
+                "MENU",
                 false
             )
         )
@@ -133,6 +155,7 @@ class TournamentStageOverScene(raceData: StageResultData) : SurfaceView(Settings
                 )
             }
 
+            drawDescription = false
             lastOption = tournamentStageOverIterator
         }
     }
@@ -215,6 +238,7 @@ class TournamentStageOverScene(raceData: StageResultData) : SurfaceView(Settings
     private fun changeLevel(option: Int) {
         when (tournamentStageOverSelectionData[option].levelType) {
             LevelTypeEnum.MODE_DESCRIPTION -> {
+                drawDescription = true
                 scoreDescription()
             }
             LevelTypeEnum.TOURNAMENT -> {
@@ -227,6 +251,17 @@ class TournamentStageOverScene(raceData: StageResultData) : SurfaceView(Settings
     }
 
     override fun redrawState(canvas: Canvas) {
+        tournamentStageOverImage.drawImage(canvas)
 
+        if(!drawDescription){
+            screenTexts[tournamentStageOverSelectionData[tournamentStageOverIterator].textValue]?.let {
+                optionText.drawText(
+                    canvas,
+                    it
+                )
+            }
+        } else {
+            descriptionText.drawMultilineText(canvas)
+        }
     }
 }

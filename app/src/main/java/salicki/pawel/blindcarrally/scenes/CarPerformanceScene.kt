@@ -253,7 +253,7 @@ class CarPerformanceScene : SurfaceView(Settings.CONTEXT), ILevel {
                 drawDescription = true
             }
             SelectionEnum.SELECTION_2, -> {
-                LevelManager.popLevel()
+                LevelManager.changeLevel(CarSelectionScene())
             }
             SelectionEnum.SELECTION_3, -> {
                 if(GameOptions.gamemode == RacingModeEnum.SINGLE_RACE){

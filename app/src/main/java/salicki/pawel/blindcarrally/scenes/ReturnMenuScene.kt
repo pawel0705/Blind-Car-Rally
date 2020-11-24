@@ -154,7 +154,7 @@ class ReturnMenuScene: SurfaceView(Settings.CONTEXT), ILevel {
                 // ds na stos sa teraz 2+
                 LevelManager.changeLevel(MenuScene())
             }
-            LevelTypeEnum.MENU -> {
+            AnswerEnum.NO -> {
                 LevelManager.popLevel()
             }
         }

@@ -8,6 +8,8 @@ import salicki.pawel.blindcarrally.datas.OptionSelectionData
 import salicki.pawel.blindcarrally.datas.StageResultData
 import salicki.pawel.blindcarrally.enums.GestureTypeEnum
 import salicki.pawel.blindcarrally.enums.LevelTypeEnum
+import salicki.pawel.blindcarrally.gameresources.OptionImage
+import salicki.pawel.blindcarrally.gameresources.TextObject
 import salicki.pawel.blindcarrally.gameresources.TextToSpeechManager
 import salicki.pawel.blindcarrally.information.Settings
 import salicki.pawel.blindcarrally.resources.RawResources
@@ -22,11 +24,17 @@ class RaceOverScene(raceData: StageResultData) : SurfaceView(Settings.CONTEXT), 
     private var textsRaceOver: HashMap<String, String> = HashMap()
     private var raceData: StageResultData = raceData
     private var raceOverSelectionData= arrayListOf<OptionSelectionData>()
+    private var raceOverImage: OptionImage = OptionImage()
     private var soundManager: SoundManager =
         SoundManager()
     private var swipe: Boolean = false
     private var raceOverIterator: Int = 0
     private var lastOption: Int = -1
+
+    private var descriptionText: TextObject = TextObject()
+    private var screenTexts: HashMap<String, String> = HashMap()
+    private var optionText: TextObject = TextObject()
+    private var drawDescription: Boolean = false
 
     init {
         isFocusable = true
@@ -34,6 +42,21 @@ class RaceOverScene(raceData: StageResultData) : SurfaceView(Settings.CONTEXT), 
         initSoundManager()
         readTTSTextFile()
         initTrackSelectionOptions()
+        raceOverImage.setFullScreenImage(R.drawable.race_over)
+
+        screenTexts.putAll(OpenerCSV.readData(R.raw.race_over_texts, Settings.languageTtsEnum))
+        optionText.initText(R.font.hemi, Settings.SCREEN_WIDTH / 2F, Settings.SCREEN_HEIGHT / 3F)
+
+            descriptionText.initMultiLineText(
+                R.font.montserrat,
+                R.dimen.informationSize,
+                Settings.SCREEN_WIDTH / 2F,
+                Settings.SCREEN_HEIGHT / 10F,
+                textsRaceOver["CAR_DAMAGE"].toString() + raceData.carDamage + "%." +
+                     textsRaceOver["TIME"].toString() + raceData.time + textsRaceOver["SECONDS"].toString() +
+                     textsRaceOver["SCORE"].toString() + raceData.score + textsRaceOver["POINTS"].toString()
+            )
+
     }
 
     private fun initTrackSelectionOptions() {
@@ -41,7 +64,7 @@ class RaceOverScene(raceData: StageResultData) : SurfaceView(Settings.CONTEXT), 
             OptionSelectionData(
                 LevelTypeEnum.MENU,
                 "MENU",
-                "Wznów",
+                "MENU",
                 false
             )
         )
@@ -49,7 +72,7 @@ class RaceOverScene(raceData: StageResultData) : SurfaceView(Settings.CONTEXT), 
             OptionSelectionData(
                 LevelTypeEnum.GAME,
                 "RACE_AGAIN",
-                "Do menu",
+                "RACE_AGAIN",
                 false
             )
         )
@@ -57,7 +80,7 @@ class RaceOverScene(raceData: StageResultData) : SurfaceView(Settings.CONTEXT), 
             OptionSelectionData(
                 LevelTypeEnum.MODE_DESCRIPTION,
                 "READ_SCORE",
-                "Do menu",
+                "READ_SCORE",
                 false
             )
         )
@@ -86,6 +109,9 @@ class RaceOverScene(raceData: StageResultData) : SurfaceView(Settings.CONTEXT), 
     }
 
     private fun scoreDescription(){
+
+
+
         TextToSpeechManager.speakQueue(textsRaceOver["CAR_DAMAGE"].toString() + raceData.carDamage + "%.")
         TextToSpeechManager.speakQueue(textsRaceOver["TIME"].toString() + raceData.time + textsRaceOver["SECONDS"].toString())
         TextToSpeechManager.speakQueue(textsRaceOver["SCORE"].toString() + raceData.score + textsRaceOver["POINTS"].toString())
@@ -99,6 +125,7 @@ class RaceOverScene(raceData: StageResultData) : SurfaceView(Settings.CONTEXT), 
                 )
             }
 
+            drawDescription = false
             lastOption = raceOverIterator
         }
     }
@@ -177,11 +204,23 @@ class RaceOverScene(raceData: StageResultData) : SurfaceView(Settings.CONTEXT), 
             }
             LevelTypeEnum.MODE_DESCRIPTION -> {
                 scoreDescription()
+                drawDescription = true
             }
         }
     }
 
     override fun redrawState(canvas: Canvas) {
+        raceOverImage.drawImage(canvas)
 
+        if(!drawDescription){
+            screenTexts[raceOverSelectionData[raceOverIterator].textValue]?.let {
+                optionText.drawText(
+                    canvas,
+                    it
+                )
+            }
+        } else {
+            descriptionText.drawMultilineText(canvas)
+        }
     }
 }

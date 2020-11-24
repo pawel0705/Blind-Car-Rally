@@ -8,7 +8,9 @@ import salicki.pawel.blindcarrally.datas.OptionSelectionData
 import salicki.pawel.blindcarrally.enums.GestureTypeEnum
 import salicki.pawel.blindcarrally.enums.LevelTypeEnum
 import salicki.pawel.blindcarrally.gameresources.OptionImage
+import salicki.pawel.blindcarrally.gameresources.TextObject
 import salicki.pawel.blindcarrally.gameresources.TextToSpeechManager
+import salicki.pawel.blindcarrally.information.GameOptions
 import salicki.pawel.blindcarrally.information.Settings
 import salicki.pawel.blindcarrally.resources.RawResources
 import salicki.pawel.blindcarrally.scenemanager.ILevel
@@ -22,6 +24,9 @@ class TournamentScene : SurfaceView(Settings.CONTEXT), ILevel {
 
     private var textsTournamentSelection: HashMap<String, String> = HashMap()
     private var textsTournament: HashMap<String, String> = HashMap()
+    private var screenTexts: HashMap<String, String> = HashMap()
+    private var optionText: TextObject = TextObject()
+    private var optionTournamentDescription: TextObject = TextObject()
     private var tournamentImage: OptionImage = OptionImage()
     private var soundManager: SoundManager =
         SoundManager()
@@ -32,6 +37,7 @@ class TournamentScene : SurfaceView(Settings.CONTEXT), ILevel {
 
     private var idleTime: Int = 0
     private var idleTimeSeconds: Int = 0
+    private var drawDescription: Boolean = false
 
     init {
         isFocusable = true
@@ -41,6 +47,17 @@ class TournamentScene : SurfaceView(Settings.CONTEXT), ILevel {
         initTournamentSelectionOptions()
 
         tournamentImage.setFullScreenImage(R.drawable.tournament_mode)
+
+        optionText.initText(R.font.hemi, Settings.SCREEN_WIDTH / 2F, Settings.SCREEN_HEIGHT / 3F)
+        screenTexts["CANT_CONTINUE"]?.let {
+            optionTournamentDescription.initMultiLineText(
+                R.font.montserrat,
+                R.dimen.informationSize,
+                Settings.SCREEN_WIDTH / 2F,
+                Settings.SCREEN_HEIGHT / 10F,
+                it
+            )
+        }
     }
 
     private fun initTournamentSelectionOptions() {
@@ -49,7 +66,7 @@ class TournamentScene : SurfaceView(Settings.CONTEXT), ILevel {
             OptionSelectionData(
                 LevelTypeEnum.NEW_TOURNAMENT,
                 "NEW",
-                "Argentyna",
+                "NEW",
                 false
             )
         )
@@ -57,7 +74,7 @@ class TournamentScene : SurfaceView(Settings.CONTEXT), ILevel {
             OptionSelectionData(
                 LevelTypeEnum.CONTINUE_TOURNAMENT,
                 "CONTINUE",
-                "Australia",
+                "CONTINUE",
                 false
             )
         )
@@ -65,7 +82,7 @@ class TournamentScene : SurfaceView(Settings.CONTEXT), ILevel {
             OptionSelectionData(
                 LevelTypeEnum.RETURN,
                 "RETURN",
-                "Polska",
+                "RETURN",
                 false
             )
         )
@@ -85,6 +102,13 @@ class TournamentScene : SurfaceView(Settings.CONTEXT), ILevel {
                 Settings.languageTtsEnum
             )
         )
+
+        screenTexts.putAll(
+            OpenerCSV.readData(
+                R.raw.tournament_texts,
+                Settings.languageTtsEnum
+            )
+        )
     }
 
     override fun initState() {
@@ -99,7 +123,7 @@ class TournamentScene : SurfaceView(Settings.CONTEXT), ILevel {
                     it
                 )
             }
-
+            drawDescription = false
             lastOption = tournamentIterator
         }
 
@@ -200,6 +224,7 @@ class TournamentScene : SurfaceView(Settings.CONTEXT), ILevel {
                 if(tmp){
                     LevelManager.changeLevel(TournamentGarageScene())
                 } else{
+                    drawDescription = true
                     TextToSpeechManager.speakNow(textsTournament["CANT_CONTINUE"].toString())
                 }
             }
@@ -211,5 +236,16 @@ class TournamentScene : SurfaceView(Settings.CONTEXT), ILevel {
 
     override fun redrawState(canvas: Canvas) {
         tournamentImage.drawImage(canvas)
+
+        if(!drawDescription){
+            screenTexts[tournamentSelectionData[tournamentIterator].textValue]?.let {
+                optionText.drawText(
+                    canvas,
+                    it
+                )
+            }
+        } else {
+            optionTournamentDescription.drawMultilineText(canvas)
+        }
     }
 }

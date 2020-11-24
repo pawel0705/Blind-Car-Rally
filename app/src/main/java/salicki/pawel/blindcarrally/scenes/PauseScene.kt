@@ -7,6 +7,8 @@ import salicki.pawel.blindcarrally.*
 import salicki.pawel.blindcarrally.datas.OptionSelectionData
 import salicki.pawel.blindcarrally.enums.GestureTypeEnum
 import salicki.pawel.blindcarrally.enums.LevelTypeEnum
+import salicki.pawel.blindcarrally.gameresources.OptionImage
+import salicki.pawel.blindcarrally.gameresources.TextObject
 import salicki.pawel.blindcarrally.gameresources.TextToSpeechManager
 import salicki.pawel.blindcarrally.information.Settings
 import salicki.pawel.blindcarrally.resources.RawResources
@@ -19,7 +21,9 @@ import salicki.pawel.blindcarrally.utils.SoundManager
 class PauseScene : SurfaceView(Settings.CONTEXT), ILevel {
 
     private var textsPause: HashMap<String, String> = HashMap()
-
+    private var screenTexts: HashMap<String, String> = HashMap()
+    private var optionText: TextObject = TextObject()
+    private var pauseImage: OptionImage = OptionImage()
     private var pauseSelectionData= arrayListOf<OptionSelectionData>()
     private var soundManager: SoundManager =
         SoundManager()
@@ -36,6 +40,10 @@ class PauseScene : SurfaceView(Settings.CONTEXT), ILevel {
         initSoundManager()
         readTTSTextFile()
         initTrackSelectionOptions()
+
+        screenTexts.putAll(OpenerCSV.readData(R.raw.pause_texts, Settings.languageTtsEnum))
+        pauseImage.setFullScreenImage(R.drawable.pause)
+        optionText.initText(R.font.hemi, Settings.SCREEN_WIDTH / 2F, Settings.SCREEN_HEIGHT / 3F)
     }
 
     private fun initTrackSelectionOptions() {
@@ -43,7 +51,7 @@ class PauseScene : SurfaceView(Settings.CONTEXT), ILevel {
             OptionSelectionData(
                 LevelTypeEnum.GAME,
                 "RESUME",
-                "Wznów",
+                "RESUME",
                 false
             )
         )
@@ -51,7 +59,7 @@ class PauseScene : SurfaceView(Settings.CONTEXT), ILevel {
             OptionSelectionData(
                 LevelTypeEnum.MENU,
                 "MENU",
-                "Do menu",
+                "MENU",
                 false
             )
         )
@@ -59,7 +67,7 @@ class PauseScene : SurfaceView(Settings.CONTEXT), ILevel {
             OptionSelectionData(
                 LevelTypeEnum.QUIT,
                 "EXIT",
-                "Wyjdz",
+                "EXIT",
                 false
             )
         )
@@ -195,6 +203,13 @@ class PauseScene : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun redrawState(canvas: Canvas) {
+        pauseImage.drawImage(canvas)
 
+        screenTexts[pauseSelectionData[pauseIterator].textValue]?.let {
+            optionText.drawText(
+                canvas,
+                it
+            )
+        }
     }
 }

@@ -7,6 +7,7 @@ import salicki.pawel.blindcarrally.*
 import salicki.pawel.blindcarrally.datas.OptionSelectionData
 import salicki.pawel.blindcarrally.enums.*
 import salicki.pawel.blindcarrally.gameresources.OptionImage
+import salicki.pawel.blindcarrally.gameresources.TextObject
 import salicki.pawel.blindcarrally.gameresources.TextToSpeechManager
 import salicki.pawel.blindcarrally.information.GameOptions
 import salicki.pawel.blindcarrally.information.Settings
@@ -20,7 +21,9 @@ import salicki.pawel.blindcarrally.utils.SoundManager
 
 class CarDestroyedScene : SurfaceView(Settings.CONTEXT), ILevel {
     private var textsDestroyedSelection: HashMap<String, String> = HashMap()
-
+    private var destroyedImage: OptionImage = OptionImage()
+    private var screenTexts: HashMap<String, String> = HashMap()
+    private var optionText: TextObject = TextObject()
     private var soundManager: SoundManager =
         SoundManager()
     private var swipe: Boolean = false
@@ -37,6 +40,9 @@ class CarDestroyedScene : SurfaceView(Settings.CONTEXT), ILevel {
         initSoundManager()
         readTTSTextFile()
         initPerformanceSelectionOptions()
+
+        destroyedImage.setFullScreenImage(R.drawable.try_again)
+        optionText.initText(R.font.hemi, Settings.SCREEN_WIDTH / 2F, Settings.SCREEN_HEIGHT / 3F)
     }
 
     private fun initPerformanceSelectionOptions() {
@@ -44,7 +50,7 @@ class CarDestroyedScene : SurfaceView(Settings.CONTEXT), ILevel {
             OptionSelectionData(
                 LevelTypeEnum.CALIBRATION,
                 "TRY_AGAIN",
-                "Argentyna",
+                "TRY_AGAIN",
                 false
             )
         )
@@ -52,7 +58,7 @@ class CarDestroyedScene : SurfaceView(Settings.CONTEXT), ILevel {
             OptionSelectionData(
                 LevelTypeEnum.MENU,
                 "MENU",
-                "Argentyna",
+                "MENU",
                 false
             )
         )
@@ -69,6 +75,13 @@ class CarDestroyedScene : SurfaceView(Settings.CONTEXT), ILevel {
         textsDestroyedSelection.putAll(
             OpenerCSV.readData(
                 R.raw.car_destroyed_tts,
+                Settings.languageTtsEnum
+            )
+        )
+
+        screenTexts.putAll(
+            OpenerCSV.readData(
+                R.raw.car_destroyed_texts,
                 Settings.languageTtsEnum
             )
         )
@@ -177,5 +190,12 @@ class CarDestroyedScene : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun redrawState(canvas: Canvas) {
+        destroyedImage.drawImage(canvas)
+        screenTexts[destroyedSelectionData[destroyedIterator].textValue]?.let {
+            optionText.drawText(
+                canvas,
+                it
+            )
+        }
     }
 }

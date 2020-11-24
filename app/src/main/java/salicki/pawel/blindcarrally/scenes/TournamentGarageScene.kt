@@ -9,6 +9,7 @@ import salicki.pawel.blindcarrally.enums.GestureTypeEnum
 import salicki.pawel.blindcarrally.enums.RacingModeEnum
 import salicki.pawel.blindcarrally.enums.TournamentGarageEnum
 import salicki.pawel.blindcarrally.gameresources.OptionImage
+import salicki.pawel.blindcarrally.gameresources.TextObject
 import salicki.pawel.blindcarrally.gameresources.TextToSpeechManager
 import salicki.pawel.blindcarrally.information.GameOptions
 import salicki.pawel.blindcarrally.information.Settings
@@ -28,7 +29,10 @@ class TournamentGarageScene : SurfaceView(Settings.CONTEXT), ILevel {
     private var textsStages: HashMap<String, String> = HashMap()
 
     private var textsCarDescriptions: HashMap<String, String> = HashMap()
-
+    private var screenTexts: HashMap<String, String> = HashMap()
+    private var optionText: TextObject = TextObject()
+    private var optionCarDescription: TextObject = TextObject()
+    private var optionStageDescription: TextObject = TextObject()
     private var soundManager: SoundManager =
         SoundManager()
     private var swipe: Boolean = false
@@ -41,6 +45,9 @@ class TournamentGarageScene : SurfaceView(Settings.CONTEXT), ILevel {
 
     private var carDescription: String = ""
     private var nextStageDescription: String = ""
+    private var drawCarDescription: Boolean = false
+    private var drawStageDescription: Boolean = false
+
 
     private var stageIterator: Int = 0
 
@@ -56,9 +63,28 @@ class TournamentGarageScene : SurfaceView(Settings.CONTEXT), ILevel {
         loadStageDescription()
 
         garageImage.setFullScreenImage(R.drawable.garage)
+
+        optionText.initText(R.font.hemi, Settings.SCREEN_WIDTH / 2F, Settings.SCREEN_HEIGHT / 3F)
+
+        optionCarDescription.initMultiLineText(
+            R.font.montserrat,
+            R.dimen.informationSize,
+            Settings.SCREEN_WIDTH / 2F,
+            Settings.SCREEN_HEIGHT / 10F,
+            carDescription
+        )
+
+
+        optionStageDescription.initMultiLineText(
+            R.font.montserrat,
+            R.dimen.informationSize,
+            Settings.SCREEN_WIDTH / 2F,
+            Settings.SCREEN_HEIGHT / 10F,
+            nextStageDescription
+        )
     }
 
-    private fun getStageNumber(){
+    private fun getStageNumber() {
         var stage = SharedPreferencesManager.loadConfiguration("tournamentStageNumber")
         if (stage != null && stage != "") {
             stageIterator = stage.toInt()
@@ -70,7 +96,7 @@ class TournamentGarageScene : SurfaceView(Settings.CONTEXT), ILevel {
             OptionSelectionData(
                 TournamentGarageEnum.CAR_INFORMATION,
                 "CAR_INFORMATION",
-                "Argentyna",
+                "CAR_INFORMATION",
                 false
             )
         )
@@ -78,7 +104,7 @@ class TournamentGarageScene : SurfaceView(Settings.CONTEXT), ILevel {
             OptionSelectionData(
                 TournamentGarageEnum.STAGE_INFORMATION,
                 "STAGE_INFORMATION",
-                "Argentyna",
+                "STAGE_INFORMATION",
                 false
             )
         )
@@ -86,7 +112,7 @@ class TournamentGarageScene : SurfaceView(Settings.CONTEXT), ILevel {
             OptionSelectionData(
                 TournamentGarageEnum.START_STAGE,
                 "NEXT_STAGE",
-                "Argentyna",
+                "NEXT_STAGE",
                 false
             )
         )
@@ -94,7 +120,7 @@ class TournamentGarageScene : SurfaceView(Settings.CONTEXT), ILevel {
             OptionSelectionData(
                 TournamentGarageEnum.MENU,
                 "MENU",
-                "Argentyna",
+                "MENU",
                 false
             )
         )
@@ -114,10 +140,11 @@ class TournamentGarageScene : SurfaceView(Settings.CONTEXT), ILevel {
             SharedPreferencesManager.loadConfiguration("carTournamentAcceleration")?.toFloat() ?: 1F
 
         GameOptions.carManeuverability =
-            SharedPreferencesManager.loadConfiguration("carTournamentManeuverability")?.toFloat() ?: 1F
+            SharedPreferencesManager.loadConfiguration("carTournamentManeuverability")?.toFloat()
+                ?: 1F
     }
 
-    private fun loadStageDescription(){
+    private fun loadStageDescription() {
         nextStageDescription = textsTournamentGarageSelection["STAGE_DESCRIPTION"] +
                 textsNations[StagesResources.stageList[stageIterator].nationKey] +
                 textsStages[StagesResources.stageList[stageIterator].stageKey]
@@ -158,6 +185,13 @@ class TournamentGarageScene : SurfaceView(Settings.CONTEXT), ILevel {
                 Settings.languageTtsEnum
             )
         )
+
+        screenTexts.putAll(
+            OpenerCSV.readData(
+                R.raw.tournament_garage_texts,
+                Settings.languageTtsEnum
+            )
+        )
     }
 
     override fun initState() {
@@ -174,6 +208,8 @@ class TournamentGarageScene : SurfaceView(Settings.CONTEXT), ILevel {
             }
 
             lastOption = garageIterator
+            drawCarDescription = false
+            drawStageDescription = false
         }
 
         if (!TextToSpeechManager.isSpeaking()) {
@@ -260,9 +296,11 @@ class TournamentGarageScene : SurfaceView(Settings.CONTEXT), ILevel {
     private fun changeLevel(option: Int) {
         when (garageSelectionData[option].levelType) {
             TournamentGarageEnum.CAR_INFORMATION -> {
+                drawCarDescription = true
                 TextToSpeechManager.speakNow(carDescription)
             }
             TournamentGarageEnum.STAGE_INFORMATION -> {
+                drawStageDescription = true
                 TextToSpeechManager.speakNow(nextStageDescription)
             }
             TournamentGarageEnum.START_STAGE -> {
@@ -279,5 +317,18 @@ class TournamentGarageScene : SurfaceView(Settings.CONTEXT), ILevel {
 
     override fun redrawState(canvas: Canvas) {
         garageImage.drawImage(canvas)
+
+        if(drawCarDescription){
+            optionCarDescription.drawMultilineText(canvas)
+        }else if(drawStageDescription){
+            optionStageDescription.drawMultilineText(canvas)
+        } else {
+            screenTexts[garageSelectionData[garageIterator].textValue]?.let {
+                optionText.drawText(
+                    canvas,
+                    it
+                )
+            }
+        }
     }
 }

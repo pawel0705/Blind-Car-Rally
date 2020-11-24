@@ -6,6 +6,7 @@ import android.view.SurfaceView
 import salicki.pawel.blindcarrally.*
 import salicki.pawel.blindcarrally.enums.GestureTypeEnum
 import salicki.pawel.blindcarrally.gameresources.OptionImage
+import salicki.pawel.blindcarrally.gameresources.TextObject
 import salicki.pawel.blindcarrally.gameresources.TextToSpeechManager
 import salicki.pawel.blindcarrally.information.Settings
 import salicki.pawel.blindcarrally.resources.RawResources
@@ -22,6 +23,8 @@ class TournamentQuestionScene : SurfaceView(Settings.CONTEXT), ILevel {
     private var texts: HashMap<String, String> = HashMap()
     private var newTournament: Boolean = true
     private var tournamentQuestionImage: OptionImage = OptionImage()
+    private var screenTexts: HashMap<String, String> = HashMap()
+    private var optionText: TextObject = TextObject()
     private var soundManager: SoundManager =
         SoundManager()
     private var tournamentQuestionIterator: Int = 0
@@ -37,6 +40,7 @@ class TournamentQuestionScene : SurfaceView(Settings.CONTEXT), ILevel {
         readTTSTextFile()
 
         tournamentQuestionImage.setFullScreenImage(R.drawable.yes_no)
+        optionText.initText(R.font.hemi, Settings.SCREEN_WIDTH / 2F, Settings.SCREEN_HEIGHT / 3F)
     }
 
     override fun initState() {
@@ -53,6 +57,13 @@ class TournamentQuestionScene : SurfaceView(Settings.CONTEXT), ILevel {
 
     private fun readTTSTextFile() {
         texts.putAll(OpenerCSV.readData(R.raw.tournament_question_tts, Settings.languageTtsEnum))
+
+        screenTexts.putAll(
+            OpenerCSV.readData(
+                R.raw.tournament_question_texts,
+                Settings.languageTtsEnum
+            )
+        )
     }
 
     override fun updateState() {
@@ -138,5 +149,12 @@ class TournamentQuestionScene : SurfaceView(Settings.CONTEXT), ILevel {
 
     override fun redrawState(canvas: Canvas) {
         tournamentQuestionImage.drawImage(canvas)
+
+        if(newTournament){
+            screenTexts["YES"]?.let { optionText.drawText(canvas, it) }
+        }
+        else {
+            screenTexts["NO"]?.let { optionText.drawText(canvas, it) }
+        }
     }
 }
