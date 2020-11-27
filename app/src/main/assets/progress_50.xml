@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<track>
+    <tts_key key="ROAD_50"/>
+    <spawn x="50" y="0"/>
+    <finish x="50" y="120"/>
+    <left></left>
+    <point x="0" y="0"/>
+    <point x="0" y="120"/>
+    <right></right>
+    <point x="100" y="0"/>
+    <point x="100" y="120"/>
+</track>

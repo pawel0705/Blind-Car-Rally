@@ -3,20 +3,20 @@
     <tts_key key="CAUTION"/>
     <tts_key key="KEEP_LEFT"/>
     <spawn x="40" y="0"/>
-    <finish x="20" y="200"/>
+    <finish x="20" y="250"/>
     <left></left>
     <point x="0" y="0"/>
-    <point x="0" y="200"/>
+    <point x="0" y="250"/>
     <right></right>
     <point x="80" y="0"/>
-    <point x="80" y="60"/>
-    <point x="40" y="70"/>
-    <point x="80" y="80"/>
-    <point x="80" y="120"/>
-    <point x="40" y="130"/>
-    <point x="80" y="140"/>
+    <point x="80" y="100"/>
+    <point x="40" y="120"/>
+    <point x="80" y="130"/>
     <point x="80" y="170"/>
     <point x="40" y="180"/>
     <point x="80" y="190"/>
-    <point x="80" y="200"/>
+    <point x="80" y="220"/>
+    <point x="40" y="230"/>
+    <point x="80" y="250"/>
+    <point x="80" y="250"/>
 </track>

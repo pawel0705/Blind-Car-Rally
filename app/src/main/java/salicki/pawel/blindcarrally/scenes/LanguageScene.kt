@@ -111,6 +111,18 @@ class LanguageScene(flow: LanguageLevelFlowEnum) : SurfaceView(Settings.CONTEXT)
                 swipe = true
                 idleTimeSeconds = 0
             }
+            GestureTypeEnum.SWIPE_UP -> {
+                LevelManager.changeLevel(MenuScene())
+                Settings.globalSounds.playSound(RawResources.swapSound)
+                swipe = true
+            }
+            GestureTypeEnum.SWIPE_DOWN->{
+                languageSelectionData[Settings.languageTtsEnum]?.texts?.get("IDLE")
+                    ?.let { TextToSpeechManager.speakNow(it) }
+                Settings.globalSounds.playSound(RawResources.swapSound)
+                idleTimeSeconds = 0
+                swipe = true
+            }
         }
 
         when (GestureManager.doubleTapDetect(event)) {
@@ -164,7 +176,7 @@ class LanguageScene(flow: LanguageLevelFlowEnum) : SurfaceView(Settings.CONTEXT)
         }
 
         if(idleTimeSeconds > 10){
-            languageSelectionData[Settings.languageTtsEnum]?.texts?.get("LANGUAGE_TUTORIAL")
+            languageSelectionData[Settings.languageTtsEnum]?.texts?.get("IDLE")
                 ?.let { TextToSpeechManager.speakNow(it) }
 
             idleTimeSeconds = 0

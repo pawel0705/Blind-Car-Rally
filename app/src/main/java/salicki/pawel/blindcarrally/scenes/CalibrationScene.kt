@@ -6,6 +6,8 @@ import android.view.SurfaceView
 import salicki.pawel.blindcarrally.*
 import salicki.pawel.blindcarrally.enums.GestureTypeEnum
 import salicki.pawel.blindcarrally.gameresources.MovementManager
+import salicki.pawel.blindcarrally.gameresources.OptionImage
+import salicki.pawel.blindcarrally.gameresources.TextObject
 import salicki.pawel.blindcarrally.gameresources.TextToSpeechManager
 import salicki.pawel.blindcarrally.information.Settings
 import salicki.pawel.blindcarrally.resources.RawResources
@@ -24,7 +26,7 @@ class CalibrationScene : SurfaceView(Settings.CONTEXT), ILevel {
         SoundManager()
     private var soundManagerEar: SoundManager =
         SoundManager()
-
+    private var text: TextObject = TextObject()
     private var time = 0
     private var timeSeconds = 0
 
@@ -37,6 +39,13 @@ class CalibrationScene : SurfaceView(Settings.CONTEXT), ILevel {
 
         initSoundManager()
         readTTSTextFile()
+
+        text.initMultiLineText(
+            R.font.montserrat, R.dimen.informationSize,
+            Settings.SCREEN_WIDTH / 2F,
+            Settings.SCREEN_HEIGHT / 8F,
+            textsCalibration["CALIBRATION_TUTORIAL"].toString()
+        )
     }
 
     private fun initSoundManager() {
@@ -97,6 +106,21 @@ class CalibrationScene : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun respondTouchState(event: MotionEvent) {
+
+        when(GestureManager.swipeDetect(event)) {
+            GestureTypeEnum.SWIPE_UP -> {
+                LevelManager.stackLevel(PauseScene())
+                Settings.globalSounds.playSound(RawResources.swapSound)
+            }
+            GestureTypeEnum.SWIPE_DOWN -> {
+                Settings.globalSounds.playSound(RawResources.swapSound)
+                rightEar = false
+                leftEar = false
+                wheel = false
+                timeSeconds = 0
+            }
+        }
+
         when (GestureManager.doubleTapDetect(event)) {
             GestureTypeEnum.DOUBLE_TAP -> {
                 MovementManager.register()
@@ -107,6 +131,6 @@ class CalibrationScene : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun redrawState(canvas: Canvas) {
-
+        text.drawMultilineText(canvas)
     }
 }

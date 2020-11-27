@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.SurfaceView
 import androidx.core.content.ContextCompat
+import org.w3c.dom.Text
 import salicki.pawel.blindcarrally.*
 import salicki.pawel.blindcarrally.datas.StageResultData
 import salicki.pawel.blindcarrally.datas.TrackData
@@ -27,11 +28,11 @@ class GameScene() : SurfaceView(Settings.CONTEXT), ILevel {
 
     private var trackReader =
         TrackReader()
-
+    private var instructionText: TextObject = TextObject()
     private var trackIterator = 0
 
     private var weather: WeatherEnum = WeatherEnum.SUN
-
+    private var pilotQuoteText: String = ""
     private var raceTime = 0
     private var raceTimeSeconds = 0
 
@@ -49,19 +50,25 @@ class GameScene() : SurfaceView(Settings.CONTEXT), ILevel {
     private val MAX_DURATION_COUNT = 6000
     private var stageResult: StageResultData = StageResultData()
     private var newRoadTile = false
-
+    private var countDownTextObject: TextObject = TextObject()
+    private var speekerTextObject: TextObject = TextObject()
     private var swipe = false
 
     private var pauseGame = false
 
     private var idleTime: Int = 0
     private var idleTimeSeconds: Int = 0
-
+    private var countDownText: String = ""
     private var windLeft: Float = 0F
     private var windFasterLeft: Boolean = true
     private var windRight: Float = 0F
     private var windFasterRight: Boolean = true
     private var disableTap: Boolean = false
+
+    private var leftRadar: TextObject = TextObject()
+    private var rightRadar: TextObject = TextObject()
+    private var leftAlertRadar: Boolean = false
+    private var rightAlertRadar: Boolean = false
 
     private var car: Car =
         Car(
@@ -70,8 +77,8 @@ class GameScene() : SurfaceView(Settings.CONTEXT), ILevel {
             RectF(
                 Settings.SCREEN_WIDTH / 2F,
                 Settings.SCREEN_HEIGHT / 2F,
-                Settings.SCREEN_WIDTH / 2F + 0.2F * Settings.SCREEN_SCALE,
-                Settings.SCREEN_HEIGHT / 2F + 0.4F * Settings.SCREEN_SCALE
+                Settings.SCREEN_WIDTH / 2F + 10F, //+ 0.2F * Settings.SCREEN_SCALE,
+                Settings.SCREEN_HEIGHT / 2F + 5F // + 0.4F * Settings.SCREEN_SCALE
             )
         )
     private var coordinateDisplayManager: CoordinateDisplayManager
@@ -106,11 +113,24 @@ class GameScene() : SurfaceView(Settings.CONTEXT), ILevel {
         }
         else if(weather == WeatherEnum.RAIN){
             MediaPlayerManager.initMediaPlayer(R.raw.rain)
-            MediaPlayerManager.changeVolume(0.4F, 0.4F)
+            MediaPlayerManager.changeVolume(0.3F, 0.3F)
             MediaPlayerManager.loopSound()
             MediaPlayerManager.startSound()
         }
 
+
+        instructionText.initMultiLineText(
+            R.font.montserrat, R.dimen.informationSize,
+            Settings.SCREEN_WIDTH / 2F,
+            Settings.SCREEN_HEIGHT / 8F,
+            pilotTexts["INSTRUCTION"].toString()
+        )
+
+        countDownTextObject.initText(R.font.hemi, Settings.SCREEN_WIDTH / 2F, Settings.SCREEN_HEIGHT / 3F)
+        speekerTextObject.initText(R.font.montserrat, Settings.SCREEN_WIDTH / 2F, Settings.SCREEN_HEIGHT / 3F)
+
+        leftRadar.initText(R.font.hemi, Settings.SCREEN_WIDTH / 10F, Settings.SCREEN_HEIGHT / 1.5F, R.dimen.radarSize)
+        rightRadar.initText(R.font.hemi, Settings.SCREEN_WIDTH / 1.15F, Settings.SCREEN_HEIGHT / 1.5F, R.dimen.radarSize)
     }
 
     private fun setWeather() {
@@ -212,6 +232,7 @@ class GameScene() : SurfaceView(Settings.CONTEXT), ILevel {
         speakerCountDown["COUNTDOWN_3"] = false
         speakerCountDown["COUNTDOWN_4"] = false
         speakerCountDown["COUNTDOWN_5"] = false
+        speakerCountDown["START"] = false
     }
 
     private fun readTTSTextFile() {
@@ -266,10 +287,15 @@ class GameScene() : SurfaceView(Settings.CONTEXT), ILevel {
                         left.startX.toFloat(),
                         left.startY.toFloat(),
                         left.endX.toFloat(),
-                        left.endY.toFloat()
+                        left.endY.toFloat(),
+                        true
                     )
                 ) {
-                    car.posX += 50
+                    car.posX += 10
+
+                    if(car.getCarHealth() % 10 == 0){
+                        TextToSpeechManager.speakNow(pilotTexts["CAR_DEMAGED"].toString() + " " + car.getCarHealth() + "%")
+                    }
                 }
             }
 
@@ -278,10 +304,15 @@ class GameScene() : SurfaceView(Settings.CONTEXT), ILevel {
                         right.startX.toFloat(),
                         right.startY.toFloat(),
                         right.endX.toFloat(),
-                        right.endY.toFloat()
+                        right.endY.toFloat(),
+                        false
                     )
                 ) {
-                    car.posX -= 50
+                    car.posX -= 10
+
+                    if(car.getCarHealth() % 10 == 0){
+                        TextToSpeechManager.speakNow(pilotTexts["CAR_DEMAGED"].toString() + " " + car.getCarHealth() + "%")
+                    }
                 }
             }
         }
@@ -289,6 +320,9 @@ class GameScene() : SurfaceView(Settings.CONTEXT), ILevel {
 
     private fun checkDistance() {
         if (trackData != null) {
+
+            leftAlertRadar = false
+            rightAlertRadar = false
 
             leftSensor@ for (left in trackData!!.roadList?.get(trackIterator)?.leftPoints!!) {
                 if (car.sensorCheck(
@@ -298,6 +332,7 @@ class GameScene() : SurfaceView(Settings.CONTEXT), ILevel {
                         left.endY.toFloat(),
                     )
                 ) {
+                    leftAlertRadar = true
                     break@leftSensor
                 }
             }
@@ -310,6 +345,7 @@ class GameScene() : SurfaceView(Settings.CONTEXT), ILevel {
                         right.endY.toFloat(),
                     )
                 ) {
+                    rightAlertRadar = true
                     break@rightSensor
                 }
             }
@@ -325,29 +361,38 @@ class GameScene() : SurfaceView(Settings.CONTEXT), ILevel {
             TextToSpeechManager.speakNow(pilotTexts["COUNTDOWN_5"].toString())
             soundManagerGame.playSound(R.raw.countdown, 0.6F, 0.6F)
             speakerCountDown["COUNTDOWN_5"] = true
+            countDownText="5"
+
+
         } else if (durationCount > 2000 && speakerCountDown["COUNTDOWN_4"] == false) {
             TextToSpeechManager.speakNow(pilotTexts["COUNTDOWN_4"].toString())
             soundManagerGame.playSound(R.raw.countdown, 0.6F, 0.6F)
             speakerCountDown["COUNTDOWN_4"] = true
+            countDownText="4"
         } else if (durationCount > 3000 && speakerCountDown["COUNTDOWN_3"] == false) {
             TextToSpeechManager.speakNow(pilotTexts["COUNTDOWN_3"].toString())
             soundManagerGame.playSound(R.raw.countdown, 0.6F, 0.6F)
             speakerCountDown["COUNTDOWN_3"] = true
+            countDownText="3"
         } else if (durationCount > 4000 && speakerCountDown["COUNTDOWN_2"] == false) {
             TextToSpeechManager.speakNow(pilotTexts["COUNTDOWN_2"].toString())
             soundManagerGame.playSound(R.raw.countdown, 0.6F, 0.6F)
             speakerCountDown["COUNTDOWN_2"] = true
+            countDownText="2"
         } else if (durationCount > 5000 && speakerCountDown["COUNTDOWN_1"] == false) {
             TextToSpeechManager.speakNow(pilotTexts["COUNTDOWN_1"].toString())
             soundManagerGame.playSound(R.raw.countdown, 0.6F, 0.6F)
             speakerCountDown["COUNTDOWN_1"] = true
-        } else if (durationCount > MAX_DURATION_COUNT && countDown) {
+            countDownText="1"
+        } else if (durationCount > MAX_DURATION_COUNT && speakerCountDown["START"] == false) {
             TextToSpeechManager.speakNow(pilotTexts["START"].toString())
             soundManagerGame.playSound(R.raw.start, 0.6F, 0.6F)
             newRoadTile = true
+            speakerCountDown["START"] = true
+            countDownText="Start!"
         }
 
-        if (durationCount > MAX_DURATION_COUNT) {
+        if (durationCount > MAX_DURATION_COUNT + 1000) {
             stopGameplay = true
             countDown = false
         }
@@ -376,6 +421,7 @@ class GameScene() : SurfaceView(Settings.CONTEXT), ILevel {
             }
 
             if (idleTimeSeconds > 10) {
+
                 TextToSpeechManager.speakNow(pilotTexts["INSTRUCTION"].toString())
 
                 idleTimeSeconds = 0
@@ -398,7 +444,7 @@ class GameScene() : SurfaceView(Settings.CONTEXT), ILevel {
 
         if(car.getCarHealth() <= 0){
             TextToSpeechManager.stop()
-
+            car.destroyCar()
             if (Looper.myLooper() == null) {
                 Looper.prepare()
             }
@@ -413,8 +459,9 @@ class GameScene() : SurfaceView(Settings.CONTEXT), ILevel {
                 if (Looper.myLooper() == null) {
                     Looper.prepare()
                 }
-
+                car.destroyCar()
                 if (GameOptions.gamemode == RacingModeEnum.TOURNAMENT_MODE) {
+
                     LevelManager.changeLevel(TournamentStageOverScene(stageResult))
                 } else {
                     LevelManager.changeLevel(RaceOverScene(stageResult))
@@ -431,8 +478,10 @@ class GameScene() : SurfaceView(Settings.CONTEXT), ILevel {
             }
 
             if (newRoadTile) {
+                pilotQuoteText = ""
                 for (tts in trackData!!.roadList[trackIterator].speakerKeys) {
                     TextToSpeechManager.speakQueue(pilotTexts[tts].toString())
+                    pilotQuoteText = pilotQuoteText + pilotTexts[tts].toString() + " "
                 }
                 newRoadTile = false
             }
@@ -474,13 +523,13 @@ class GameScene() : SurfaceView(Settings.CONTEXT), ILevel {
             if (windFasterRight) {
                 car.pushCar(
                     0F,
-                    windRight * Settings.SCREEN_SCALE * 0.004F
+                    windRight * 0.05F //* Settings.SCREEN_SCALE * 0.004F
                 )
 
                 MediaPlayerManager.changeVolume(0F, windRight)
             } else {
                 car.pushCar(
-                    windLeft * Settings.SCREEN_SCALE * 0.004F,
+                    windLeft * 0.05F, //* Settings.SCREEN_SCALE * 0.004F,
                     0F
                 )
                 MediaPlayerManager.changeVolume(windLeft, 0F)
@@ -536,6 +585,30 @@ class GameScene() : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun redrawState(canvas: Canvas) {
+
+        if(!stopGameplay && !countDown){
+            instructionText.drawMultilineText(canvas)
+        }
+
+        if(countDown){
+            countDownTextObject.drawText(canvas, countDownText)
+        }
+
+        if(stopGameplay){
+            speekerTextObject.drawText(canvas, pilotQuoteText)
+
+            if(leftAlertRadar){
+                leftRadar.drawText(canvas, "!")
+            }
+
+            if(rightAlertRadar){
+                rightRadar.drawText(canvas, "!")
+            }
+        }
+
+
+
+        /*
         canvas.translate(0F, canvas.height.toFloat());   // reset where 0,0 is located
         canvas.scale(1F, -1F);    // invert
 
@@ -543,7 +616,7 @@ class GameScene() : SurfaceView(Settings.CONTEXT), ILevel {
         car.draw(canvas, coordinateDisplayManager)
 
         var paint = Paint()
-        paint.strokeWidth = Settings.SCREEN_SCALE * 0.02F
+        paint.strokeWidth =  1F
         paint.color = Color.WHITE
 
         if (trackData != null) {
@@ -577,5 +650,7 @@ class GameScene() : SurfaceView(Settings.CONTEXT), ILevel {
         canvas.drawText(windLeft.toString(), 500F, 900F, paint)
 
         canvas.drawText(windRight.toString(), 900F, 900F, paint)
+
+         */
     }
 }

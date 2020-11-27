@@ -152,7 +152,7 @@ class TrackSelectionScene : SurfaceView(Settings.CONTEXT), ILevel {
         }
 
         if (idleTimeSeconds > 10) {
-            TextToSpeechManager.speakNow(textsTrackSelection["TRACK_SELECTION_TUTORIAL"].toString())
+            TextToSpeechManager.speakNow(textsTrackSelection["IDLE"].toString())
 
             idleTimeSeconds = 0
         }
@@ -186,6 +186,17 @@ class TrackSelectionScene : SurfaceView(Settings.CONTEXT), ILevel {
                     trackIterator = trackSelectionData.size - 1
                 }
 
+                swipe = true
+            }
+            GestureTypeEnum.SWIPE_UP -> {
+                LevelManager.changeLevel(GameModeScene())
+                Settings.globalSounds.playSound(RawResources.swapSound)
+                swipe = true
+            }
+            GestureTypeEnum.SWIPE_DOWN -> {
+                TextToSpeechManager.speakNow(textsTrackSelection["IDLE"].toString())
+                Settings.globalSounds.playSound(RawResources.swapSound)
+                idleTimeSeconds = 0
                 swipe = true
             }
         }

@@ -125,7 +125,7 @@ class StageSelectionScene(nation: NationEnum) : SurfaceView(Settings.CONTEXT), I
         }
 
         if(idleTimeSeconds > 10){
-            TextToSpeechManager.speakNow(textsStageSelection["STAGE_SELECTION_TUTORIAL"].toString())
+            TextToSpeechManager.speakNow(textsStageSelection["IDLE"].toString())
 
             idleTimeSeconds = 0
         }
@@ -162,6 +162,17 @@ class StageSelectionScene(nation: NationEnum) : SurfaceView(Settings.CONTEXT), I
 
                 swipe = true
                 idleTimeSeconds = 0
+            }
+            GestureTypeEnum.SWIPE_UP -> {
+                LevelManager.changeLevel(TrackSelectionScene())
+                Settings.globalSounds.playSound(RawResources.swapSound)
+                swipe = true
+            }
+            GestureTypeEnum.SWIPE_DOWN -> {
+                TextToSpeechManager.speakNow(textsStageSelection["IDLE"].toString())
+                Settings.globalSounds.playSound(RawResources.swapSound)
+                idleTimeSeconds = 0
+                swipe = true
             }
         }
 

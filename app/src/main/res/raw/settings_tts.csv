@@ -1,5 +1,5 @@
 TEXT_KEY;ENGLISH;POLISH
-SETTINGS_TUTORIAL;You are in the settings menu.;Znajdujesz się w menu ustawień.
+SETTINGS_TUTORIAL;Settings.;Ustawienia.
 SETTINGS_VIBRATION_ON;Selected option: Activate vibrations.;Zaznaczona opcja: Aktywuj wibracje.
 SETTINGS_VIBRATION_OFF;Selected option: Deactivate vibrations.;Zaznaczona opcja: Dezaktywuj wibracje.
 SETTINGS_DISPLAY_ON;Selected option: Activate screen display.;Zaznaczona opcja: Aktywuj wyświetlanie ekranu.
@@ -21,3 +21,4 @@ SETTINGS_VOLUME_70; seventy percent.; siememdziesiąt procent.
 SETTINGS_VOLUME_80; eighty percent.; osiemdziesiąt procent.
 SETTINGS_VOLUME_90; ninety percent.; dziewięćdziesiąt procent.
 SETTINGS_VOLUME_100; one hundred percent.; sto procent.
+IDLE;You are in the settings menu. You can turn vibrations on or off, turn on or off screen display, turn on or off the initial information displayed before entering the main menu, change the volume of the speech synthesizer or the volume of other sounds. Swipe left or right to navigate through the options. Confirm the option by double-tapping your finger.;Znajdujesz się w menu ustawień. Możesz włączyć lub wyłączyć wibracje, włączyć lub wyłączyć wyświetlanie ekranu, włączyć lub wyłączyć wstępną informację pokazywaną przed wejściem do głównego menu, zmienić głośność syntezatora mowy lub głośność pozostałych dźwięków. Przesuń palcem w lewo lub prawo, by poruszać się po opcjach. Podwójnym stuknięciem palcem zatwierdź opcję.

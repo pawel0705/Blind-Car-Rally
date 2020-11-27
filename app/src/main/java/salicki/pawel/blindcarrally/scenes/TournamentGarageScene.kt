@@ -221,7 +221,7 @@ class TournamentGarageScene : SurfaceView(Settings.CONTEXT), ILevel {
         }
 
         if (idleTimeSeconds > 10) {
-            TextToSpeechManager.speakNow(textsTournamentGarageSelection["GARAGE_TUTORIAL"].toString())
+            TextToSpeechManager.speakNow(textsTournamentGarageSelection["IDLE"].toString())
 
             idleTimeSeconds = 0
         }
@@ -255,6 +255,17 @@ class TournamentGarageScene : SurfaceView(Settings.CONTEXT), ILevel {
                     garageIterator = garageSelectionData.size - 1
                 }
 
+                swipe = true
+            }
+            GestureTypeEnum.SWIPE_UP -> {
+                LevelManager.changeLevel(MenuScene())
+                Settings.globalSounds.playSound(RawResources.swapSound)
+                swipe = true
+            }
+            GestureTypeEnum.SWIPE_DOWN -> {
+                TextToSpeechManager.speakNow(textsTournamentGarageSelection["IDLE"].toString())
+                Settings.globalSounds.playSound(RawResources.swapSound)
+                idleTimeSeconds = 0
                 swipe = true
             }
         }

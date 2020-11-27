@@ -62,6 +62,7 @@ class CreditsScene : SurfaceView(Settings.CONTEXT), ILevel {
         }
 
         if(idleTimeSeconds > 10 && !TextToSpeechManager.isSpeaking()){
+            TextToSpeechManager.speakNow(texts["IDLE"].toString())
             TextToSpeechManager.speakNow(texts["CREDITS_AUTHOR"].toString())
             TextToSpeechManager.speakQueue(texts["CREDITS_BACK"].toString())
             idleTimeSeconds = 0
@@ -79,6 +80,20 @@ class CreditsScene : SurfaceView(Settings.CONTEXT), ILevel {
             GestureTypeEnum.DOUBLE_TAP -> {
                 Settings.globalSounds.playSound(RawResources.acceptSound)
                 LevelManager.changeLevel(MenuScene())
+            }
+        }
+
+        when(GestureManager.swipeDetect(event)){
+            GestureTypeEnum.SWIPE_UP -> {
+                LevelManager.changeLevel(MenuScene())
+                Settings.globalSounds.playSound(RawResources.swapSound)
+            }
+            GestureTypeEnum.SWIPE_DOWN -> {
+                TextToSpeechManager.speakNow(texts["IDLE"].toString())
+                TextToSpeechManager.speakNow(texts["CREDITS_AUTHOR"].toString())
+                TextToSpeechManager.speakQueue(texts["CREDITS_BACK"].toString())
+                idleTimeSeconds = 0
+                Settings.globalSounds.playSound(RawResources.swapSound)
             }
         }
     }

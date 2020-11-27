@@ -1,4 +1,5 @@
 TEXT_KEY;ENGLISH;POLISH
 QUIT_TUTORIAL;Are you sure you want to quit the game?;Czy na pewno chcesz wyjść z gry?
-QUIT_YES;Selected option: Yes.;Wybrana opcja: Tak.
-QUIT_NO;Selected option: No.;Wybrana opcja: Nie.
+QUIT_YES;Yes.;Tak.
+QUIT_NO;No.;Nie.
+IDLE;Do you want to quit the game? You can choose yes or no. Swipe left or right to navigate through the options. Confirm the option by double-tapping your finger.;Czy chcesz wyjść z gry? Do wyboru masz tak lub nie. Przesuń palcem w lewo lub prawo, by poruszać się po opcjach. Podwójnym stuknięciem palcem zatwierdź opcję.

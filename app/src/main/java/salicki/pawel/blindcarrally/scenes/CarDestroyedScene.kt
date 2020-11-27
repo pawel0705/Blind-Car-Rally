@@ -112,7 +112,7 @@ class CarDestroyedScene : SurfaceView(Settings.CONTEXT), ILevel {
         }
 
         if (idleTimeSeconds > 10) {
-            TextToSpeechManager.speakNow(textsDestroyedSelection["DESTROYED"].toString())
+            TextToSpeechManager.speakNow(textsDestroyedSelection["IDLE"].toString())
 
             idleTimeSeconds = 0
         }
@@ -148,10 +148,21 @@ class CarDestroyedScene : SurfaceView(Settings.CONTEXT), ILevel {
 
                 swipe = true
             }
+            GestureTypeEnum.SWIPE_UP -> {
+                LevelManager.changeLevel(MenuScene())
+
+                Settings.globalSounds.playSound(RawResources.swapSound)
+                swipe = true
+            }
+            GestureTypeEnum.SWIPE_DOWN -> {
+                TextToSpeechManager.speakNow(textsDestroyedSelection["IDLE"].toString())
+                Settings.globalSounds.playSound(RawResources.swapSound)
+                idleTimeSeconds = 0
+                swipe = true
+            }
         }
 
         when (GestureManager.doubleTapDetect(event)) {
-
             GestureTypeEnum.DOUBLE_TAP -> {
                 TextToSpeechManager.stop()
                 Settings.globalSounds.playSound(RawResources.acceptSound)

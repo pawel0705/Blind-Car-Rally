@@ -131,7 +131,7 @@ class GameModeScene : SurfaceView(Settings.CONTEXT), ILevel {
         }
 
         if (idleTimeSeconds > 10) {
-            TextToSpeechManager.speakNow(texts["MODE_TUTORIAL"].toString())
+            TextToSpeechManager.speakNow(texts["IDLE"].toString())
 
             idleTimeSeconds = 0
         }
@@ -166,6 +166,16 @@ class GameModeScene : SurfaceView(Settings.CONTEXT), ILevel {
                 }
 
                 swipe = true
+                idleTimeSeconds = 0
+            }
+            GestureTypeEnum.SWIPE_UP -> {
+                LevelManager.changeLevel(MenuScene())
+                Settings.globalSounds.playSound(RawResources.swapSound)
+                swipe = true
+            }
+            GestureTypeEnum.SWIPE_DOWN -> {
+                TextToSpeechManager.speakNow(texts["IDLE"].toString())
+                Settings.globalSounds.playSound(RawResources.swapSound)
                 idleTimeSeconds = 0
             }
         }

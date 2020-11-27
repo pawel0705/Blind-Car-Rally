@@ -8,6 +8,8 @@ import salicki.pawel.blindcarrally.datas.OptionSelectionData
 import salicki.pawel.blindcarrally.enums.AnswerEnum
 import salicki.pawel.blindcarrally.enums.GestureTypeEnum
 import salicki.pawel.blindcarrally.enums.LevelTypeEnum
+import salicki.pawel.blindcarrally.gameresources.OptionImage
+import salicki.pawel.blindcarrally.gameresources.TextObject
 import salicki.pawel.blindcarrally.gameresources.TextToSpeechManager
 import salicki.pawel.blindcarrally.information.Settings
 import salicki.pawel.blindcarrally.resources.RawResources
@@ -20,7 +22,7 @@ import salicki.pawel.blindcarrally.utils.SoundManager
 class ReturnMenuScene: SurfaceView(Settings.CONTEXT), ILevel {
 
     private var textsReturnMenu: HashMap<String, String> = HashMap()
-
+    private var returnMenuImage: OptionImage = OptionImage()
     private var returnMenuSelectionData= arrayListOf<OptionSelectionData>()
     private var soundManager: SoundManager =
         SoundManager()
@@ -28,12 +30,21 @@ class ReturnMenuScene: SurfaceView(Settings.CONTEXT), ILevel {
     private var returnMenuIterator: Int = 0
     private var lastOption: Int = -1
 
+    private var screenTexts: HashMap<String, String> = HashMap()
+    private var optionText: TextObject = TextObject()
+
+    private var idleTime: Int = 0
+    private var idleTimeSeconds: Int = 0
+
     init {
         isFocusable = true
 
         initSoundManager()
         readTTSTextFile()
         initTrackSelectionOptions()
+        returnMenuImage.setFullScreenImage(R.drawable.yes_no)
+        screenTexts.putAll(OpenerCSV.readData(R.raw.return_menu_texts, Settings.languageTtsEnum))
+        optionText.initText(R.font.hemi, Settings.SCREEN_WIDTH / 2F, Settings.SCREEN_HEIGHT / 3F)
     }
 
     private fun initTrackSelectionOptions() {
@@ -41,7 +52,7 @@ class ReturnMenuScene: SurfaceView(Settings.CONTEXT), ILevel {
             OptionSelectionData(
                 AnswerEnum.YES,
                 "YES",
-                "Tak",
+                "YES",
                 false
             )
         )
@@ -49,7 +60,7 @@ class ReturnMenuScene: SurfaceView(Settings.CONTEXT), ILevel {
             OptionSelectionData(
                 AnswerEnum.NO,
                 "NO",
-                "Nie",
+                "NO",
                 false
             )
         )
@@ -86,6 +97,20 @@ class ReturnMenuScene: SurfaceView(Settings.CONTEXT), ILevel {
 
             lastOption = returnMenuIterator
         }
+
+        if(!TextToSpeechManager.isSpeaking()){
+            idleTime++
+
+            if(idleTime % 30 == 0){
+                idleTimeSeconds++
+            }
+        }
+
+        if(idleTimeSeconds > 10){
+            TextToSpeechManager.speakNow(textsReturnMenu["IDLE"].toString())
+
+            idleTimeSeconds = 0
+        }
     }
 
     override fun destroyState() {
@@ -116,6 +141,17 @@ class ReturnMenuScene: SurfaceView(Settings.CONTEXT), ILevel {
                     returnMenuIterator = returnMenuSelectionData.size - 1
                 }
 
+                swipe = true
+            }
+            GestureTypeEnum.SWIPE_UP->{
+                LevelManager.popLevel()
+                Settings.globalSounds.playSound(RawResources.swapSound)
+                swipe = true
+            }
+            GestureTypeEnum.SWIPE_DOWN->{
+                TextToSpeechManager.speakNow(textsReturnMenu["IDLE"].toString())
+                Settings.globalSounds.playSound(RawResources.swapSound)
+                idleTimeSeconds = 0
                 swipe = true
             }
         }
@@ -161,6 +197,13 @@ class ReturnMenuScene: SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun redrawState(canvas: Canvas) {
+        returnMenuImage.drawImage(canvas)
 
+        screenTexts[returnMenuSelectionData[returnMenuIterator].textValue]?.let {
+            optionText.drawText(
+                canvas,
+                it
+            )
+        }
     }
 }

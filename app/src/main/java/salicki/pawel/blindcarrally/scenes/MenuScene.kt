@@ -149,7 +149,7 @@ class MenuScene : SurfaceView(Settings.CONTEXT), ILevel {
         }
 
         if(idleTimeSeconds > 10){
-            TextToSpeechManager.speakNow(texts["MENU_TUTORIAL"].toString())
+            TextToSpeechManager.speakNow(texts["IDLE"].toString())
 
             idleTimeSeconds = 0
         }
@@ -187,6 +187,12 @@ class MenuScene : SurfaceView(Settings.CONTEXT), ILevel {
 
                 swipe = true
                 idleTimeSeconds = 0
+            }
+            GestureTypeEnum.SWIPE_DOWN -> {
+                TextToSpeechManager.speakNow(texts["IDLE"].toString())
+                Settings.globalSounds.playSound(RawResources.swapSound)
+                idleTimeSeconds = 0
+                swipe = true
             }
         }
 

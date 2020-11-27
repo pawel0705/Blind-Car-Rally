@@ -176,7 +176,7 @@ class CarPerformanceScene : SurfaceView(Settings.CONTEXT), ILevel {
         }
 
         if (idleTimeSeconds > 10) {
-            TextToSpeechManager.speakNow(textsPerformanceSelection["PERFORMANCE_TUTORIAL"].toString())
+            TextToSpeechManager.speakNow(textsPerformanceSelection["IDLE"].toString())
 
             idleTimeSeconds = 0
         }
@@ -210,6 +210,17 @@ class CarPerformanceScene : SurfaceView(Settings.CONTEXT), ILevel {
                     performanceIterator = performanceSelectionData.size - 1
                 }
 
+                swipe = true
+            }
+            GestureTypeEnum.SWIPE_UP -> {
+                LevelManager.changeLevel(CarSelectionScene())
+                Settings.globalSounds.playSound(RawResources.swapSound)
+                swipe = true
+            }
+            GestureTypeEnum.SWIPE_DOWN -> {
+                TextToSpeechManager.speakNow(textsPerformanceSelection["IDLE"].toString())
+                Settings.globalSounds.playSound(RawResources.swapSound)
+                idleTimeSeconds = 0
                 swipe = true
             }
         }

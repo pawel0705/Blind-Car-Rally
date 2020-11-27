@@ -52,7 +52,7 @@ class TextObject {
         );
     }
 
-    fun initText(fontId: Int, positionX: Float, positionY: Float) {
+    fun initText(fontId: Int, positionX: Float, positionY: Float, fontSizeId: Int = R.dimen.selectFontSize) {
 
         textPaint.textAlign = Paint.Align.CENTER
         textPaint.color = Color.WHITE
@@ -68,7 +68,7 @@ class TextObject {
         posY = (positionY - (textPaint.descent() + textPaint.ascent()) / 2)
 
         textPaint.textSize =
-            Settings.CONTEXT?.resources?.getDimensionPixelSize(R.dimen.selectFontSize)!!.toFloat()
+            Settings.CONTEXT?.resources?.getDimensionPixelSize(fontSizeId)!!.toFloat()
     }
 
     fun drawText(canvas: Canvas, text: String) {

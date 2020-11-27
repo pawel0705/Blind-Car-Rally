@@ -2,9 +2,10 @@ TEXT_KEY;ENGLISH;POLISH
 PERFORMANCE_TUTORIAL;Car performance.;Osiągi pojazdu.
 READ;Read car performance.;Przeczytaj osiągi pojazdu.
 BACK;Return to car selection;Powróć do wyboru pojazdu.
-ACCEPT;Accept and go to the race.;Zaakceptuj i przejdź do wyścigu.
+ACCEPT;Accept car.;Zaakceptuj pojazd.
 CAR_1;Top speed: ten percent. Acceleration: twenty percent. Maneuverability: thirty percent.;Prędkość maksymalna: dziesięć procent. Przyśpieszenie: dwadzieścia procent. Prędkość maksymalna: trzydzieści procent.
 CAR_2;Top speed: twenty percent. Acceleration: thirty percent. Maneuverability: fifty percent.;Prędkość maksymalna: dwadzieścia procent. Przyśpieszenie: trzydzieści procent. Prędkość maksymalna: pięćdziesiąt procent.
 CAR_3;Top speed: fifty percent. Acceleration: forty percent. Maneuverability: fifty percent.;Prędkość maksymalna: pięćdziesiąt procent. Przyśpieszenie: czterdzieści procent. Prędkość maksymalna: pięćdziesiąt procent.
 CAR_4;Top speed: ninety percent. Acceleration: sixty percent. Maneuverability: siememdziesiąt procent.;Prędkość maksymalna: dziewięćdziesiąt procent. Przyśpieszenie: sześćdziesiąt procent. Prędkość maksymalna: siedemdziesiąt procent.
 CAR_5;Top speed: one hundred percent. Acceleration: one hundred percent. Maneuverability: one hundred percent.;Prędkość maksymalna: sto procent. Przyśpieszenie: sto procent. Prędkość maksymalna: sto procent.
+IDLE;You are in the information panel for the selected vehicle. You can read its performance, go back to select another vehicle or accept the vehicle selection. Swipe left or right to navigate through the options. Confirm your selection with a double-tap of your finger.;Znajdujesz się w panelu informacji o wybranym pojeździe. Możesz przeczytać jego osiągi, powrócić by wybrać inny pojazd lub zaakceptować wybór pojazdu. Przesuwaj palcem w lewo lub prawo, by przechodzić po kolejnych opcjach. Podwujnym stuknięciem palca zatwierdź wybór.

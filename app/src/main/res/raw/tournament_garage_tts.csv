@@ -1,8 +1,9 @@
 TEXT_KEY;ENGLISH;POLISH
-GARAGE_TUTORIAL;You are in the service area.;Znajdujesz się w strefie serwisowej.
+GARAGE_TUTORIAL;Service area.;Strefia serwisowa.
 CAR_INFORMATION;Car information.;Informacje o pojeździe.
 STAGE_INFORMATION;Next stage information.;Informacje o kolejnym etapie.
 STAGE_DESCRIPTION;Next stage of the rally is: ;Kolejnym etapem rajdu jest:
 PUNCTATION;Punctation.;Punktacja.
 NEXT_STAGE;Start the next stage of the raid.;Rozpocznij kolejny etap rajdu.
 MENU;Return to menu.;Powrót do menu głównego.
+IDLE;You are in the tournament service area. You can read the vehicle information, information about the next stage, go to the next stage or return to the main menu. Swipe left or right to navigate through the options. Confirm the option by double-tapping your finger.;Znajdujesz się w strefie serwisowej turnieju. Możesz przeczytać informacje o pojeździe, informacje o kolejnym etapie, przejść do kolejnego etapu lub powrócić do menu głównego. Przesuń palcem w lewo lub prawo, by poruszać się po opcjach. Podwójnym stuknięciem palcem zatwierdź opcję.

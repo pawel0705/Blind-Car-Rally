@@ -4,3 +4,4 @@ NEW;Start new tournament.;Rozpocznij nowy turniej.
 CONTINUE;Continue tournament.;Kontynuuj turniej.
 CANT_CONTINUE;You are not in the tournament. You need to start a new tournament.;Nie jesteś w trakcie turnieju. Musisz rozpocząć nowy turniej.
 RETURN;Return.;Powrót.
+IDLE;You are in tournament mode. You can start a new tournament, continue a started tournament, or return to the game mode selection. Swipe left or right to navigate through the options. Confirm the option by double-tapping your finger.;Znajdujesz się w trybie turniejowym. Możesz rozpocząc nowy turniej, kontynuować rozpoczęty turniej lub powrócić do wyboru trybu gry. Przesuń palcem w lewo lub prawo, by poruszać się po opcjach. Podwójnym stuknięciem palcem zatwierdź opcję.

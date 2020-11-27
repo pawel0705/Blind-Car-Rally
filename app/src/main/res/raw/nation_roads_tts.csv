@@ -1,16 +1,17 @@
 TEXT_KEY;ENGLISH;POLISH
-ARGENTINA_1;Camino a La Puerta.;Camino a La Puerta.
-ARGENTINA_2;Valle de los puantes a la inversa.;Valle de los puantes a la inversa.
-ARGENTINA_3;Camino de acantilados y rocas.;Camino de acantilados y rocas.
-AUSTRALIA_1;Chandlers Creek.;Chandlers Creek.
-AUSTRALIA_2;Mount Kaye Pass.;Mount Kaye Pass.
-AUSTRALIA_3;Rockton Plains.;Rockton Plains.
-POLAND_1;Jezioro Lukie.;Jezioro Lukie.
-POLAND_2;Zagórze.;Zagórze.
-POLAND_3;Borysik.;Borysik.
-SPAIN_1;Descenso por carretera.;Descenso por carretera.
-SPAIN_2;Final de Bellriu.;Final de Bellriu.
-SPAIN_3;Ascenso por valle el Gualet.;Ascenso por valle el Gualet.
-NEW_ZEALAND_1;Waimarama Sprint.;Waimarama Sprint.
-NEW_ZEALAND_2;Ocean Beach.;Ocean Beach.
-NEW_ZEALAND_3;Te Awanga Sprint.;Te Awanga Sprint.
+ARGENTINA_1;Camino a La Puerta. Very sunny weather. ;Camino a La Puerta. Bardzo słoneczna pogoda.
+ARGENTINA_2;Valle de los puantes a la inversa. Rainy weather. ;Valle de los puantes a la inversa. Deszczowa pogoda.
+ARGENTINA_3;Camino de acantilados y rocas. Very windy weather. ;Camino de acantilados y rocas. Bardzo wietrzna pogoda.
+AUSTRALIA_1;Chandlers Creek. Very sunny weather. ;Chandlers Creek. Bardzo słoneczna pogoda.
+AUSTRALIA_2;Mount Kaye Pass. Rainy weather.;Mount Kaye Pass. Deszczowa pogoda.
+AUSTRALIA_3;Rockton Plains. Very windy weather. ;Rockton Plains. Bardzo wietrzna pogoda.
+POLAND_1;Jezioro Lukie. Very sunny weather. ;Jezioro Lukie. Bardzo słoneczna pogoda.
+POLAND_2;Zagórze. Rainy weather.;Zagórze. Deszczowa pogoda.
+POLAND_3;Borysik. Very windy weather. ;Borysik. Bardzo wietrzna pogoda.
+SPAIN_1;Descenso por carretera. Very sunny weather. ;Descenso por carretera. Bardzo słoneczna pogoda.
+SPAIN_2;Final de Bellriu. Rainy weather.;Final de Bellriu. Deszczowa pogoda.
+SPAIN_3;Ascenso por valle el Gualet. Very windy weather. ;Ascenso por valle el Gualet. Bardzo wietrzna pogoda.
+NEW_ZEALAND_1;Waimarama Sprint. Very sunny weather. ;Waimarama Sprint. Bardzo słoneczna pogoda.
+NEW_ZEALAND_2;Ocean Beach. Rainy weather. ;Ocean Beach. Deszczowa pogoda.
+NEW_ZEALAND_3;Te Awanga Sprint. Very windy weather. ;Te Awanga Sprint. Bardzo wietrzna pogoda.
+IDLE;You are in the rally stage selection screen. You have 3 stages to choose from. Swipe left or right to navigate through the options. Confirm the option by double-tapping your finger.;Znajdujesz się w ekranie wyboru etapu rajdu. Masz do wyboru 3 etapy. Przesuń palcem w lewo lub prawo, by poruszać się po opcjach. Podwójnym stuknięciem palcem zatwierdź opcję.

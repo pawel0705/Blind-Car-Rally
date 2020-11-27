@@ -7,3 +7,4 @@ MENU_ASK;Are you sure you want to exit to the main menu?;Czy na pewno chcesz wyj
 EXIT_ASK;Are you sure you want to quit the game?;Czy na pewno chcesz wyjść z gry?
 YES;Yes.;Tak.
 NO;No.;Nie.
+IDLE;Znajdujesz się w menu pauzy. Przesuń palcem w lewo lub prawo, by poruszać się po opcjach. Podwójnym stuknięciem palcem zatwierdź opcję.;You are in the pause menu. Swipe left or right to navigate through the options. Confirm the option by double-tapping your finger.

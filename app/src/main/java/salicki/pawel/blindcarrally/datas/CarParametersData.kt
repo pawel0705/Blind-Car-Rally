@@ -11,7 +11,7 @@ data class CarParametersData(
     var gear: Int = 1,
     var health: Int = 100,
 
-    var maxSpeed: Float = 1F * GameOptions.carTopSpeed,
-    var turnSpeed: Float = 0.008F * GameOptions.carManeuverability,
-    var acceleration: Float = 1F * GameOptions.carAcceleration,
+    var maxSpeed: Float = 0.1F * GameOptions.carTopSpeed,
+    var turnSpeed: Float = 0.025F * GameOptions.carManeuverability,
+    var acceleration: Float = 0.0025F * GameOptions.carAcceleration,
 ) {}

@@ -25,6 +25,8 @@ class VolumeSoundsScene : SurfaceView(Settings.CONTEXT), ILevel {
     private var soundManager: SoundManager =
         SoundManager()
     private var swipe: Boolean = false
+    private var idleTime: Int = 0
+    private var idleTimeSeconds: Int = 0
 
     init {
         isFocusable = true
@@ -71,6 +73,20 @@ class VolumeSoundsScene : SurfaceView(Settings.CONTEXT), ILevel {
 
             lastOption = volumeIterator
         }
+
+        if (!TextToSpeechManager.isSpeaking()) {
+            idleTime++
+
+            if (idleTime % 30 == 0) {
+                idleTimeSeconds++
+            }
+        }
+
+        if (idleTimeSeconds > 10) {
+            TextToSpeechManager.speakNow(texts["IDLE"].toString())
+
+            idleTimeSeconds = 0
+        }
     }
 
     override fun destroyState() {
@@ -112,6 +128,17 @@ class VolumeSoundsScene : SurfaceView(Settings.CONTEXT), ILevel {
 
                 TextToSpeechManager.speakNow(texts["SETTINGS_SOUNDS_VOLUME"].toString() + texts[volume[Settings.sounds - 1]].toString())
 
+                swipe = true
+            }
+            GestureTypeEnum.SWIPE_UP -> {
+                LevelManager.changeLevel(SettingsScene())
+                Settings.globalSounds.playSound(RawResources.swapSound)
+                swipe = true
+            }
+            GestureTypeEnum.SWIPE_DOWN -> {
+                TextToSpeechManager.speakNow(texts["IDLE"].toString())
+                Settings.globalSounds.playSound(RawResources.swapSound)
+                idleTimeSeconds = 0
                 swipe = true
             }
         }

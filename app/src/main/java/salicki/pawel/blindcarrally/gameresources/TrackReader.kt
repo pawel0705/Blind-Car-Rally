@@ -110,8 +110,8 @@ class TrackReader {
                             var x: String = parser.getAttributeValue(0)
                             var y: String = parser.getAttributeValue(1)
 
-                            var x0 = x.toFloat() * Settings.SCREEN_SCALE * 0.02F
-                            var y0 = y.toFloat() * Settings.SCREEN_SCALE * 0.02F
+                            var x0 = x.toFloat() //* Settings.SCREEN_SCALE * 0.02F
+                            var y0 = y.toFloat() //* Settings.SCREEN_SCALE * 0.02F
 
                             if(left){
                                 if(firstLeft){
@@ -134,16 +134,16 @@ class TrackReader {
                             var x: String = parser.getAttributeValue(0)
                             var y: String = parser.getAttributeValue(1)
 
-                            road.spawnX = (x.toInt() * Settings.SCREEN_SCALE * 0.02F).toInt()
-                            road.spawnY = (y.toInt() * Settings.SCREEN_SCALE * 0.02F).toInt()
+                            road.spawnX = x.toInt() //(x.toInt() * Settings.SCREEN_SCALE * 0.02F).toInt()
+                            road.spawnY = y.toInt() //(y.toInt() * Settings.SCREEN_SCALE * 0.02F).toInt()
                             Log.d("SPAWN", "spawn");
                         }
                         "finish" -> {
                             var x: String = parser.getAttributeValue(0)
                             var y: String = parser.getAttributeValue(1)
 
-                            road.finishX = (x.toInt() * Settings.SCREEN_SCALE * 0.02F).toInt()
-                            road.finishY = (y.toInt() * Settings.SCREEN_SCALE * 0.02F).toInt()
+                            road.finishX =x.toInt()  //(x.toInt() * Settings.SCREEN_SCALE * 0.02F).toInt()
+                            road.finishY =y.toInt() //(y.toInt() * Settings.SCREEN_SCALE * 0.02F).toInt()
 
                             Log.d("FINISH", "finish");
                         }

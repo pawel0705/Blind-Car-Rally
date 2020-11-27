@@ -2,4 +2,4 @@ TEXT_KEY;ENGLISH;POLISH
 SELECT_LANGUAGE;Language selection.;Wybór języka.
 SELECTED_LANGUAGE;Selected language: English.;Wybrany język: Polski.
 LANGUAGE_TUTORIAL;You are in the choice of language. Swipe left or right to change language. Confirm the option by double-tapping your finger.;Znajdujesz się w wyborze języka. Przesuń palcem w lewo lub prawo, by zmienić język. Podwójnym stuknięciem palcem zatwierdź opcję.
-LANGUAGE_WAIT;Loading another language. Please wait.;Wczytywanie kolejnego języka. Proszę czekać.
+IDLE;You are in the choice of language. Swipe left or right to change language. Confirm the option by double-tapping your finger.;Znajdujesz się w wyborze języka. Przesuń palcem w lewo lub prawo, by zmienić język. Podwójnym stuknięciem palcem zatwierdź opcję.

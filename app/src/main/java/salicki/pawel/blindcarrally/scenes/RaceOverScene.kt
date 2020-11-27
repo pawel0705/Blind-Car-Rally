@@ -36,6 +36,9 @@ class RaceOverScene(raceData: StageResultData) : SurfaceView(Settings.CONTEXT), 
     private var optionText: TextObject = TextObject()
     private var drawDescription: Boolean = false
 
+    private var idleTime: Int = 0
+    private var idleTimeSeconds: Int = 0
+
     init {
         isFocusable = true
 
@@ -128,6 +131,20 @@ class RaceOverScene(raceData: StageResultData) : SurfaceView(Settings.CONTEXT), 
             drawDescription = false
             lastOption = raceOverIterator
         }
+
+        if(!TextToSpeechManager.isSpeaking()){
+            idleTime++
+
+            if(idleTime % 30 == 0){
+                idleTimeSeconds++
+            }
+        }
+
+        if(idleTimeSeconds > 10){
+            TextToSpeechManager.speakNow(textsRaceOver["IDLE"].toString())
+
+            idleTimeSeconds = 0
+        }
     }
 
     override fun destroyState() {
@@ -158,6 +175,17 @@ class RaceOverScene(raceData: StageResultData) : SurfaceView(Settings.CONTEXT), 
                     raceOverIterator = raceOverSelectionData.size - 1
                 }
 
+                swipe = true
+            }
+            GestureTypeEnum.SWIPE_UP -> {
+                LevelManager.changeLevel(MenuScene())
+                Settings.globalSounds.playSound(RawResources.swapSound)
+                swipe = true
+            }
+            GestureTypeEnum.SWIPE_DOWN -> {
+                TextToSpeechManager.speakNow(textsRaceOver["IDLE"].toString())
+                Settings.globalSounds.playSound(RawResources.swapSound)
+                idleTimeSeconds = 0
                 swipe = true
             }
         }

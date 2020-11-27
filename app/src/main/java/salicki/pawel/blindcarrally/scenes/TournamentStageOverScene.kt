@@ -40,6 +40,9 @@ class TournamentStageOverScene(raceData: StageResultData) : SurfaceView(Settings
     private var optionText: TextObject = TextObject()
     private var drawDescription: Boolean = false
 
+    private var idleTime: Int = 0
+    private var idleTimeSeconds: Int = 0
+
     init {
         isFocusable = true
 
@@ -158,6 +161,20 @@ class TournamentStageOverScene(raceData: StageResultData) : SurfaceView(Settings
             drawDescription = false
             lastOption = tournamentStageOverIterator
         }
+
+        if(!TextToSpeechManager.isSpeaking()){
+            idleTime++
+
+            if(idleTime % 30 == 0){
+                idleTimeSeconds++
+            }
+        }
+
+        if(idleTimeSeconds > 10){
+            TextToSpeechManager.speakNow(textsTournamentStageOver["IDLE"].toString())
+
+            idleTimeSeconds = 0
+        }
     }
 
     override fun destroyState() {
@@ -188,6 +205,17 @@ class TournamentStageOverScene(raceData: StageResultData) : SurfaceView(Settings
                     tournamentStageOverIterator = tournamentStageOverSelectionData.size - 1
                 }
 
+                swipe = true
+            }
+            GestureTypeEnum.SWIPE_UP -> {
+                LevelManager.changeLevel(MenuScene())
+                Settings.globalSounds.playSound(RawResources.swapSound)
+                swipe = true
+            }
+            GestureTypeEnum.SWIPE_DOWN -> {
+                TextToSpeechManager.speakNow(textsTournamentStageOver["IDLE"].toString())
+                Settings.globalSounds.playSound(RawResources.swapSound)
+                idleTimeSeconds = 0
                 swipe = true
             }
         }

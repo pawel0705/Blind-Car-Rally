@@ -76,6 +76,14 @@ class InformationScene : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun respondTouchState(event: MotionEvent) {
+        when(GestureManager.swipeDetect(event)){
+            GestureTypeEnum.SWIPE_DOWN -> {
+                TextToSpeechManager.speakNow(texts["INTRODUCTION_TUTORIAL"].toString())
+                idleTimeSeconds = 0
+                Settings.globalSounds.playSound(RawResources.swapSound)
+            }
+        }
+
         when (GestureManager.doubleTapDetect(event)) {
             GestureTypeEnum.DOUBLE_TAP -> {
                 Settings.globalSounds.playSound(RawResources.acceptSound)

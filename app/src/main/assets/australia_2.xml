@@ -6,6 +6,7 @@
     <road name="right_4_very_long.xml" />
     <road name="right_4_very_long.xml" />
     <road name="left_4_very_short.xml" />
+    <road name="progress_25.xml"/>
     <road name="tightens.xml" />
     <road name="left_4_very_long_t.xml" />
     <road name="straight_60_t.xml" />
@@ -13,6 +14,7 @@
     <road name="opens.xml" />
     <road name="left_5_very_long.xml"/>
     <road name="right_4_long.xml"/>
+    <road name="progress_50.xml"/>
     <road name="right_6_long.xml"/>
     <road name="right_4_short.xml"/>
     <road name="straight_70.xml"/>
@@ -20,6 +22,7 @@
     <road name="right_4_very_long_t.xml"/>
     <road name="left_4_very_long_t.xml"/>
     <road name="left_4_very_long_t.xml"/>
+    <road name="progress_75.xml"/>
     <road name="opens.xml" />
     <road name="straight_50.xml" />
     <road name="left_4_very_short.xml"/>
@@ -27,5 +30,6 @@
     <road name="straight_90.xml"/>
     <road name="right_5.xml"/>
     <road name="right_5_very_long.xml"/>
+    <road name="progress_100.xml"/>
     <road name="finish.xml"/>
 </track>

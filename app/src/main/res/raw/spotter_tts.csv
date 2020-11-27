@@ -62,3 +62,8 @@ BRIDGE;Through bridge;Przez most
 TO_LEFT;To the left;W lewo
 TO_RIGHT;To the right;W prawo
 TIGHTER;Tight, tighter;Ciasno, ciaśniej
+CAR_DEMAGED;Car condition:;Stan pojazdu:
+ROAD_25;We drove 1/4 of the route!;Przejechaliśmy 1/4 trasy!
+ROAD_50;We are halfway to the finish line!;Jesteśmy w połowie drogi do mety!
+ROAD_75;We drove 3/4 of the route!;Przejechaliśmy 3/4 trasy!
+ROAD_100;The finish line is ahead of us!;Przed nami meta!

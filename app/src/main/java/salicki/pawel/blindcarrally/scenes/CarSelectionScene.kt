@@ -130,7 +130,7 @@ class CarSelectionScene() : SurfaceView(Settings.CONTEXT), ILevel {
         }
 
         if (idleTimeSeconds > 10) {
-            TextToSpeechManager.speakNow(textsCarsSelection["CAR_TUTORIAL"].toString())
+            TextToSpeechManager.speakNow(textsCarsSelection["IDLE"].toString())
 
             idleTimeSeconds = 0
         }
@@ -165,6 +165,16 @@ class CarSelectionScene() : SurfaceView(Settings.CONTEXT), ILevel {
                 }
 
                 swipe = true
+            }
+            GestureTypeEnum.SWIPE_UP -> {
+                LevelManager.changeLevel(StageSelectionScene(GameOptions.nation))
+                Settings.globalSounds.playSound(RawResources.swapSound)
+                swipe = true
+            }
+            GestureTypeEnum.SWIPE_DOWN -> {
+                TextToSpeechManager.speakNow(textsCarsSelection["IDLE"].toString())
+                Settings.globalSounds.playSound(RawResources.swapSound)
+                idleTimeSeconds = 0
             }
         }
 

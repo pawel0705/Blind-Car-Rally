@@ -1,4 +1,5 @@
 TEXT_KEY;ENGLISH;POLISH
 RETURN_MENU;Are you sure you want to exit to the main menu?;Czy na pewno chcesz wyjść do głównego menu?
-YES;Selected option: Yes.;Wybrana opcja: Tak.
-NO;Selected option: No.;Wybrana opcja: Nie.
+YES;Yes.;Tak.
+NO;No.;Nie.
+IDLE;Are you sure you want to exit to the main menu? You can choose yes or no. Swipe left or right to navigate through the options. Confirm the option by double-tapping your finger.;Czy na pewno chcesz wyjść do głównego menu? Możesz wybrać tak lub nie. Przesuń palcem w lewo lub prawo, by poruszać się po opcjach. Podwójnym stuknięciem palcem zatwierdź opcję.

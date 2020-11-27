@@ -136,7 +136,7 @@ class TournamentScene : SurfaceView(Settings.CONTEXT), ILevel {
         }
 
         if(idleTimeSeconds > 10){
-            TextToSpeechManager.speakNow(textsTournamentSelection["TOURNAMENT_TUTORIAL"].toString())
+            TextToSpeechManager.speakNow(textsTournamentSelection["IDLE"].toString())
 
             idleTimeSeconds = 0
         }
@@ -173,6 +173,17 @@ class TournamentScene : SurfaceView(Settings.CONTEXT), ILevel {
 
                 swipe = true
                 idleTimeSeconds = 0
+            }
+            GestureTypeEnum.SWIPE_UP -> {
+                LevelManager.changeLevel(GameModeScene())
+                Settings.globalSounds.playSound(RawResources.swapSound)
+                swipe = true
+            }
+            GestureTypeEnum.SWIPE_DOWN -> {
+                TextToSpeechManager.speakNow(textsTournamentSelection["IDLE"].toString())
+                Settings.globalSounds.playSound(RawResources.swapSound)
+                idleTimeSeconds = 0
+                swipe = true
             }
         }
 
