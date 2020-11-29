@@ -61,7 +61,8 @@ class CalibrationScene : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun initState() {
-
+        MovementManager.newGame()
+        MovementManager.pause()
     }
 
     override fun updateState() {

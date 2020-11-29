@@ -44,7 +44,7 @@ class GameScene() : SurfaceView(Settings.CONTEXT), ILevel {
 
     private var stopGameplay: Boolean = false
     private var countDown: Boolean = false
-    private var MAX_SCORE: Int = 1000000;
+
     private var startCountTime: Long = 0
     private var durationCount: Long = 0
     private val MAX_DURATION_COUNT = 6000
@@ -120,9 +120,9 @@ class GameScene() : SurfaceView(Settings.CONTEXT), ILevel {
 
 
         instructionText.initMultiLineText(
-            R.font.montserrat, R.dimen.informationSize,
+            R.font.montserrat, R.dimen.informationSizeSmall,
             Settings.SCREEN_WIDTH / 2F,
-            Settings.SCREEN_HEIGHT / 8F,
+            Settings.SCREEN_HEIGHT / 20F,
             pilotTexts["INSTRUCTION"].toString()
         )
 
@@ -247,11 +247,11 @@ class GameScene() : SurfaceView(Settings.CONTEXT), ILevel {
     private fun drawCoordinates(canvas: Canvas) {
         if (MovementManager.getOrientation() != null && MovementManager.getStartOrientation() != null) {
             val test1 =
-                MovementManager.getOrientation()!![0].toDouble() - MovementManager.getStartOrientation()!![0].toDouble()
+                MovementManager.getOrientation()!![0].toDouble()
             val test2 =
-                MovementManager.getOrientation()!![1].toDouble() - MovementManager.getStartOrientation()!![1].toDouble()
+                MovementManager.getOrientation()!![1].toDouble()
             val test3 =
-                MovementManager.getOrientation()!![2].toDouble() - MovementManager.getStartOrientation()!![2].toDouble()
+                MovementManager.getOrientation()!![2].toDouble()
             val paint = Paint()
             val color = ContextCompat.getColor(context, R.color.colorPrimary)
             paint.color = color
@@ -291,7 +291,7 @@ class GameScene() : SurfaceView(Settings.CONTEXT), ILevel {
                         true
                     )
                 ) {
-                    car.posX += 10
+                    car.posX += 15
 
                     if(car.getCarHealth() % 10 == 0){
                         TextToSpeechManager.speakNow(pilotTexts["CAR_DEMAGED"].toString() + " " + car.getCarHealth() + "%")
@@ -308,7 +308,7 @@ class GameScene() : SurfaceView(Settings.CONTEXT), ILevel {
                         false
                     )
                 ) {
-                    car.posX -= 10
+                    car.posX -= 15
 
                     if(car.getCarHealth() % 10 == 0){
                         TextToSpeechManager.speakNow(pilotTexts["CAR_DEMAGED"].toString() + " " + car.getCarHealth() + "%")
@@ -401,10 +401,12 @@ class GameScene() : SurfaceView(Settings.CONTEXT), ILevel {
     private fun updateStageResult() {
         stageResult.carDamage = car.getCarHealth()
         stageResult.time = raceTimeSeconds
-        stageResult.score = (MAX_SCORE * car.getCarHealth() * 0.01F / raceTimeSeconds).toInt()
     }
 
     override fun updateState() {
+        if(!MediaPlayerManager.isPlaying()){
+            MediaPlayerManager.startSound()
+        }
 
         if (countDown) {
             countDown()
@@ -523,13 +525,13 @@ class GameScene() : SurfaceView(Settings.CONTEXT), ILevel {
             if (windFasterRight) {
                 car.pushCar(
                     0F,
-                    windRight * 0.05F //* Settings.SCREEN_SCALE * 0.004F
+                    windRight * 0.075F //* Settings.SCREEN_SCALE * 0.004F
                 )
 
                 MediaPlayerManager.changeVolume(0F, windRight)
             } else {
                 car.pushCar(
-                    windLeft * 0.05F, //* Settings.SCREEN_SCALE * 0.004F,
+                    windLeft * 0.075F, //* Settings.SCREEN_SCALE * 0.004F,
                     0F
                 )
                 MediaPlayerManager.changeVolume(windLeft, 0F)
@@ -555,6 +557,7 @@ class GameScene() : SurfaceView(Settings.CONTEXT), ILevel {
             GestureTypeEnum.SWIPE_UP -> {
                 Settings.globalSounds.playSound(RawResources.swapSound)
                 pauseGame = true
+                MediaPlayerManager.stopSound()
                 LevelManager.stackLevel(PauseScene())
                 swipe = true
             }
@@ -606,9 +609,7 @@ class GameScene() : SurfaceView(Settings.CONTEXT), ILevel {
             }
         }
 
-
-
-        /*
+/*
         canvas.translate(0F, canvas.height.toFloat());   // reset where 0,0 is located
         canvas.scale(1F, -1F);    // invert
 
@@ -651,6 +652,9 @@ class GameScene() : SurfaceView(Settings.CONTEXT), ILevel {
 
         canvas.drawText(windRight.toString(), 900F, 900F, paint)
 
-         */
+
+
+ */
+
     }
 }

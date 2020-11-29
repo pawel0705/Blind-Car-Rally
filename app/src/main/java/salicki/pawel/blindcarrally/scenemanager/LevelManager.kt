@@ -6,8 +6,10 @@ import android.graphics.Paint
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
+import salicki.pawel.blindcarrally.MainActivity
 import salicki.pawel.blindcarrally.information.Settings
 import salicki.pawel.blindcarrally.scenes.*
+import salicki.pawel.blindcarrally.utils.MediaPlayerManager
 import java.util.*
 import kotlin.collections.ArrayDeque
 
@@ -91,6 +93,7 @@ object LevelManager : SurfaceView(Settings.CONTEXT), SurfaceHolder.Callback {
 
     fun pause() {
         gameLoop.stopLoop()
+        MediaPlayerManager.stopSound()
     }
 
     override fun surfaceCreated(holder: SurfaceHolder) {

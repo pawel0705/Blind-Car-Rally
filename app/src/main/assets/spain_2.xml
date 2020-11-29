@@ -10,6 +10,7 @@
     <road name="right_4_short.xml"/>
     <road name="straight_60.xml"/>
     <road name="left_3_short.xml"/>
+    <road name="chicane_1.xml"/>
     <road name="right_2_short.xml"/>
     <road name="right_5_long.xml"/>
     <road name="tightens.xml"/>
@@ -17,9 +18,11 @@
     <road name="progress_50.xml"/>
     <road name="opens.xml"/>
     <road name="right_2_very_long.xml"/>
+    <road name="gate_1.xml"/>
     <road name="keep_left_1.xml"/>
     <road name="tightens.xml"/>
     <road name="left_2_long_t.xml"/>
+    <road name="chicane_1.xml"/>
     <road name="left_4.xml"/>
     <road name="opens.xml"/>
     <road name="left_4_very_short.xml"/>

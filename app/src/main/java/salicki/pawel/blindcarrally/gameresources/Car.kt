@@ -3,16 +3,19 @@ package salicki.pawel.blindcarrally.gameresources
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.RectF
-
-import android.util.Log
-import salicki.pawel.blindcarrally.*
+import android.provider.Settings
+import android.view.WindowManager
+import androidx.core.content.ContextCompat.getSystemService
+import androidx.core.content.withStyledAttributes
+import salicki.pawel.blindcarrally.MainActivity
+import salicki.pawel.blindcarrally.R
 import salicki.pawel.blindcarrally.datas.CarParametersData
 import salicki.pawel.blindcarrally.datas.CarViewData
-import salicki.pawel.blindcarrally.information.Settings
 import salicki.pawel.blindcarrally.utils.SoundManager
 import salicki.pawel.blindcarrally.utils.VibratorManager
 import kotlin.math.pow
 import kotlin.math.sqrt
+
 
 class Car(posX: Float, posY: Float, rect: RectF) : EnvironmentObject(posX, posY) {
 
@@ -58,7 +61,7 @@ class Car(posX: Float, posY: Float, rect: RectF) : EnvironmentObject(posX, posY)
 
     }
 
-    private fun initSoundManager(){
+    private fun initSoundManager() {
         soundManagerLeft.initSoundManager()
         soundManagerRight.initSoundManager()
         soundManagerEngine.initSoundManager()
@@ -75,10 +78,10 @@ class Car(posX: Float, posY: Float, rect: RectF) : EnvironmentObject(posX, posY)
         soundManagerGears.addSound(R.raw.gear_blocked)
     }
 
-    private fun carEngine(){
+    private fun carEngine() {
         var i = 0
-        loop@while(i < gearRatio.size){
-            if(i > carParameters.speed){
+        loop@ while (i < gearRatio.size) {
+            if (i > carParameters.speed) {
                 gear = i
                 break@loop
             }
@@ -86,34 +89,40 @@ class Car(posX: Float, posY: Float, rect: RectF) : EnvironmentObject(posX, posY)
             i++
         }
 
-        var gearMinValue : Float = 0.0F
-        var gearMaxValue : Float = 0.0F
+        var gearMinValue: Float = 0.0F
+        var gearMaxValue: Float = 0.0F
 
-        gearMinValue = if(gear == 0){
+        gearMinValue = if (gear == 0) {
             0F
         } else {
-            gearRatio[gear-1].toFloat()
+            gearRatio[gear - 1].toFloat()
         }
         gearMaxValue = gearRatio[gear].toFloat()
 
-        var enginePitch = ((carParameters.speed - gearMaxValue)/(gearMaxValue-gearMinValue)) + 1 / 3F
+        var enginePitch =
+            ((carParameters.speed - gearMaxValue) / (gearMaxValue - gearMinValue)) + 1 / 3F
 
-     //   Log.d("SPED", carParameters.speed.toString())
-     //   Log.d("PITCH", (carParameters.speed / carParameters.maxSpeed + 1).toString())
+        //   Log.d("SPED", carParameters.speed.toString())
+        //   Log.d("PITCH", (carParameters.speed / carParameters.maxSpeed + 1).toString())
 
-        if(carParameters.speed > 0.01){
-            if(engineIterator > 2){
+        if (carParameters.speed > 0.01) {
+            if (engineIterator > 2) {
                 engineIterator = 0
                 engineLoop = false
-                soundManagerEngine.playSound(R.raw.engine_03, 0.2F, 0.2F, 0, carParameters.speed / carParameters.maxSpeed + 1)
+                soundManagerEngine.playSound(
+                    R.raw.engine_03,
+                    0.25F,
+                    0.25F,
+                    0,
+                    carParameters.speed / carParameters.maxSpeed + 0.9F + carParameters.gear * 0.05F
+                )
             }
         } else {
-            if(!engineLoop){
+            if (!engineLoop) {
                 soundManagerEngine.playSound(R.raw.engine_03, 0.5F, 0.5F, -1)
                 engineLoop = true
             }
         }
-
 
 
     }
@@ -154,7 +163,7 @@ class Car(posX: Float, posY: Float, rect: RectF) : EnvironmentObject(posX, posY)
         }
     }
 
-    fun destroyCar(){
+    fun destroyCar() {
         soundManagerLeft.destroy()
         soundManagerRight.destroy()
         soundManagerEngine.destroy()
@@ -187,9 +196,7 @@ class Car(posX: Float, posY: Float, rect: RectF) : EnvironmentObject(posX, posY)
 
         if (sensorDistance.left) {
 
-            val volume = 1 / (sensorDistance.leftLength  + 1)
-
-            Log.d("LEFT", sensorDistance.leftLength.toString())
+            val volume = 1 / (sensorDistance.leftLength + 1)
 
             if (sensorBeepIteratorLeft > 2 * 1 / volume) {
                 sensorBeepIteratorLeft = 0
@@ -198,7 +205,7 @@ class Car(posX: Float, posY: Float, rect: RectF) : EnvironmentObject(posX, posY)
         }
 
         if (sensorDistance.right) {
-            val volume = 1 / (sensorDistance.rightLength  + 1)
+            val volume = 1 / (sensorDistance.rightLength + 1)
 
             if (sensorBeepIteratorRight > 2 * 1 / volume) {
                 sensorBeepIteratorRight = 0
@@ -208,7 +215,7 @@ class Car(posX: Float, posY: Float, rect: RectF) : EnvironmentObject(posX, posY)
         return sensorDistance.right || sensorDistance.left
     }
 
-    fun pushCar(left: Float, right: Float){
+    fun pushCar(left: Float, right: Float) {
         posX += left  //* Settings.SCREEN_SCALE * 0.0001F
         posX -= right // * Settings.SCREEN_SCALE * 0.0001F
     }
@@ -217,12 +224,11 @@ class Car(posX: Float, posY: Float, rect: RectF) : EnvironmentObject(posX, posY)
 
         val collision = carHitbox.collisionCheck(x1, y1, x2, y2)
 
-        if(collision){
+        if (collision) {
             this.carParameters.health -= 5
-            if(leftPath){
+            if (leftPath) {
                 soundManagerCollition.playSound(R.raw.collision, 0.6F, 0F)
-            }
-            else {
+            } else {
                 soundManagerCollition.playSound(R.raw.collision, 0F, 0.6F)
             }
 
@@ -234,18 +240,17 @@ class Car(posX: Float, posY: Float, rect: RectF) : EnvironmentObject(posX, posY)
         return false
     }
 
-    fun getCarHealth() :Int{
+    fun getCarHealth(): Int {
         return this.carParameters.health
     }
 
     fun higherGear() {
-        if(carParameters.speed > 0.8 * carParameters.maxSpeed) {
+        if (carParameters.speed > 0.8 * carParameters.maxSpeed) {
             if (carParameters.gear < carParameters.maxGear) {
                 carParameters.gear++
                 soundManagerGears.playSound(R.raw.gear_up)
             }
-        }
-        else {
+        } else {
             soundManagerGears.playSound(R.raw.gear_blocked)
         }
     }
@@ -271,6 +276,7 @@ class Car(posX: Float, posY: Float, rect: RectF) : EnvironmentObject(posX, posY)
     private fun updateCarMovement() {
 
 
+
         if (MovementManager != null) {
             if (MovementManager.getOrientation() != null && MovementManager.getStartOrientation() != null) {
                 var pitch: Float =
@@ -278,17 +284,17 @@ class Car(posX: Float, posY: Float, rect: RectF) : EnvironmentObject(posX, posY)
                 var roll: Float =
                     MovementManager.getOrientation()!![1] - MovementManager.getStartOrientation()!![1]
 
-                val phonePosition = MovementManager.getOrientation()!![0]
-
-                if(phonePosition > -0.5F){
+                if ((salicki.pawel.blindcarrally.information.Settings.CONTEXT as MainActivity).getOrientation() == 3) {
                     pitch *= -1
-                } else {
+                }
+
+                if((salicki.pawel.blindcarrally.information.Settings.CONTEXT as MainActivity).getOrientation() == 1){
                     roll *= -1
                 }
 
                 velX = 100 * roll // * Settings.SCREEN_SCALE
 
-                velY = if(pitch<0){
+                velY = if (pitch < 0) {
                     pitch * carParameters.acceleration // * Settings.SCREEN_SCALE * 0.00005F *
                 } else {
                     pitch * carParameters.acceleration // Settings.SCREEN_SCALE * 0.0005F *
@@ -298,7 +304,6 @@ class Car(posX: Float, posY: Float, rect: RectF) : EnvironmentObject(posX, posY)
             }
         }
     }
-
 
 
     private fun updateCarSpeed() {
@@ -327,8 +332,8 @@ class Car(posX: Float, posY: Float, rect: RectF) : EnvironmentObject(posX, posY)
 
         carParameters.maxSpeed = carParameters.gear.toFloat() * 0.1F
 
-        if(carParameters.gear > carParameters.minGear){
-            if(carParameters.speed < (carParameters.gear * 0.1 - 0.1) * 0.8F){
+        if (carParameters.gear > carParameters.minGear) {
+            if (carParameters.speed < (carParameters.gear * 0.1 - 0.1) * 0.8F) {
                 carParameters.gear--
                 soundManagerGears.playSound(R.raw.gear_down)
             }
@@ -337,7 +342,7 @@ class Car(posX: Float, posY: Float, rect: RectF) : EnvironmentObject(posX, posY)
 
     }
 
-    fun getCarSpeed() : Float{
+    fun getCarSpeed(): Float {
         return this.carParameters.speed
     }
 

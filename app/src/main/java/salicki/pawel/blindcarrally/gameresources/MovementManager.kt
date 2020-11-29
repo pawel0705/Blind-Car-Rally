@@ -38,6 +38,7 @@ object MovementManager : SensorEventListener {
     }
 
     fun register() {
+
         manager!!.registerListener(this,
             accelerometer, SensorManager.SENSOR_DELAY_GAME)
         manager!!.registerListener(this,

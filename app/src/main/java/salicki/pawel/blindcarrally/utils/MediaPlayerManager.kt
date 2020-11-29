@@ -14,27 +14,23 @@ object MediaPlayerManager {
     }
 
     fun startSound() {
-
         mediaPlayer.start()
+    }
 
+    fun isPlaying(): Boolean{
+        return mediaPlayer.isPlaying
     }
 
     fun loopSound() {
-
         mediaPlayer.isLooping = true
-
     }
 
     fun unLoopSound() {
-
         mediaPlayer.isLooping = false
-
     }
 
     fun stopSound() {
-
         mediaPlayer.stop()
-
     }
 
     fun changeVolume(left: Float, right: Float) {

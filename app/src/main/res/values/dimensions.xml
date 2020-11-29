@@ -6,7 +6,6 @@
     <dimen name="screenSize">400sp</dimen>
     <dimen name="fullScreenSize">800sp</dimen>
     <dimen name="informationSize">20sp</dimen>
-    <dimen name="carSizeX">20sp</dimen>
-    <dimen name="carSizeY">10sp</dimen>
+    <dimen name="informationSizeSmall">17sp</dimen>
     <dimen name="radarSize">60sp</dimen>
 </resources>

@@ -7,6 +7,7 @@
     <road name="right_4_short_t.xml"/>
     <road name="straight_60_t.xml"/>
     <road name="progress_25.xml"/>
+    <road name="chicane_1.xml"/>
     <road name="right_2_long_t.xml" />
     <road name="straight_50_t.xml"/>
     <road name="left_3_long_t.xml" />
@@ -16,6 +17,7 @@
     <road name="left_2_very_long.xml" />
     <road name="progress_50.xml"/>
     <road name="left_5_very_long.xml" />
+    <road name="chicane_1.xml"/>
     <road name="left_4_long.xml" />
     <road name="straight_60.xml" />
     <road name="right_4_long.xml"/>

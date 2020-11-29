@@ -55,9 +55,8 @@ class RaceOverScene(raceData: StageResultData) : SurfaceView(Settings.CONTEXT), 
                 R.dimen.informationSize,
                 Settings.SCREEN_WIDTH / 2F,
                 Settings.SCREEN_HEIGHT / 10F,
-                textsRaceOver["CAR_DAMAGE"].toString() + raceData.carDamage + "%." +
-                     textsRaceOver["TIME"].toString() + raceData.time + textsRaceOver["SECONDS"].toString() +
-                     textsRaceOver["SCORE"].toString() + raceData.score + textsRaceOver["POINTS"].toString()
+                textsRaceOver["CAR_DAMAGE"].toString() + " " + raceData.carDamage + "%. " +
+                     textsRaceOver["TIME"].toString() + " " + raceData.time + textsRaceOver["SECONDS"].toString()
             )
 
     }
@@ -117,7 +116,6 @@ class RaceOverScene(raceData: StageResultData) : SurfaceView(Settings.CONTEXT), 
 
         TextToSpeechManager.speakQueue(textsRaceOver["CAR_DAMAGE"].toString() + raceData.carDamage + "%.")
         TextToSpeechManager.speakQueue(textsRaceOver["TIME"].toString() + raceData.time + textsRaceOver["SECONDS"].toString())
-        TextToSpeechManager.speakQueue(textsRaceOver["SCORE"].toString() + raceData.score + textsRaceOver["POINTS"].toString())
     }
 
     override fun updateState() {

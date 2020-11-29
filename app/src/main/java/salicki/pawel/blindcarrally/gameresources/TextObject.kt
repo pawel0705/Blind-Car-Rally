@@ -44,7 +44,7 @@ class TextObject {
         textLayout = StaticLayout(
             text,
             infoTextPaint,
-            (Settings.SCREEN_WIDTH * 0.8F).toInt(),
+            (Settings.SCREEN_WIDTH * 0.9F).toInt(),
             Layout.Alignment.ALIGN_NORMAL,
             1.0f,
             0.0f,

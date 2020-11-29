@@ -18,6 +18,7 @@
     <road name="straight_50.xml"/>
     <road name="tightens.xml"/>
     <road name="straight_100_t.xml"/>
+    <road name="chicane_1.xml"/>
     <road name="opens.xml"/>
     <road name="right_5_very_long.xml"/>
     <road name="keep_left_1.xml"/>

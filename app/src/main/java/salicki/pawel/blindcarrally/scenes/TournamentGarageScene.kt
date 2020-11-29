@@ -145,8 +145,8 @@ class TournamentGarageScene : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     private fun loadStageDescription() {
-        nextStageDescription = textsTournamentGarageSelection["STAGE_DESCRIPTION"] +
-                textsNations[StagesResources.stageList[stageIterator].nationKey] +
+        nextStageDescription = textsTournamentGarageSelection["STAGE_DESCRIPTION"] + " " +
+                textsNations[StagesResources.stageList[stageIterator].nationKey] + " " +
                 textsStages[StagesResources.stageList[stageIterator].stageKey]
     }
 

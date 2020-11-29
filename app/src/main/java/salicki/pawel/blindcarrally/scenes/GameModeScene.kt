@@ -50,9 +50,9 @@ class GameModeScene : SurfaceView(Settings.CONTEXT), ILevel {
         screenTexts["MODE_DESCRIPTION_CLICKED"]?.let {
             descriptionText.initMultiLineText(
                 R.font.montserrat,
-                R.dimen.informationSize,
+                R.dimen.informationSizeSmall,
                 Settings.SCREEN_WIDTH / 2F,
-                Settings.SCREEN_HEIGHT / 10F,
+                Settings.SCREEN_HEIGHT / 20F,
                 it
             )
         }
@@ -240,9 +240,8 @@ class GameModeScene : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun redrawState(canvas: Canvas) {
-        gameModeImage.drawImage(canvas)
-
         if(!drawDescription){
+            gameModeImage.drawImage(canvas)
             screenTexts[modeSelectionData[modeIterator].textValue]?.let {
                 optionText.drawText(
                     canvas,

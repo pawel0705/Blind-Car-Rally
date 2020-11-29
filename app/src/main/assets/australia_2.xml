@@ -11,6 +11,7 @@
     <road name="left_4_very_long_t.xml" />
     <road name="straight_60_t.xml" />
     <road name="left_6_t.xml" />
+    <road name="chicane_1.xml"/>
     <road name="opens.xml" />
     <road name="left_5_very_long.xml"/>
     <road name="right_4_long.xml"/>

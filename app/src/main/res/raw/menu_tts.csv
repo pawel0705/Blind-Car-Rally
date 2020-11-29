@@ -3,6 +3,6 @@ MENU_TUTORIAL;Main menu.;Menu główne.
 MENU_PLAY;Start the game.;Rozpocznij grę.
 MENU_SETTINGS;Settings.;Ustawienia.
 MENU_LANGUAGE;Change language.;Zmień język.
-MENU_CREDITS;Credits.;Autorzy.
+MENU_CREDITS;Instruction.;Instrukcja.
 MENU_QUIT;Quit game.;Wyjdź z gry.
 IDLE;You are in the main menu. You can start the game, go to settings, change the language, go to the authors list, or exit the application. Swipe left or right to navigate through the options. Confirm your selection with a double-tap of your finger.;Znajdujesz się w menu głównym. Możesz rozpocząć grę, przejść do ustawień, zmienić język, przejść do listy autorów, lub wyjść z aplikacji. Przesuń palcem w lewo lub prawo, by poruszać się po opcjach. Podwójnym stuknięciem palcem zatwierdź opcję.

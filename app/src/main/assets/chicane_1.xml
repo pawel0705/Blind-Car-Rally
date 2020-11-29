@@ -2,17 +2,17 @@
 <track>
     <tts_key key="CAUTION"/>
     <tts_key key="CHICANE"/>
-    <spawn x="40" y="0"/>
+    <spawn x="40" y="-40"/>
     <finish x="20" y="320"/>
     <left></left>
-    <point x="0" y="0"/>
+    <point x="0" y="-40"/>
     <point x="0" y="60"/>
     <point x="70" y="100"/>
     <point x="0" y="160"/>
     <point x="70" y="240"/>
     <point x="0" y="320"/>
     <right></right>
-    <point x="80" y="0"/>
+    <point x="80" y="-40"/>
     <point x="80" y="50"/>
     <point x="160" y="100"/>
     <point x="80" y="160"/>

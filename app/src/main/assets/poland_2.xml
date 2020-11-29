@@ -19,7 +19,9 @@
     <road name="left_3_very_long.xml" />
     <road name="left_6_very_long.xml" />
     <road name="left_5_long.xml" />
+    <road name="gate_1.xml"/>
     <road name="right_3_long.xml" />
+    <road name="chicane_1.xml"/>
     <road name="keep_right_1.xml" />
     <road name="straight_80.xml"/>
     <road name="tightens.xml" />

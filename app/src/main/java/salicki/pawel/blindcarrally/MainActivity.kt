@@ -1,15 +1,17 @@
 package salicki.pawel.blindcarrally
 
+import android.content.Context
 import android.os.Bundle
 import android.os.Vibrator
+import android.util.Log
 import android.view.View
+import android.view.WindowManager
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import salicki.pawel.blindcarrally.gameresources.TextToSpeechManager
 import salicki.pawel.blindcarrally.information.Settings
 import salicki.pawel.blindcarrally.resources.RawResources
 import salicki.pawel.blindcarrally.scenemanager.LevelManager
-import java.util.logging.Level
 import kotlin.system.exitProcess
 
 
@@ -40,6 +42,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(LevelManager)
 
         window.decorView.invalidate()
+
+        this.getOrientation()
     }
 
 
@@ -55,6 +59,13 @@ class MainActivity : AppCompatActivity() {
 
     fun vibratorService(): Vibrator {
         return getSystemService(VIBRATOR_SERVICE) as Vibrator
+    }
+
+    fun getOrientation(): Int{
+        val display =
+            (getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay
+
+        return display.orientation
     }
 
     override fun onPause() {

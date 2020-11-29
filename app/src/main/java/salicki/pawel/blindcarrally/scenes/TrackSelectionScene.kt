@@ -112,13 +112,7 @@ class TrackSelectionScene : SurfaceView(Settings.CONTEXT), ILevel {
         TextToSpeechManager.speakQueue(textsNations["ARGENTINA"].toString())
 
         screenTexts[trackSelectionData[trackIterator].textValue]?.let {
-            optionText.initMultiLineText(
-                R.font.hemi,
-                R.dimen.selectFontSize,
-                Settings.SCREEN_WIDTH / 2F,
-                Settings.SCREEN_HEIGHT / 3F,
-                it
-            )
+            optionText.initText(R.font.hemi, Settings.SCREEN_WIDTH / 2F, Settings.SCREEN_HEIGHT / 3F)
         }
     }
 
@@ -126,16 +120,6 @@ class TrackSelectionScene : SurfaceView(Settings.CONTEXT), ILevel {
         if (trackSelectionData[trackIterator].selected && lastOption != trackIterator) {
             textsNations[trackSelectionData[trackIterator].textKey]?.let {
                 TextToSpeechManager.speakNow(
-                    it
-                )
-            }
-
-            screenTexts[trackSelectionData[trackIterator].textValue]?.let {
-                optionText.initMultiLineText(
-                    R.font.hemi,
-                    R.dimen.selectFontSize,
-                    Settings.SCREEN_WIDTH / 2F,
-                    Settings.SCREEN_HEIGHT / 3F,
                     it
                 )
             }
@@ -267,6 +251,10 @@ class TrackSelectionScene : SurfaceView(Settings.CONTEXT), ILevel {
     override fun redrawState(canvas: Canvas) {
         trackSelectionImage.drawImage(canvas)
 
-        optionText.drawMultilineText(canvas)
+        screenTexts[trackSelectionData[trackIterator].textValue]?.let {
+            optionText.drawText(canvas,
+                it
+            )
+        }
     }
 }

@@ -10,6 +10,7 @@
     <road name="straight_50.xml"/>
     <road name="right_2.xml"/>
     <road name="keep_right_1.xml"/>
+    <road name="chicane_1.xml"/>
     <road name="straight_60.xml"/>
     <road name="tightens.xml"/>
     <road name="straight_70_t.xml"/>

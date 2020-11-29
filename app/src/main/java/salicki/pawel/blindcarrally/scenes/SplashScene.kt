@@ -28,6 +28,8 @@ class SplashScene() : SurfaceView(Settings.CONTEXT), ILevel {
         SoundManager()
     private var splashImage =
         OptionImage()
+    private var waitIterator: Int = 0
+    private var waitTime: Int = 60
 
     private var languageSelection: Boolean = true
 
@@ -66,7 +68,7 @@ class SplashScene() : SurfaceView(Settings.CONTEXT), ILevel {
 
     private fun initScreenTransitionTimer() {
         if (languageSelection) {
-            var timer = object : CountDownTimer(10000, 10000) {
+            var timer = object : CountDownTimer(8000, 8000) {
                 override fun onTick(millisUntilFinished: Long) {}
                 override fun onFinish() {
                     LevelManager.changeLevel(LanguageScene(LanguageLevelFlowEnum.INTRODUCTION))
@@ -74,7 +76,7 @@ class SplashScene() : SurfaceView(Settings.CONTEXT), ILevel {
             }
             timer.start()
         } else {
-            var timer = object : CountDownTimer(10000, 10000) {
+            var timer = object : CountDownTimer(8000, 8000) {
                 override fun onTick(millisUntilFinished: Long) {}
                 override fun onFinish() {
                     if (Settings.introduction) {
@@ -98,8 +100,8 @@ class SplashScene() : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun updateState() {
-
-        if(!loading){
+        waitIterator++
+        if(!loading && waitIterator > waitTime){
             soundManager.playSound(R.raw.loading)
             loading = true
         }

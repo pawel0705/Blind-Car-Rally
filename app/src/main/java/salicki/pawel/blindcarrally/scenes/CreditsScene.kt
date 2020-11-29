@@ -7,6 +7,7 @@ import salicki.pawel.blindcarrally.*
 import salicki.pawel.blindcarrally.enums.GestureTypeEnum
 import salicki.pawel.blindcarrally.gameresources.TextObject
 import salicki.pawel.blindcarrally.gameresources.TextToSpeechManager
+import salicki.pawel.blindcarrally.information.GameOptions
 import salicki.pawel.blindcarrally.information.Settings
 import salicki.pawel.blindcarrally.resources.RawResources
 import salicki.pawel.blindcarrally.scenemanager.ILevel
@@ -18,7 +19,6 @@ import salicki.pawel.blindcarrally.utils.SoundManager
 class CreditsScene : SurfaceView(Settings.CONTEXT), ILevel {
 
     private var texts: HashMap<String, String> = HashMap()
-    private var screenTexts: HashMap<String, String> = HashMap()
     private var optionText: TextObject = TextObject()
     private var soundManager: SoundManager =
         SoundManager()
@@ -31,7 +31,15 @@ class CreditsScene : SurfaceView(Settings.CONTEXT), ILevel {
 
         initSoundManager()
         readTTSTextFile()
-        optionText.initText(R.font.hemi, Settings.SCREEN_WIDTH / 2F, Settings.SCREEN_HEIGHT / 3F)
+        texts["INSTRUCTION"]?.let {
+            optionText.initMultiLineText(
+                R.font.montserrat,
+                R.dimen.informationSize,
+                Settings.SCREEN_WIDTH / 2F,
+                Settings.SCREEN_HEIGHT / 10F,
+                it
+            )
+        }
     }
 
     private fun initSoundManager() {
@@ -42,12 +50,10 @@ class CreditsScene : SurfaceView(Settings.CONTEXT), ILevel {
 
     private fun readTTSTextFile() {
         texts.putAll(OpenerCSV.readData(R.raw.credits_tts, Settings.languageTtsEnum))
-        screenTexts.putAll(OpenerCSV.readData(R.raw.credits_texts, Settings.languageTtsEnum))
     }
 
     override fun initState() {
-        TextToSpeechManager.speakNow(texts["CREDITS_AUTHOR"].toString())
-        TextToSpeechManager.speakQueue(texts["CREDITS_BACK"].toString())
+        TextToSpeechManager.speakNow(texts["INSTRUCTION"].toString())
     }
 
     override fun updateState() {
@@ -62,9 +68,7 @@ class CreditsScene : SurfaceView(Settings.CONTEXT), ILevel {
         }
 
         if(idleTimeSeconds > 10 && !TextToSpeechManager.isSpeaking()){
-            TextToSpeechManager.speakNow(texts["IDLE"].toString())
-            TextToSpeechManager.speakNow(texts["CREDITS_AUTHOR"].toString())
-            TextToSpeechManager.speakQueue(texts["CREDITS_BACK"].toString())
+            TextToSpeechManager.speakNow(texts["INSTRUCTION"].toString())
             idleTimeSeconds = 0
         }
     }
@@ -89,9 +93,7 @@ class CreditsScene : SurfaceView(Settings.CONTEXT), ILevel {
                 Settings.globalSounds.playSound(RawResources.swapSound)
             }
             GestureTypeEnum.SWIPE_DOWN -> {
-                TextToSpeechManager.speakNow(texts["IDLE"].toString())
-                TextToSpeechManager.speakNow(texts["CREDITS_AUTHOR"].toString())
-                TextToSpeechManager.speakQueue(texts["CREDITS_BACK"].toString())
+                TextToSpeechManager.speakNow(texts["INSTRUCTION"].toString())
                 idleTimeSeconds = 0
                 Settings.globalSounds.playSound(RawResources.swapSound)
             }
@@ -99,6 +101,6 @@ class CreditsScene : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun redrawState(canvas: Canvas) {
-        screenTexts["CREDITS_AUTHOR"]?.let { optionText.drawText(canvas, it) }
+        optionText.drawMultilineText(canvas)
     }
 }
