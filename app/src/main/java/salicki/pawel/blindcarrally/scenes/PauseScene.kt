@@ -11,10 +11,12 @@ import salicki.pawel.blindcarrally.gameresources.OptionImage
 import salicki.pawel.blindcarrally.gameresources.TextObject
 import salicki.pawel.blindcarrally.gameresources.TextToSpeechManager
 import salicki.pawel.blindcarrally.information.Settings
+import salicki.pawel.blindcarrally.resources.DrawableResources
 import salicki.pawel.blindcarrally.resources.RawResources
 import salicki.pawel.blindcarrally.scenemanager.ILevel
 import salicki.pawel.blindcarrally.scenemanager.LevelManager
 import salicki.pawel.blindcarrally.utils.GestureManager
+import salicki.pawel.blindcarrally.utils.IdleSpeakManager
 import salicki.pawel.blindcarrally.utils.OpenerCSV
 import salicki.pawel.blindcarrally.utils.SoundManager
 
@@ -22,17 +24,18 @@ class PauseScene : SurfaceView(Settings.CONTEXT), ILevel {
 
     private var textsPause: HashMap<String, String> = HashMap()
     private var screenTexts: HashMap<String, String> = HashMap()
+    private var pauseSelectionData= arrayListOf<OptionSelectionData>()
+
+    private var idleSpeak: IdleSpeakManager = IdleSpeakManager()
     private var optionText: TextObject = TextObject()
     private var pauseImage: OptionImage = OptionImage()
-    private var pauseSelectionData= arrayListOf<OptionSelectionData>()
     private var soundManager: SoundManager =
         SoundManager()
-    private var swipe: Boolean = false
+
     private var pauseIterator: Int = 0
     private var lastOption: Int = -1
 
-    private var idleTime: Int = 0
-    private var idleTimeSeconds: Int = 0
+    private var swipe: Boolean = false
 
     init {
         isFocusable = true
@@ -41,8 +44,8 @@ class PauseScene : SurfaceView(Settings.CONTEXT), ILevel {
         readTTSTextFile()
         initTrackSelectionOptions()
 
-        screenTexts.putAll(OpenerCSV.readData(R.raw.pause_texts, Settings.languageTtsEnum))
-        pauseImage.setFullScreenImage(R.drawable.pause)
+        screenTexts.putAll(OpenerCSV.readData(RawResources.pause_TXT, Settings.languageTtsEnum))
+        pauseImage.setFullScreenImage(DrawableResources.pauseView)
         optionText.initText(R.font.hemi, Settings.SCREEN_WIDTH / 2F, Settings.SCREEN_HEIGHT / 3F)
     }
 
@@ -83,7 +86,7 @@ class PauseScene : SurfaceView(Settings.CONTEXT), ILevel {
     private fun readTTSTextFile() {
         textsPause.putAll(
             OpenerCSV.readData(
-                R.raw.pause_tts,
+               RawResources.pause_TTS,
                 Settings.languageTtsEnum
             )
         )
@@ -105,19 +108,7 @@ class PauseScene : SurfaceView(Settings.CONTEXT), ILevel {
             lastOption = pauseIterator
         }
 
-        if(!TextToSpeechManager.isSpeaking()){
-            idleTime++
-
-            if(idleTime % 30 == 0){
-                idleTimeSeconds++
-            }
-        }
-
-        if(idleTimeSeconds > 10){
-            TextToSpeechManager.speakNow(textsPause["IDLE"].toString())
-
-            idleTimeSeconds = 0
-        }
+        idleSpeak.updateIdleStatus()
     }
 
     override fun destroyState() {
@@ -140,7 +131,7 @@ class PauseScene : SurfaceView(Settings.CONTEXT), ILevel {
                 }
 
                 swipe = true
-                idleTimeSeconds = 0
+                idleSpeak.resetIdleTimeSeconds()
             }
             GestureTypeEnum.SWIPE_LEFT -> {
                 soundManager.playSound(RawResources.swapSound)
@@ -150,7 +141,7 @@ class PauseScene : SurfaceView(Settings.CONTEXT), ILevel {
                 }
 
                 swipe = true
-                idleTimeSeconds = 0
+                idleSpeak.resetIdleTimeSeconds()
             }
             GestureTypeEnum.SWIPE_UP -> {
                 LevelManager.popLevel()
@@ -160,7 +151,7 @@ class PauseScene : SurfaceView(Settings.CONTEXT), ILevel {
             GestureTypeEnum.SWIPE_DOWN -> {
                 TextToSpeechManager.speakNow(textsPause["IDLE"].toString())
                 Settings.globalSounds.playSound(RawResources.swapSound)
-                idleTimeSeconds = 0
+                idleSpeak.resetIdleTimeSeconds()
                 swipe = true
             }
         }
@@ -171,7 +162,7 @@ class PauseScene : SurfaceView(Settings.CONTEXT), ILevel {
                 TextToSpeechManager.stop()
                 Settings.globalSounds.playSound(RawResources.acceptSound)
                 changeLevel(pauseIterator)
-                idleTimeSeconds = 0
+                idleSpeak.resetIdleTimeSeconds()
             }
         }
 
@@ -188,7 +179,7 @@ class PauseScene : SurfaceView(Settings.CONTEXT), ILevel {
                     pauseIterator = 2
                 }
             }
-            idleTimeSeconds = 0
+            idleSpeak.resetIdleTimeSeconds()
         }
 
         pauseSelectionData.forEach {
@@ -204,7 +195,6 @@ class PauseScene : SurfaceView(Settings.CONTEXT), ILevel {
                 LevelManager.popLevel()
             }
             LevelTypeEnum.MENU -> {
-                // ds na stos sa teraz 2+
                 LevelManager.changeLevel(MenuScene())
             }
             LevelTypeEnum.QUIT -> {

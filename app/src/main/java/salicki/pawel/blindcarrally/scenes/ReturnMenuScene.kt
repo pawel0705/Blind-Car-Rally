@@ -12,29 +12,30 @@ import salicki.pawel.blindcarrally.gameresources.OptionImage
 import salicki.pawel.blindcarrally.gameresources.TextObject
 import salicki.pawel.blindcarrally.gameresources.TextToSpeechManager
 import salicki.pawel.blindcarrally.information.Settings
+import salicki.pawel.blindcarrally.resources.DrawableResources
 import salicki.pawel.blindcarrally.resources.RawResources
 import salicki.pawel.blindcarrally.scenemanager.ILevel
 import salicki.pawel.blindcarrally.scenemanager.LevelManager
 import salicki.pawel.blindcarrally.utils.GestureManager
+import salicki.pawel.blindcarrally.utils.IdleSpeakManager
 import salicki.pawel.blindcarrally.utils.OpenerCSV
 import salicki.pawel.blindcarrally.utils.SoundManager
 
 class ReturnMenuScene: SurfaceView(Settings.CONTEXT), ILevel {
-
+    private var screenTexts: HashMap<String, String> = HashMap()
     private var textsReturnMenu: HashMap<String, String> = HashMap()
-    private var returnMenuImage: OptionImage = OptionImage()
     private var returnMenuSelectionData= arrayListOf<OptionSelectionData>()
+
     private var soundManager: SoundManager =
         SoundManager()
-    private var swipe: Boolean = false
+    private var returnMenuImage: OptionImage = OptionImage()
+    private var optionText: TextObject = TextObject()
+    private var idleSpeak: IdleSpeakManager = IdleSpeakManager()
+
     private var returnMenuIterator: Int = 0
     private var lastOption: Int = -1
 
-    private var screenTexts: HashMap<String, String> = HashMap()
-    private var optionText: TextObject = TextObject()
-
-    private var idleTime: Int = 0
-    private var idleTimeSeconds: Int = 0
+    private var swipe: Boolean = false
 
     init {
         isFocusable = true
@@ -42,8 +43,8 @@ class ReturnMenuScene: SurfaceView(Settings.CONTEXT), ILevel {
         initSoundManager()
         readTTSTextFile()
         initTrackSelectionOptions()
-        returnMenuImage.setFullScreenImage(R.drawable.yes_no)
-        screenTexts.putAll(OpenerCSV.readData(R.raw.return_menu_texts, Settings.languageTtsEnum))
+        returnMenuImage.setFullScreenImage(DrawableResources.yesNoView)
+        screenTexts.putAll(OpenerCSV.readData(RawResources.returnMenu_TXT, Settings.languageTtsEnum))
         optionText.initText(R.font.hemi, Settings.SCREEN_WIDTH / 2F, Settings.SCREEN_HEIGHT / 3F)
     }
 
@@ -76,7 +77,7 @@ class ReturnMenuScene: SurfaceView(Settings.CONTEXT), ILevel {
     private fun readTTSTextFile() {
         textsReturnMenu.putAll(
             OpenerCSV.readData(
-                R.raw.return_menu_tts,
+              RawResources.returnMenu_TTS,
                 Settings.languageTtsEnum
             )
         )
@@ -85,6 +86,8 @@ class ReturnMenuScene: SurfaceView(Settings.CONTEXT), ILevel {
     override fun initState() {
         TextToSpeechManager.speakNow(textsReturnMenu["RETURN_MENU"].toString())
         TextToSpeechManager.speakQueue(textsReturnMenu["YES"].toString())
+
+        idleSpeak.initIdleString(textsReturnMenu["IDLE"].toString())
     }
 
     override fun updateState() {
@@ -98,19 +101,7 @@ class ReturnMenuScene: SurfaceView(Settings.CONTEXT), ILevel {
             lastOption = returnMenuIterator
         }
 
-        if(!TextToSpeechManager.isSpeaking()){
-            idleTime++
-
-            if(idleTime % 30 == 0){
-                idleTimeSeconds++
-            }
-        }
-
-        if(idleTimeSeconds > 10){
-            TextToSpeechManager.speakNow(textsReturnMenu["IDLE"].toString())
-
-            idleTimeSeconds = 0
-        }
+        idleSpeak.updateIdleStatus()
     }
 
     override fun destroyState() {
@@ -120,7 +111,6 @@ class ReturnMenuScene: SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun respondTouchState(event: MotionEvent) {
-
         swipe = false
 
         when (GestureManager.swipeDetect(event)) {
@@ -151,7 +141,7 @@ class ReturnMenuScene: SurfaceView(Settings.CONTEXT), ILevel {
             GestureTypeEnum.SWIPE_DOWN->{
                 TextToSpeechManager.speakNow(textsReturnMenu["IDLE"].toString())
                 Settings.globalSounds.playSound(RawResources.swapSound)
-                idleTimeSeconds = 0
+                idleSpeak.resetIdleTimeSeconds()
                 swipe = true
             }
         }
@@ -187,7 +177,6 @@ class ReturnMenuScene: SurfaceView(Settings.CONTEXT), ILevel {
     private fun changeLevel(option: Int) {
         when (returnMenuSelectionData[option].levelType) {
             AnswerEnum.YES -> {
-                // ds na stos sa teraz 2+
                 LevelManager.changeLevel(MenuScene())
             }
             AnswerEnum.NO -> {

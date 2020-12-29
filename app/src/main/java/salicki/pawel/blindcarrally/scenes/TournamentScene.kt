@@ -12,31 +12,30 @@ import salicki.pawel.blindcarrally.gameresources.TextObject
 import salicki.pawel.blindcarrally.gameresources.TextToSpeechManager
 import salicki.pawel.blindcarrally.information.GameOptions
 import salicki.pawel.blindcarrally.information.Settings
+import salicki.pawel.blindcarrally.resources.DrawableResources
 import salicki.pawel.blindcarrally.resources.RawResources
 import salicki.pawel.blindcarrally.scenemanager.ILevel
 import salicki.pawel.blindcarrally.scenemanager.LevelManager
-import salicki.pawel.blindcarrally.utils.GestureManager
-import salicki.pawel.blindcarrally.utils.OpenerCSV
-import salicki.pawel.blindcarrally.utils.SharedPreferencesManager
-import salicki.pawel.blindcarrally.utils.SoundManager
+import salicki.pawel.blindcarrally.utils.*
 
 class TournamentScene : SurfaceView(Settings.CONTEXT), ILevel {
 
     private var textsTournamentSelection: HashMap<String, String> = HashMap()
     private var textsTournament: HashMap<String, String> = HashMap()
     private var screenTexts: HashMap<String, String> = HashMap()
+    private var tournamentSelectionData = arrayListOf<OptionSelectionData>()
+
     private var optionText: TextObject = TextObject()
     private var optionTournamentDescription: TextObject = TextObject()
+    private var idleSpeak: IdleSpeakManager = IdleSpeakManager()
     private var tournamentImage: OptionImage = OptionImage()
     private var soundManager: SoundManager =
         SoundManager()
-    private var swipe: Boolean = false
-    private var tournamentSelectionData = arrayListOf<OptionSelectionData>()
+
     private var tournamentIterator: Int = 0
     private var lastOption: Int = -1
 
-    private var idleTime: Int = 0
-    private var idleTimeSeconds: Int = 0
+    private var swipe: Boolean = false
     private var drawDescription: Boolean = false
 
     init {
@@ -46,7 +45,7 @@ class TournamentScene : SurfaceView(Settings.CONTEXT), ILevel {
         readTTSTextFile()
         initTournamentSelectionOptions()
 
-        tournamentImage.setFullScreenImage(R.drawable.tournament_mode)
+        tournamentImage.setFullScreenImage(DrawableResources.tournamentModeView)
 
         optionText.initText(R.font.hemi, Settings.SCREEN_WIDTH / 2F, Settings.SCREEN_HEIGHT / 3F)
         screenTexts["CANT_CONTINUE"]?.let {
@@ -61,7 +60,6 @@ class TournamentScene : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     private fun initTournamentSelectionOptions() {
-
         tournamentSelectionData.add(
             OptionSelectionData(
                 LevelTypeEnum.NEW_TOURNAMENT,
@@ -98,14 +96,14 @@ class TournamentScene : SurfaceView(Settings.CONTEXT), ILevel {
     private fun readTTSTextFile() {
         textsTournament.putAll(
             OpenerCSV.readData(
-                R.raw.tournament_tts,
+                RawResources.tournament_TTS,
                 Settings.languageTtsEnum
             )
         )
 
         screenTexts.putAll(
             OpenerCSV.readData(
-                R.raw.tournament_texts,
+                RawResources.tournament_TXT,
                 Settings.languageTtsEnum
             )
         )
@@ -114,6 +112,8 @@ class TournamentScene : SurfaceView(Settings.CONTEXT), ILevel {
     override fun initState() {
         TextToSpeechManager.speakNow(textsTournament["TOURNAMENT_TUTORIAL"].toString())
         TextToSpeechManager.speakQueue(textsTournament["NEW"].toString())
+
+        idleSpeak.initIdleString(textsTournamentSelection["IDLE"].toString())
     }
 
     override fun updateState() {
@@ -127,19 +127,7 @@ class TournamentScene : SurfaceView(Settings.CONTEXT), ILevel {
             lastOption = tournamentIterator
         }
 
-        if(!TextToSpeechManager.isSpeaking()){
-            idleTime++
-
-            if(idleTime % 30 == 0){
-                idleTimeSeconds++
-            }
-        }
-
-        if(idleTimeSeconds > 10){
-            TextToSpeechManager.speakNow(textsTournamentSelection["IDLE"].toString())
-
-            idleTimeSeconds = 0
-        }
+        idleSpeak.updateIdleStatus()
     }
 
     override fun destroyState() {
@@ -149,7 +137,6 @@ class TournamentScene : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun respondTouchState(event: MotionEvent) {
-
         swipe = false
 
         when (GestureManager.swipeDetect(event)) {
@@ -162,7 +149,7 @@ class TournamentScene : SurfaceView(Settings.CONTEXT), ILevel {
                 }
 
                 swipe = true
-                idleTimeSeconds = 0
+                idleSpeak.resetIdleTimeSeconds()
             }
             GestureTypeEnum.SWIPE_LEFT -> {
                 soundManager.playSound(RawResources.swapSound)
@@ -172,7 +159,7 @@ class TournamentScene : SurfaceView(Settings.CONTEXT), ILevel {
                 }
 
                 swipe = true
-                idleTimeSeconds = 0
+                idleSpeak.resetIdleTimeSeconds()
             }
             GestureTypeEnum.SWIPE_UP -> {
                 LevelManager.changeLevel(GameModeScene())
@@ -182,7 +169,7 @@ class TournamentScene : SurfaceView(Settings.CONTEXT), ILevel {
             GestureTypeEnum.SWIPE_DOWN -> {
                 TextToSpeechManager.speakNow(textsTournamentSelection["IDLE"].toString())
                 Settings.globalSounds.playSound(RawResources.swapSound)
-                idleTimeSeconds = 0
+                idleSpeak.resetIdleTimeSeconds()
                 swipe = true
             }
         }
@@ -193,7 +180,7 @@ class TournamentScene : SurfaceView(Settings.CONTEXT), ILevel {
                 TextToSpeechManager.stop()
                 Settings.globalSounds.playSound(RawResources.acceptSound)
                 changeLevel(tournamentIterator)
-                idleTimeSeconds = 0
+                idleSpeak.resetIdleTimeSeconds()
             }
         }
 
@@ -210,7 +197,7 @@ class TournamentScene : SurfaceView(Settings.CONTEXT), ILevel {
                     tournamentIterator = 2
                 }
             }
-            idleTimeSeconds = 0
+            idleSpeak.resetIdleTimeSeconds()
         }
 
         tournamentSelectionData.forEach {
@@ -232,9 +219,9 @@ class TournamentScene : SurfaceView(Settings.CONTEXT), ILevel {
                     tmp = isTournament == "1"
                 }
 
-                if(tmp){
+                if (tmp) {
                     LevelManager.changeLevel(TournamentGarageScene())
-                } else{
+                } else {
                     drawDescription = true
                     TextToSpeechManager.speakNow(textsTournament["CANT_CONTINUE"].toString())
                 }
@@ -248,7 +235,7 @@ class TournamentScene : SurfaceView(Settings.CONTEXT), ILevel {
     override fun redrawState(canvas: Canvas) {
         tournamentImage.drawImage(canvas)
 
-        if(!drawDescription){
+        if (!drawDescription) {
             screenTexts[tournamentSelectionData[tournamentIterator].textValue]?.let {
                 optionText.drawText(
                     canvas,

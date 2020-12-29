@@ -9,12 +9,13 @@ import java.util.*
 import kotlin.collections.HashMap
 
 object TextToSpeechManager {
-    private var textToSpeechLanguages: HashMap<LanguageTtsEnum, TextToSpeech?> = hashMapOf(
-        LanguageTtsEnum.ENGLISH to null, LanguageTtsEnum.POLISH to null)
     private var selectedLanguage: LanguageTtsEnum = LanguageTtsEnum.ENGLISH
 
-    fun initTextToSpeech() {
+    private var textToSpeechLanguages: HashMap<LanguageTtsEnum, TextToSpeech?> = hashMapOf(
+        LanguageTtsEnum.ENGLISH to null, LanguageTtsEnum.POLISH to null
+    )
 
+    fun initTextToSpeech() {
         textToSpeechLanguages[LanguageTtsEnum.ENGLISH] = TextToSpeech(Settings.CONTEXT) { status ->
             if (status != TextToSpeech.ERROR) {
                 textToSpeechLanguages[LanguageTtsEnum.ENGLISH]?.language =
@@ -33,22 +34,13 @@ object TextToSpeechManager {
         }
     }
 
-    fun setPitch(pitch: Float) {
-        textToSpeechLanguages[selectedLanguage]?.setPitch(pitch)
-    }
-
-    fun setSpeechRate(speechRate: Float) {
-        textToSpeechLanguages[selectedLanguage]?.setSpeechRate(speechRate)
-    }
-
-
     fun setLanguage(language: LanguageTtsEnum) {
         selectedLanguage = language
     }
 
     fun isSpeaking(): Boolean {
-        if(textToSpeechLanguages[selectedLanguage] != null){
-            if(textToSpeechLanguages[selectedLanguage]?.isSpeaking!!){
+        if (textToSpeechLanguages[selectedLanguage] != null) {
+            if (textToSpeechLanguages[selectedLanguage]?.isSpeaking!!) {
                 return true
             }
         }
@@ -63,7 +55,7 @@ object TextToSpeechManager {
         }
     }
 
-    fun changeLanguage(language : LanguageTtsEnum){
+    fun changeLanguage(language: LanguageTtsEnum) {
         selectedLanguage = language
     }
 

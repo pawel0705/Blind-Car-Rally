@@ -6,26 +6,25 @@ import salicki.pawel.blindcarrally.enums.StageEnum
 import salicki.pawel.blindcarrally.enums.WeatherEnum
 
 object StagesResources {
+    const val argentina_1: String = "argentina_1.xml"
+    const val argentina_2: String = "argentina_2.xml"
+    const val argentina_3: String = "argentina_3.xml"
 
-    val argentina_1: String = "argentina_1.xml"
-    val argentina_2: String = "argentina_2.xml"
-    val argentina_3: String = "argentina_3.xml"
+    const val australia_1: String = "australia_1.xml"
+    const val australia_2: String = "australia_2.xml"
+    const val australia_3: String = "australia_3.xml"
 
-    val australia_1: String = "australia_1.xml"
-    val australia_2: String = "australia_2.xml"
-    val australia_3: String = "australia_3.xml"
+    const val poland_1: String = "poland_1.xml"
+    const val poland_2: String = "poland_2.xml"
+    const val poland_3: String = "poland_3.xml"
 
-    val poland_1: String = "poland_1.xml"
-    val poland_2: String = "poland_2.xml"
-    val poland_3: String = "poland_3.xml"
+    const val spain_1: String = "spain_1.xml"
+    const val spain_2: String = "spain_2.xml"
+    const val spain_3: String = "spain_3.xml"
 
-    val spain_1: String = "spain_1.xml"
-    val spain_2: String = "spain_2.xml"
-    val spain_3: String = "spain_3.xml"
-
-    val zealand_1: String = "zealand_1.xml"
-    val zealand_2: String = "zealand_1.xml"
-    val zealand_3: String = "zealand_1.xml"
+    const val zealand_1: String = "zealand_1.xml"
+    const val zealand_2: String = "zealand_1.xml"
+    const val zealand_3: String = "zealand_1.xml"
 
     val stageList: List<StageTournamentData> = listOf(
         StageTournamentData(argentina_1, "ARGENTINA", "ARGENTINA_1", NationEnum.ARGENTINA, StageEnum.STAGE_1, WeatherEnum.SUN),

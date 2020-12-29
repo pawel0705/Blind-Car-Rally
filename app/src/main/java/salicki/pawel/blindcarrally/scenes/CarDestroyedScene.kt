@@ -1,6 +1,7 @@
 package salicki.pawel.blindcarrally.scenes
 
 import android.graphics.Canvas
+import android.graphics.drawable.Drawable
 import android.view.MotionEvent
 import android.view.SurfaceView
 import salicki.pawel.blindcarrally.*
@@ -11,28 +12,27 @@ import salicki.pawel.blindcarrally.gameresources.TextObject
 import salicki.pawel.blindcarrally.gameresources.TextToSpeechManager
 import salicki.pawel.blindcarrally.information.GameOptions
 import salicki.pawel.blindcarrally.information.Settings
+import salicki.pawel.blindcarrally.resources.DrawableResources
 import salicki.pawel.blindcarrally.resources.RawResources
 import salicki.pawel.blindcarrally.scenemanager.ILevel
 import salicki.pawel.blindcarrally.scenemanager.LevelManager
-import salicki.pawel.blindcarrally.utils.GestureManager
-import salicki.pawel.blindcarrally.utils.OpenerCSV
-import salicki.pawel.blindcarrally.utils.SharedPreferencesManager
-import salicki.pawel.blindcarrally.utils.SoundManager
+import salicki.pawel.blindcarrally.utils.*
 
 class CarDestroyedScene : SurfaceView(Settings.CONTEXT), ILevel {
     private var textsDestroyedSelection: HashMap<String, String> = HashMap()
-    private var destroyedImage: OptionImage = OptionImage()
     private var screenTexts: HashMap<String, String> = HashMap()
+    private var destroyedSelectionData = arrayListOf<OptionSelectionData>()
+
+    private var destroyedImage: OptionImage = OptionImage()
     private var optionText: TextObject = TextObject()
     private var soundManager: SoundManager =
         SoundManager()
+    private var idleSpeak: IdleSpeakManager = IdleSpeakManager()
+
     private var swipe: Boolean = false
-    private var destroyedSelectionData = arrayListOf<OptionSelectionData>()
+
     private var destroyedIterator: Int = 0
     private var lastOption: Int = -1
-
-    private var idleTime: Int = 0
-    private var idleTimeSeconds: Int = 0
 
     init {
         isFocusable = true
@@ -41,7 +41,7 @@ class CarDestroyedScene : SurfaceView(Settings.CONTEXT), ILevel {
         readTTSTextFile()
         initPerformanceSelectionOptions()
 
-        destroyedImage.setFullScreenImage(R.drawable.try_again)
+        destroyedImage.setFullScreenImage(DrawableResources.tryAgainView)
         optionText.initText(R.font.hemi, Settings.SCREEN_WIDTH / 2F, Settings.SCREEN_HEIGHT / 3F)
     }
 
@@ -74,14 +74,14 @@ class CarDestroyedScene : SurfaceView(Settings.CONTEXT), ILevel {
     private fun readTTSTextFile() {
         textsDestroyedSelection.putAll(
             OpenerCSV.readData(
-                R.raw.car_destroyed_tts,
+                RawResources.carDestroyed_TTS,
                 Settings.languageTtsEnum
             )
         )
 
         screenTexts.putAll(
             OpenerCSV.readData(
-                R.raw.car_destroyed_texts,
+                RawResources.carDestroyed_TXT,
                 Settings.languageTtsEnum
             )
         )
@@ -90,6 +90,8 @@ class CarDestroyedScene : SurfaceView(Settings.CONTEXT), ILevel {
     override fun initState() {
         TextToSpeechManager.speakNow(textsDestroyedSelection["DESTROYED"].toString())
         TextToSpeechManager.speakQueue(textsDestroyedSelection["TRY_AGAIN"].toString())
+
+        idleSpeak.initIdleString(textsDestroyedSelection["IDLE"].toString())
     }
 
     override fun updateState() {
@@ -103,19 +105,7 @@ class CarDestroyedScene : SurfaceView(Settings.CONTEXT), ILevel {
             lastOption = destroyedIterator
         }
 
-        if (!TextToSpeechManager.isSpeaking()) {
-            idleTime++
-
-            if (idleTime % 30 == 0) {
-                idleTimeSeconds++
-            }
-        }
-
-        if (idleTimeSeconds > 10) {
-            TextToSpeechManager.speakNow(textsDestroyedSelection["IDLE"].toString())
-
-            idleTimeSeconds = 0
-        }
+        idleSpeak.updateIdleStatus()
     }
 
     override fun destroyState() {
@@ -125,7 +115,6 @@ class CarDestroyedScene : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun respondTouchState(event: MotionEvent) {
-
         swipe = false
 
         when (GestureManager.swipeDetect(event)) {
@@ -157,7 +146,7 @@ class CarDestroyedScene : SurfaceView(Settings.CONTEXT), ILevel {
             GestureTypeEnum.SWIPE_DOWN -> {
                 TextToSpeechManager.speakNow(textsDestroyedSelection["IDLE"].toString())
                 Settings.globalSounds.playSound(RawResources.swapSound)
-                idleTimeSeconds = 0
+                idleSpeak.resetIdleTimeSeconds()
                 swipe = true
             }
         }

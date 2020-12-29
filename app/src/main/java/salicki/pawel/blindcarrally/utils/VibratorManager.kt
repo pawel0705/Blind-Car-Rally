@@ -21,8 +21,4 @@ object VibratorManager {
             vibrator?.vibrate(time)
         }
     }
-
-    fun stop() {
-        vibrator?.cancel()
-    }
 }

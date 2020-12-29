@@ -38,11 +38,14 @@ object MovementManager : SensorEventListener {
     }
 
     fun register() {
-
-        manager!!.registerListener(this,
-            accelerometer, SensorManager.SENSOR_DELAY_GAME)
-        manager!!.registerListener(this,
-            magnetometer, SensorManager.SENSOR_DELAY_GAME)
+        manager!!.registerListener(
+            this,
+            accelerometer, SensorManager.SENSOR_DELAY_GAME
+        )
+        manager!!.registerListener(
+            this,
+            magnetometer, SensorManager.SENSOR_DELAY_GAME
+        )
     }
 
     fun pause() {
@@ -61,20 +64,24 @@ object MovementManager : SensorEventListener {
         if (accelOutput != null && magOutput != null) {
             val R = FloatArray(9)
             val I = FloatArray(9)
-            val success = SensorManager.getRotationMatrix(R, I,
+            val success = SensorManager.getRotationMatrix(
+                R, I,
                 accelOutput,
                 magOutput
             )
             if (success) {
-                SensorManager.getOrientation(R,
+                SensorManager.getOrientation(
+                    R,
                     orientation
                 )
                 if (startOrientation == null) {
                     startOrientation = FloatArray(
-                        orientation.size)
+                        orientation.size
+                    )
                     System.arraycopy(
                         orientation, 0,
-                        startOrientation, 0, orientation.size)
+                        startOrientation, 0, orientation.size
+                    )
                 }
             }
         }

@@ -13,44 +13,40 @@ import salicki.pawel.blindcarrally.gameresources.TextObject
 import salicki.pawel.blindcarrally.gameresources.TextToSpeechManager
 import salicki.pawel.blindcarrally.information.GameOptions
 import salicki.pawel.blindcarrally.information.Settings
+import salicki.pawel.blindcarrally.resources.DrawableResources
 import salicki.pawel.blindcarrally.resources.RawResources
 import salicki.pawel.blindcarrally.resources.StagesResources
 import salicki.pawel.blindcarrally.scenemanager.ILevel
 import salicki.pawel.blindcarrally.scenemanager.LevelManager
-import salicki.pawel.blindcarrally.utils.GestureManager
-import salicki.pawel.blindcarrally.utils.OpenerCSV
-import salicki.pawel.blindcarrally.utils.SharedPreferencesManager
-import salicki.pawel.blindcarrally.utils.SoundManager
+import salicki.pawel.blindcarrally.utils.*
 
 class TournamentGarageScene : SurfaceView(Settings.CONTEXT), ILevel {
     private var textsTournamentGarageSelection: HashMap<String, String> = HashMap()
-    private var garageImage: OptionImage = OptionImage()
     private var textsNations: HashMap<String, String> = HashMap()
     private var textsStages: HashMap<String, String> = HashMap()
-
     private var textsCarDescriptions: HashMap<String, String> = HashMap()
     private var screenTexts: HashMap<String, String> = HashMap()
+    private var garageSelectionData = arrayListOf<OptionSelectionData>()
+
     private var optionText: TextObject = TextObject()
     private var optionCarDescription: TextObject = TextObject()
     private var optionStageDescription: TextObject = TextObject()
+
+    private var garageImage: OptionImage = OptionImage()
+    private var idleSpeak: IdleSpeakManager = IdleSpeakManager()
     private var soundManager: SoundManager =
         SoundManager()
-    private var swipe: Boolean = false
-    private var garageSelectionData = arrayListOf<OptionSelectionData>()
-    private var garageIterator: Int = 0
-    private var lastOption: Int = -1
-
-    private var idleTime: Int = 0
-    private var idleTimeSeconds: Int = 0
 
     private var carDescription: String = ""
     private var nextStageDescription: String = ""
-    private var drawCarDescription: Boolean = false
-    private var drawStageDescription: Boolean = false
 
-
+    private var garageIterator: Int = 0
+    private var lastOption: Int = -1
     private var stageIterator: Int = 0
 
+    private var drawCarDescription: Boolean = false
+    private var drawStageDescription: Boolean = false
+    private var swipe: Boolean = false
 
     init {
         isFocusable = true
@@ -62,7 +58,7 @@ class TournamentGarageScene : SurfaceView(Settings.CONTEXT), ILevel {
         loadCarDescription()
         loadStageDescription()
 
-        garageImage.setFullScreenImage(R.drawable.garage)
+        garageImage.setFullScreenImage(DrawableResources.garageView)
 
         optionText.initText(R.font.hemi, Settings.SCREEN_WIDTH / 2F, Settings.SCREEN_HEIGHT / 3F)
 
@@ -73,7 +69,6 @@ class TournamentGarageScene : SurfaceView(Settings.CONTEXT), ILevel {
             Settings.SCREEN_HEIGHT / 10F,
             carDescription
         )
-
 
         optionStageDescription.initMultiLineText(
             R.font.montserrat,
@@ -127,7 +122,6 @@ class TournamentGarageScene : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     private fun loadCarDescription() {
-
         var number = SharedPreferencesManager.loadConfiguration("carTournamentNumber")
         if (number != null && number != "") {
             carDescription = textsCarDescriptions["CAR_$number"].toString()
@@ -160,35 +154,35 @@ class TournamentGarageScene : SurfaceView(Settings.CONTEXT), ILevel {
     private fun readTTSTextFile() {
         textsTournamentGarageSelection.putAll(
             OpenerCSV.readData(
-                R.raw.tournament_garage_tts,
+                RawResources.tournamentGarage_TTS,
                 Settings.languageTtsEnum
             )
         )
 
         textsCarDescriptions.putAll(
             OpenerCSV.readData(
-                R.raw.car_performance_tts,
+                RawResources.carPerformance_TTS,
                 Settings.languageTtsEnum
             )
         )
 
         textsNations.putAll(
             OpenerCSV.readData(
-                R.raw.tracks_tts,
+                RawResources.tracks_TTS,
                 Settings.languageTtsEnum
             )
         )
 
         textsStages.putAll(
             OpenerCSV.readData(
-                R.raw.nation_roads_tts,
+                RawResources.nationRoads_TTS,
                 Settings.languageTtsEnum
             )
         )
 
         screenTexts.putAll(
             OpenerCSV.readData(
-                R.raw.tournament_garage_texts,
+                RawResources.tournamentGarage_TXT,
                 Settings.languageTtsEnum
             )
         )
@@ -197,6 +191,8 @@ class TournamentGarageScene : SurfaceView(Settings.CONTEXT), ILevel {
     override fun initState() {
         TextToSpeechManager.speakNow(textsTournamentGarageSelection["GARAGE_TUTORIAL"].toString())
         TextToSpeechManager.speakQueue(textsTournamentGarageSelection["CAR_INFORMATION"].toString())
+
+        idleSpeak.initIdleString(textsTournamentGarageSelection["IDLE"].toString())
     }
 
     override fun updateState() {
@@ -212,19 +208,7 @@ class TournamentGarageScene : SurfaceView(Settings.CONTEXT), ILevel {
             drawStageDescription = false
         }
 
-        if (!TextToSpeechManager.isSpeaking()) {
-            idleTime++
-
-            if (idleTime % 30 == 0) {
-                idleTimeSeconds++
-            }
-        }
-
-        if (idleTimeSeconds > 10) {
-            TextToSpeechManager.speakNow(textsTournamentGarageSelection["IDLE"].toString())
-
-            idleTimeSeconds = 0
-        }
+        idleSpeak.updateIdleStatus()
     }
 
     override fun destroyState() {
@@ -234,7 +218,6 @@ class TournamentGarageScene : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun respondTouchState(event: MotionEvent) {
-
         swipe = false
 
         when (GestureManager.swipeDetect(event)) {
@@ -265,7 +248,7 @@ class TournamentGarageScene : SurfaceView(Settings.CONTEXT), ILevel {
             GestureTypeEnum.SWIPE_DOWN -> {
                 TextToSpeechManager.speakNow(textsTournamentGarageSelection["IDLE"].toString())
                 Settings.globalSounds.playSound(RawResources.swapSound)
-                idleTimeSeconds = 0
+                idleSpeak.resetIdleTimeSeconds()
                 swipe = true
             }
         }
@@ -329,9 +312,9 @@ class TournamentGarageScene : SurfaceView(Settings.CONTEXT), ILevel {
     override fun redrawState(canvas: Canvas) {
         garageImage.drawImage(canvas)
 
-        if(drawCarDescription){
+        if (drawCarDescription) {
             optionCarDescription.drawMultilineText(canvas)
-        }else if(drawStageDescription){
+        } else if (drawStageDescription) {
             optionStageDescription.drawMultilineText(canvas)
         } else {
             screenTexts[garageSelectionData[garageIterator].textValue]?.let {

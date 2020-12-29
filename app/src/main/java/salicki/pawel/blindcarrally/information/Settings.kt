@@ -9,6 +9,7 @@ object Settings {
     var SCREEN_HEIGHT: Int = 0
     var SCREEN_SCALE: Float = 0.0F
 
+    const val FPS: Int = 30
     var CONTEXT: Context? = null
 
     var languageTtsEnum: LanguageTtsEnum = LanguageTtsEnum.ENGLISH

@@ -84,11 +84,11 @@ object LevelManager : SurfaceView(Settings.CONTEXT), SurfaceHolder.Callback {
         super.draw(canvas)
         clearCanvas(canvas)
 
-        if (Settings.display) {
-            if (!activeScene.isEmpty()) {
-                activeScene?.last().redrawState(canvas)
-            }
+
+        if (!activeScene.isEmpty()) {
+            activeScene?.last().redrawState(canvas)
         }
+
     }
 
     fun pause() {
@@ -123,7 +123,7 @@ object LevelManager : SurfaceView(Settings.CONTEXT), SurfaceHolder.Callback {
         }, 1000)
     }
 
-    private fun clearCanvas(canvas: Canvas){
+    private fun clearCanvas(canvas: Canvas) {
         canvas.drawRect(
             0F,
             0F,

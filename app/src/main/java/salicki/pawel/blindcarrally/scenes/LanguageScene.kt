@@ -9,65 +9,53 @@ import salicki.pawel.blindcarrally.enums.GestureTypeEnum
 import salicki.pawel.blindcarrally.enums.LanguageLevelFlowEnum
 import salicki.pawel.blindcarrally.enums.LanguageTtsEnum
 import salicki.pawel.blindcarrally.gameresources.OptionImage
-import salicki.pawel.blindcarrally.gameresources.SelectBoxManager
 import salicki.pawel.blindcarrally.gameresources.TextObject
 import salicki.pawel.blindcarrally.gameresources.TextToSpeechManager
 import salicki.pawel.blindcarrally.information.Settings
+import salicki.pawel.blindcarrally.resources.DrawableResources
 import salicki.pawel.blindcarrally.resources.RawResources
 import salicki.pawel.blindcarrally.scenemanager.ILevel
 import salicki.pawel.blindcarrally.scenemanager.LevelManager
-import salicki.pawel.blindcarrally.utils.GestureManager
-import salicki.pawel.blindcarrally.utils.OpenerCSV
-import salicki.pawel.blindcarrally.utils.SharedPreferencesManager
-import salicki.pawel.blindcarrally.utils.SoundManager
+import salicki.pawel.blindcarrally.utils.*
 import java.security.cert.PKIXRevocationChecker
 
 class LanguageScene(flow: LanguageLevelFlowEnum) : SurfaceView(Settings.CONTEXT), ILevel {
-
-    private val languageLevelFlow = flow
-    private var languageImage: OptionImage = OptionImage()
     private var screenTexts: HashMap<String, String> = HashMap()
-    private var optionText: TextObject = TextObject()
-    private var soundManager: SoundManager =
-        SoundManager()
     private var languageSelectionData: LinkedHashMap<LanguageTtsEnum, LanguageSelectionData> =
         LinkedHashMap()
     private var languageTypeData: ArrayList<LanguageTtsEnum> =
         arrayListOf(LanguageTtsEnum.ENGLISH, LanguageTtsEnum.POLISH)
 
+    private val languageLevelFlow = flow
+    private var languageImage: OptionImage = OptionImage()
+    private var optionText: TextObject = TextObject()
+    private var soundManager: SoundManager =
+        SoundManager()
+    private var idleSpeak: IdleSpeakManager = IdleSpeakManager()
+
     private var languageIterator: Int = Settings.languageTtsEnum.ordinal
     private var lastOption: Int = Settings.languageTtsEnum.ordinal
-    private var selectBoxManager =
-        SelectBoxManager()
 
     private var swipe: Boolean = false
-
-    private var idleTime: Int = 0
-    private var idleTimeSeconds: Int = 0
 
     init {
         isFocusable = true
 
         initSoundManager()
         readTTSTextFile()
-        initSelectBoxModel()
 
-        languageImage.setFullScreenImage(R.drawable.language)
+        languageImage.setFullScreenImage(DrawableResources.languageView)
         optionText.initText(R.font.hemi, Settings.SCREEN_WIDTH / 2F, Settings.SCREEN_HEIGHT / 3F)
-    }
-
-    private fun initSelectBoxModel(){
-        selectBoxManager.initSelectBoxModel(2)
     }
 
 
     private fun readTTSTextFile() {
         languageSelectionData[LanguageTtsEnum.ENGLISH] =
-            (LanguageSelectionData(OpenerCSV.readData(R.raw.language_tts, LanguageTtsEnum.ENGLISH)))
+            (LanguageSelectionData(OpenerCSV.readData(RawResources.language_TTS, LanguageTtsEnum.ENGLISH)))
         languageSelectionData[LanguageTtsEnum.POLISH] =
-            (LanguageSelectionData(OpenerCSV.readData(R.raw.language_tts, LanguageTtsEnum.POLISH)))
+            (LanguageSelectionData(OpenerCSV.readData(RawResources.language_TTS, LanguageTtsEnum.POLISH)))
 
-        screenTexts.putAll(OpenerCSV.readData(R.raw.language_texts, Settings.languageTtsEnum))
+        screenTexts.putAll(OpenerCSV.readData(RawResources.language_TXT, Settings.languageTtsEnum))
     }
 
     private fun initSoundManager() {
@@ -83,10 +71,15 @@ class LanguageScene(flow: LanguageLevelFlowEnum) : SurfaceView(Settings.CONTEXT)
 
         languageSelectionData[Settings.languageTtsEnum]?.texts?.get("SELECTED_LANGUAGE")
             ?.let { TextToSpeechManager.speakQueue(it) }
+
+        languageSelectionData[Settings.languageTtsEnum]?.texts?.get("IDLE")?.let {
+            idleSpeak.initIdleString(
+                it
+            )
+        }
     }
 
     override fun respondTouchState(event: MotionEvent) {
-
         swipe = false
 
         when (GestureManager.swipeDetect(event)){
@@ -99,7 +92,7 @@ class LanguageScene(flow: LanguageLevelFlowEnum) : SurfaceView(Settings.CONTEXT)
                 }
 
                 swipe = true
-                idleTimeSeconds = 0
+                idleSpeak.resetIdleTimeSeconds()
             }
             GestureTypeEnum.SWIPE_RIGHT -> {
                 soundManager.playSound(RawResources.swapSound)
@@ -109,7 +102,7 @@ class LanguageScene(flow: LanguageLevelFlowEnum) : SurfaceView(Settings.CONTEXT)
                 }
 
                 swipe = true
-                idleTimeSeconds = 0
+                idleSpeak.resetIdleTimeSeconds()
             }
             GestureTypeEnum.SWIPE_UP -> {
                 LevelManager.changeLevel(MenuScene())
@@ -120,7 +113,7 @@ class LanguageScene(flow: LanguageLevelFlowEnum) : SurfaceView(Settings.CONTEXT)
                 languageSelectionData[Settings.languageTtsEnum]?.texts?.get("IDLE")
                     ?.let { TextToSpeechManager.speakNow(it) }
                 Settings.globalSounds.playSound(RawResources.swapSound)
-                idleTimeSeconds = 0
+                idleSpeak.resetIdleTimeSeconds()
                 swipe = true
             }
         }
@@ -150,10 +143,8 @@ class LanguageScene(flow: LanguageLevelFlowEnum) : SurfaceView(Settings.CONTEXT)
                 }
             }
 
-            idleTimeSeconds = 0
+            idleSpeak.resetIdleTimeSeconds()
         }
-
-        selectBoxManager.updateSelectBoxPosition(languageIterator)
     }
 
     override fun updateState() {
@@ -165,23 +156,15 @@ class LanguageScene(flow: LanguageLevelFlowEnum) : SurfaceView(Settings.CONTEXT)
                 ?.let { TextToSpeechManager.speakNow(it) }
 
             lastOption = languageIterator
-        }
 
-        if(!TextToSpeechManager.isSpeaking()){
-            idleTime++
-
-            if(idleTime % 30 == 0){
-                idleTimeSeconds++
+            languageSelectionData[Settings.languageTtsEnum]?.texts?.get("IDLE")?.let {
+                idleSpeak.initIdleString(
+                    it
+                )
             }
         }
 
-        if(idleTimeSeconds > 10){
-            languageSelectionData[Settings.languageTtsEnum]?.texts?.get("IDLE")
-                ?.let { TextToSpeechManager.speakNow(it) }
-
-            idleTimeSeconds = 0
-        }
-
+        idleSpeak.updateIdleStatus()
     }
 
     override fun destroyState() {

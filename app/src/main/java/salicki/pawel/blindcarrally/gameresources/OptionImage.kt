@@ -4,10 +4,10 @@ import android.graphics.*
 import salicki.pawel.blindcarrally.information.Settings
 
 class OptionImage {
-
     private var rectangle: Rect = Rect()
-    private lateinit var  image: Bitmap
     private var paint: Paint = Paint()
+
+    private lateinit var image: Bitmap
 
     fun setImage(imageId: Int, positionX: Int, positionY: Int, sizeId: Int) {
         val point = Point(positionX, positionY)
@@ -18,7 +18,8 @@ class OptionImage {
         image = BitmapFactory.decodeResource(Settings.CONTEXT?.resources, imageId)
 
         Settings.CONTEXT?.resources?.getDimensionPixelSize(sizeId)?.let {
-            rectangle.set(0,0,
+            rectangle.set(
+                0, 0,
                 Settings.CONTEXT?.resources?.getDimensionPixelSize(sizeId)!!,
                 it
             )
@@ -42,18 +43,14 @@ class OptionImage {
         }
     }
 
-    fun setFullScreenImage(imageId: Int){
+    fun setFullScreenImage(imageId: Int) {
         paint.isAntiAlias = true
         paint.isFilterBitmap = true
         image = BitmapFactory.decodeResource(Settings.CONTEXT?.resources, imageId)
-        rectangle.set(0, 0, Settings.SCREEN_WIDTH, Settings.SCREEN_HEIGHT )
+        rectangle.set(0, 0, Settings.SCREEN_WIDTH, Settings.SCREEN_HEIGHT)
     }
 
-    fun drawImage(canvas: Canvas){
+    fun drawImage(canvas: Canvas) {
         canvas.drawBitmap(image, null, rectangle, paint)
-    }
-
-    fun freeMemory(){
-        image.recycle()
     }
 }

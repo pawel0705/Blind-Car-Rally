@@ -12,32 +12,34 @@ import salicki.pawel.blindcarrally.gameresources.OptionImage
 import salicki.pawel.blindcarrally.gameresources.TextObject
 import salicki.pawel.blindcarrally.gameresources.TextToSpeechManager
 import salicki.pawel.blindcarrally.information.Settings
+import salicki.pawel.blindcarrally.resources.DrawableResources
 import salicki.pawel.blindcarrally.resources.RawResources
 import salicki.pawel.blindcarrally.scenemanager.ILevel
 import salicki.pawel.blindcarrally.scenemanager.LevelManager
 import salicki.pawel.blindcarrally.utils.GestureManager
+import salicki.pawel.blindcarrally.utils.IdleSpeakManager
 import salicki.pawel.blindcarrally.utils.OpenerCSV
 import salicki.pawel.blindcarrally.utils.SoundManager
 
 class RaceOverScene(raceData: StageResultData) : SurfaceView(Settings.CONTEXT), ILevel {
-
+    private var screenTexts: HashMap<String, String> = HashMap()
     private var textsRaceOver: HashMap<String, String> = HashMap()
-    private var raceData: StageResultData = raceData
     private var raceOverSelectionData= arrayListOf<OptionSelectionData>()
+
+    private var raceData: StageResultData = raceData
+
     private var raceOverImage: OptionImage = OptionImage()
     private var soundManager: SoundManager =
         SoundManager()
-    private var swipe: Boolean = false
+    private var descriptionText: TextObject = TextObject()
+    private var optionText: TextObject = TextObject()
+    private var idleSpeak: IdleSpeakManager = IdleSpeakManager()
+
     private var raceOverIterator: Int = 0
     private var lastOption: Int = -1
 
-    private var descriptionText: TextObject = TextObject()
-    private var screenTexts: HashMap<String, String> = HashMap()
-    private var optionText: TextObject = TextObject()
     private var drawDescription: Boolean = false
-
-    private var idleTime: Int = 0
-    private var idleTimeSeconds: Int = 0
+    private var swipe: Boolean = false
 
     init {
         isFocusable = true
@@ -45,9 +47,9 @@ class RaceOverScene(raceData: StageResultData) : SurfaceView(Settings.CONTEXT), 
         initSoundManager()
         readTTSTextFile()
         initTrackSelectionOptions()
-        raceOverImage.setFullScreenImage(R.drawable.race_over)
+        raceOverImage.setFullScreenImage(DrawableResources.raceOverView)
 
-        screenTexts.putAll(OpenerCSV.readData(R.raw.race_over_texts, Settings.languageTtsEnum))
+        screenTexts.putAll(OpenerCSV.readData(RawResources.raceMode_TXT, Settings.languageTtsEnum))
         optionText.initText(R.font.hemi, Settings.SCREEN_WIDTH / 2F, Settings.SCREEN_HEIGHT / 3F)
 
             descriptionText.initMultiLineText(
@@ -58,7 +60,6 @@ class RaceOverScene(raceData: StageResultData) : SurfaceView(Settings.CONTEXT), 
                 textsRaceOver["CAR_DAMAGE"].toString() + " " + raceData.carDamage + "%. " +
                      textsRaceOver["TIME"].toString() + " " + raceData.time + textsRaceOver["SECONDS"].toString()
             )
-
     }
 
     private fun initTrackSelectionOptions() {
@@ -98,7 +99,7 @@ class RaceOverScene(raceData: StageResultData) : SurfaceView(Settings.CONTEXT), 
     private fun readTTSTextFile() {
         textsRaceOver.putAll(
             OpenerCSV.readData(
-                R.raw.race_over_tts,
+              RawResources.raceOver_TTS,
                 Settings.languageTtsEnum
             )
         )
@@ -108,12 +109,11 @@ class RaceOverScene(raceData: StageResultData) : SurfaceView(Settings.CONTEXT), 
         TextToSpeechManager.speakNow(textsRaceOver["STAGE_COMPLETED_1"].toString())
         scoreDescription()
         TextToSpeechManager.speakQueue(textsRaceOver["MENU"].toString())
+
+        idleSpeak.initIdleString(textsRaceOver["IDLE"].toString())
     }
 
     private fun scoreDescription(){
-
-
-
         TextToSpeechManager.speakQueue(textsRaceOver["CAR_DAMAGE"].toString() + raceData.carDamage + "%.")
         TextToSpeechManager.speakQueue(textsRaceOver["TIME"].toString() + raceData.time + textsRaceOver["SECONDS"].toString())
     }
@@ -130,19 +130,7 @@ class RaceOverScene(raceData: StageResultData) : SurfaceView(Settings.CONTEXT), 
             lastOption = raceOverIterator
         }
 
-        if(!TextToSpeechManager.isSpeaking()){
-            idleTime++
-
-            if(idleTime % 30 == 0){
-                idleTimeSeconds++
-            }
-        }
-
-        if(idleTimeSeconds > 10){
-            TextToSpeechManager.speakNow(textsRaceOver["IDLE"].toString())
-
-            idleTimeSeconds = 0
-        }
+        idleSpeak.updateIdleStatus()
     }
 
     override fun destroyState() {
@@ -152,7 +140,6 @@ class RaceOverScene(raceData: StageResultData) : SurfaceView(Settings.CONTEXT), 
     }
 
     override fun respondTouchState(event: MotionEvent) {
-
         swipe = false
 
         when (GestureManager.swipeDetect(event)) {
@@ -183,7 +170,7 @@ class RaceOverScene(raceData: StageResultData) : SurfaceView(Settings.CONTEXT), 
             GestureTypeEnum.SWIPE_DOWN -> {
                 TextToSpeechManager.speakNow(textsRaceOver["IDLE"].toString())
                 Settings.globalSounds.playSound(RawResources.swapSound)
-                idleTimeSeconds = 0
+                idleSpeak.resetIdleTimeSeconds()
                 swipe = true
             }
         }
@@ -225,7 +212,6 @@ class RaceOverScene(raceData: StageResultData) : SurfaceView(Settings.CONTEXT), 
                 LevelManager.changeLevel(MenuScene())
             }
             LevelTypeEnum.GAME -> {
-                // ds na stos sa teraz 2+
                 LevelManager.changeLevel(GameScene())
             }
             LevelTypeEnum.MODE_DESCRIPTION -> {

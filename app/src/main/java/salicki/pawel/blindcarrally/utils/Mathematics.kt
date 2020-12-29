@@ -4,14 +4,13 @@ import java.util.*
 import kotlin.math.sqrt
 
 object Mathematics {
-
     private val random = Random()
 
-    fun randFloat(from: Float, to: Float) : Float {
+    fun randFloat(from: Float, to: Float): Float {
         return random.nextFloat() * (to - from) + from;
     }
 
-    fun randInt(from: Int, to: Int) : Int {
+    fun randInt(from: Int, to: Int): Int {
         return (from..to).random()
     }
 
@@ -43,8 +42,6 @@ object Mathematics {
             param < 0 -> {
                 xx = lineX1
                 yy = lineY1
-
-
             }
             param > 1 -> {
                 xx = lineX2
@@ -58,7 +55,6 @@ object Mathematics {
 
         var dx = pointX - xx
         var dy = pointY - yy
-
 
         return sqrt((dx * dx + dy * dy).toDouble())
     }
@@ -74,9 +70,9 @@ object Mathematics {
         y4: Float
     ): Boolean {
         val uA =
-            (((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / ((y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1))).toFloat()
+            (((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / ((y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1)))
         val uB =
-            (((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / ((y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1))).toFloat()
+            (((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / ((y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1)))
 
         if (uA in 0.0..1.0 && uB in 0.0..1.0) {
             return true

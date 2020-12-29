@@ -13,31 +13,33 @@ import salicki.pawel.blindcarrally.gameresources.TextObject
 import salicki.pawel.blindcarrally.gameresources.TextToSpeechManager
 import salicki.pawel.blindcarrally.information.GameOptions
 import salicki.pawel.blindcarrally.information.Settings
+import salicki.pawel.blindcarrally.resources.DrawableResources
 import salicki.pawel.blindcarrally.resources.RawResources
 import salicki.pawel.blindcarrally.scenemanager.ILevel
 import salicki.pawel.blindcarrally.scenemanager.LevelManager
 import salicki.pawel.blindcarrally.utils.GestureManager
+import salicki.pawel.blindcarrally.utils.IdleSpeakManager
 import salicki.pawel.blindcarrally.utils.OpenerCSV
 import salicki.pawel.blindcarrally.utils.SoundManager
 import java.security.cert.PKIXRevocationChecker
 
 class StageSelectionScene(nation: NationEnum) : SurfaceView(Settings.CONTEXT), ILevel {
-
-    private val stageName = nation.toString()
-    private var stageImage: OptionImage = OptionImage()
     private var textsStageSelection: HashMap<String, String> = HashMap()
     private var textsNations: HashMap<String, String> = HashMap()
     private var screenTexts: HashMap<String, String> = HashMap()
+    private var stageSelectionData = arrayListOf<OptionSelectionData>()
+
+    private val stageName = nation.toString()
+    private var stageImage: OptionImage = OptionImage()
+    private var idleSpeak: IdleSpeakManager = IdleSpeakManager()
     private var optionText: TextObject = TextObject()
     private var soundManager: SoundManager =
         SoundManager()
-    private var swipe: Boolean = false
-    private var stageSelectionData = arrayListOf<OptionSelectionData>()
+
     private var stageIterator: Int = 0
     private var lastOption: Int = -1
 
-    private var idleTime: Int = 0
-    private var idleTimeSeconds: Int = 0
+    private var swipe: Boolean = false
 
     init {
         isFocusable = true
@@ -48,12 +50,10 @@ class StageSelectionScene(nation: NationEnum) : SurfaceView(Settings.CONTEXT), I
 
         optionText.initText(R.font.hemi, Settings.SCREEN_WIDTH / 2F, Settings.SCREEN_HEIGHT / 3F)
 
-        stageImage.setFullScreenImage(R.drawable.select_track)
+        stageImage.setFullScreenImage(DrawableResources.selectTrackView)
     }
 
     private fun initStageSelectionOptions() {
-
-       // Log.d("TRST", stageName.toString())
 
         stageSelectionData.add(
             OptionSelectionData(
@@ -91,18 +91,20 @@ class StageSelectionScene(nation: NationEnum) : SurfaceView(Settings.CONTEXT), I
     private fun readTTSTextFile() {
         textsStageSelection.putAll(
             OpenerCSV.readData(
-                R.raw.stage_selection_tts,
+             RawResources.stageSelection_TTS,
                 Settings.languageTtsEnum
             )
         )
-        textsNations.putAll(OpenerCSV.readData(R.raw.nation_roads_tts, Settings.languageTtsEnum))
+        textsNations.putAll(OpenerCSV.readData(RawResources.nationRoads_TTS, Settings.languageTtsEnum))
 
-        screenTexts.putAll(OpenerCSV.readData(R.raw.nation_roads_texts, Settings.languageTtsEnum))
+        screenTexts.putAll(OpenerCSV.readData(RawResources.nationRoads_TXT, Settings.languageTtsEnum))
     }
 
     override fun initState() {
         TextToSpeechManager.speakNow(textsStageSelection["STAGE_SELECTION_TUTORIAL"].toString())
         TextToSpeechManager.speakQueue(textsNations[stageName + "_1"].toString())
+
+        idleSpeak.initIdleString(textsStageSelection["STAGE_SELECTION_TUTORIAL"].toString())
     }
 
     override fun updateState() {
@@ -116,19 +118,7 @@ class StageSelectionScene(nation: NationEnum) : SurfaceView(Settings.CONTEXT), I
             lastOption = stageIterator
         }
 
-        if(!TextToSpeechManager.isSpeaking()){
-            idleTime++
-
-            if(idleTime % 30 == 0){
-                idleTimeSeconds++
-            }
-        }
-
-        if(idleTimeSeconds > 10){
-            TextToSpeechManager.speakNow(textsStageSelection["IDLE"].toString())
-
-            idleTimeSeconds = 0
-        }
+        idleSpeak.updateIdleStatus()
     }
 
     override fun destroyState() {
@@ -138,7 +128,6 @@ class StageSelectionScene(nation: NationEnum) : SurfaceView(Settings.CONTEXT), I
     }
 
     override fun respondTouchState(event: MotionEvent) {
-
         swipe = false
 
         when (GestureManager.swipeDetect(event)) {
@@ -151,7 +140,7 @@ class StageSelectionScene(nation: NationEnum) : SurfaceView(Settings.CONTEXT), I
                 }
 
                 swipe = true
-                idleTimeSeconds = 0
+                idleSpeak.resetIdleTimeSeconds()
             }
             GestureTypeEnum.SWIPE_LEFT -> {
                 soundManager.playSound(RawResources.swapSound)
@@ -161,7 +150,7 @@ class StageSelectionScene(nation: NationEnum) : SurfaceView(Settings.CONTEXT), I
                 }
 
                 swipe = true
-                idleTimeSeconds = 0
+                idleSpeak.resetIdleTimeSeconds()
             }
             GestureTypeEnum.SWIPE_UP -> {
                 LevelManager.changeLevel(TrackSelectionScene())
@@ -171,7 +160,7 @@ class StageSelectionScene(nation: NationEnum) : SurfaceView(Settings.CONTEXT), I
             GestureTypeEnum.SWIPE_DOWN -> {
                 TextToSpeechManager.speakNow(textsStageSelection["IDLE"].toString())
                 Settings.globalSounds.playSound(RawResources.swapSound)
-                idleTimeSeconds = 0
+                idleSpeak.resetIdleTimeSeconds()
                 swipe = true
             }
         }
@@ -182,7 +171,7 @@ class StageSelectionScene(nation: NationEnum) : SurfaceView(Settings.CONTEXT), I
                 TextToSpeechManager.stop()
                 Settings.globalSounds.playSound(RawResources.acceptSound)
                 changeLevel(stageIterator)
-                idleTimeSeconds = 0
+                idleSpeak.resetIdleTimeSeconds()
             }
         }
 
@@ -199,7 +188,7 @@ class StageSelectionScene(nation: NationEnum) : SurfaceView(Settings.CONTEXT), I
                     stageIterator = 2
                 }
             }
-            idleTimeSeconds = 0
+            idleSpeak.resetIdleTimeSeconds()
         }
 
         stageSelectionData.forEach {

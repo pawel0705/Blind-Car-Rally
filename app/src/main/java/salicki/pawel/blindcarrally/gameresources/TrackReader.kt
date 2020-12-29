@@ -1,6 +1,5 @@
 package salicki.pawel.blindcarrally.gameresources
 
-import android.util.Log
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
 import salicki.pawel.blindcarrally.datas.RoadPointsData
@@ -14,7 +13,7 @@ class TrackReader {
     private lateinit var parser: XmlPullParser
     private lateinit var xmlFile: InputStream
 
-    fun readRacingTrack(trackName: String) : TrackData{
+    fun readRacingTrack(trackName: String): TrackData {
         var trackNames = mutableListOf<String>()
         xmlFile = Settings.CONTEXT?.assets?.open(trackName)!!
 
@@ -44,18 +43,14 @@ class TrackReader {
         }
 
         var trackData = TrackData()
-        for(track in trackNames){
-
-            Log.d("NAME", track)
+        for (track in trackNames) {
             trackData.roadList?.add(this.readTrackTile(track))
         }
 
         return trackData
     }
 
-    private fun readTrackTile(trackName: String) : RoadTileData{
-
-        Log.d("READ", "rad")
+    private fun readTrackTile(trackName: String): RoadTileData {
 
         xmlFile = Settings.CONTEXT?.assets?.open(trackName)!!
 
@@ -65,7 +60,6 @@ class TrackReader {
         parser.setInput(xmlFile, null)
 
         var left: Boolean = false
-        var right: Boolean = false
 
         var road = RoadTileData()
 
@@ -77,34 +71,25 @@ class TrackReader {
 
         var event: Int = parser.eventType
 
-        Log.d("EVENT", event.toString())
-
         while (event != XmlPullParser.END_DOCUMENT) {
             var tag_name: String? = parser.name
-
-            Log.d("TAG", tag_name.toString())
 
             when (event) {
                 XmlPullParser.END_TAG -> {
                     when (tag_name) {
-                        "tts_key"->{
+                        "tts_key" -> {
                             var key: String = parser.getAttributeValue(0)
                             road.speakerKeys.add(key)
                         }
                         "left" -> {
-                            right = false
                             left = true
                             lastX = 0
                             lastY = 0
-
-                            Log.d("LEFT", "left");
                         }
                         "right" -> {
-                            right = true
                             left = false
                             lastX = 0
                             lastY = 0
-                            Log.d("RIGHT", "right");
                         }
                         "point" -> {
                             var x: String = parser.getAttributeValue(0)
@@ -113,39 +98,48 @@ class TrackReader {
                             var x0 = x.toFloat() //* Settings.SCREEN_SCALE * 0.02F
                             var y0 = y.toFloat() //* Settings.SCREEN_SCALE * 0.02F
 
-                            if(left){
-                                if(firstLeft){
-                                    road.leftPoints?.add(RoadPointsData(lastX, lastY, x0.toInt(), y0.toInt()))
+                            if (left) {
+                                if (firstLeft) {
+                                    road.leftPoints?.add(
+                                        RoadPointsData(
+                                            lastX,
+                                            lastY,
+                                            x0.toInt(),
+                                            y0.toInt()
+                                        )
+                                    )
                                 }
                                 firstLeft = true
-                            } else{
-                                if(firstRight){
-                                    road.rightPints?.add(RoadPointsData(lastX, lastY, x0.toInt(), y0.toInt()))
+                            } else {
+                                if (firstRight) {
+                                    road.rightPints?.add(
+                                        RoadPointsData(
+                                            lastX,
+                                            lastY,
+                                            x0.toInt(),
+                                            y0.toInt()
+                                        )
+                                    )
                                 }
                                 firstRight = true
                             }
 
                             lastX = x0.toInt()
                             lastY = y0.toInt()
-
-                            Log.d("POINT", "point");
                         }
                         "spawn" -> {
                             var x: String = parser.getAttributeValue(0)
                             var y: String = parser.getAttributeValue(1)
 
-                            road.spawnX = x.toInt() //(x.toInt() * Settings.SCREEN_SCALE * 0.02F).toInt()
-                            road.spawnY = y.toInt() //(y.toInt() * Settings.SCREEN_SCALE * 0.02F).toInt()
-                            Log.d("SPAWN", "spawn");
+                            road.spawnX = x.toInt()
+                            road.spawnY = y.toInt()
                         }
                         "finish" -> {
                             var x: String = parser.getAttributeValue(0)
                             var y: String = parser.getAttributeValue(1)
 
-                            road.finishX =x.toInt()  //(x.toInt() * Settings.SCREEN_SCALE * 0.02F).toInt()
-                            road.finishY =y.toInt() //(y.toInt() * Settings.SCREEN_SCALE * 0.02F).toInt()
-
-                            Log.d("FINISH", "finish");
+                            road.finishX = x.toInt()
+                            road.finishY = y.toInt()
                         }
                     }
                 }
@@ -153,9 +147,6 @@ class TrackReader {
 
             event = parser.next()
         }
-
-        Log.d("ROAD", road.toString())
-
         return road
     }
 }

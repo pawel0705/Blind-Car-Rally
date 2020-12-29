@@ -12,27 +12,30 @@ import salicki.pawel.blindcarrally.gameresources.TextObject
 import salicki.pawel.blindcarrally.gameresources.TextToSpeechManager
 import salicki.pawel.blindcarrally.information.GameOptions
 import salicki.pawel.blindcarrally.information.Settings
+import salicki.pawel.blindcarrally.resources.DrawableResources
 import salicki.pawel.blindcarrally.resources.RawResources
 import salicki.pawel.blindcarrally.scenemanager.ILevel
 import salicki.pawel.blindcarrally.scenemanager.LevelManager
 import salicki.pawel.blindcarrally.utils.GestureManager
+import salicki.pawel.blindcarrally.utils.IdleSpeakManager
 import salicki.pawel.blindcarrally.utils.OpenerCSV
 import salicki.pawel.blindcarrally.utils.SoundManager
 
 class CarSelectionScene() : SurfaceView(Settings.CONTEXT), ILevel {
     private var textsCarsSelection: HashMap<String, String> = HashMap()
-    private var selectionImage: OptionImage = OptionImage()
     private var screenTexts: HashMap<String, String> = HashMap()
+    private var carsSelectionData = arrayListOf<OptionSelectionData>()
+
+    private var selectionImage: OptionImage = OptionImage()
+    private var idleSpeak: IdleSpeakManager = IdleSpeakManager()
     private var optionText: TextObject = TextObject()
     private var soundManager: SoundManager =
         SoundManager()
+
     private var swipe: Boolean = false
-    private var carsSelectionData = arrayListOf<OptionSelectionData>()
+
     private var carIterator: Int = 0
     private var lastOption: Int = -1
-
-    private var idleTime: Int = 0
-    private var idleTimeSeconds: Int = 0
 
     init {
         isFocusable = true
@@ -41,7 +44,7 @@ class CarSelectionScene() : SurfaceView(Settings.CONTEXT), ILevel {
         readTTSTextFile()
         initCarSelectionOptions()
 
-        selectionImage.setFullScreenImage(R.drawable.select_car)
+        selectionImage.setFullScreenImage(DrawableResources.selectCarView)
         optionText.initText(R.font.hemi, Settings.SCREEN_WIDTH / 2F, Settings.SCREEN_HEIGHT / 3F)
     }
 
@@ -98,16 +101,23 @@ class CarSelectionScene() : SurfaceView(Settings.CONTEXT), ILevel {
     private fun readTTSTextFile() {
         textsCarsSelection.putAll(
             OpenerCSV.readData(
-                R.raw.car_selection_tts,
+                RawResources.carSelection_TTS,
                 Settings.languageTtsEnum
             )
         )
-        screenTexts.putAll(OpenerCSV.readData(R.raw.car_selection_texts, Settings.languageTtsEnum))
+        screenTexts.putAll(
+            OpenerCSV.readData(
+                RawResources.carSelection_TXT,
+                Settings.languageTtsEnum
+            )
+        )
     }
 
     override fun initState() {
         TextToSpeechManager.speakNow(textsCarsSelection["CAR_TUTORIAL"].toString())
         TextToSpeechManager.speakQueue(textsCarsSelection["CAR_1"].toString())
+
+        idleSpeak.initIdleString(textsCarsSelection["IDLE"].toString())
     }
 
     override fun updateState() {
@@ -121,19 +131,7 @@ class CarSelectionScene() : SurfaceView(Settings.CONTEXT), ILevel {
             lastOption = carIterator
         }
 
-        if (!TextToSpeechManager.isSpeaking()) {
-            idleTime++
-
-            if (idleTime % 30 == 0) {
-                idleTimeSeconds++
-            }
-        }
-
-        if (idleTimeSeconds > 10) {
-            TextToSpeechManager.speakNow(textsCarsSelection["IDLE"].toString())
-
-            idleTimeSeconds = 0
-        }
+        idleSpeak.updateIdleStatus()
     }
 
     override fun destroyState() {
@@ -143,7 +141,6 @@ class CarSelectionScene() : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun respondTouchState(event: MotionEvent) {
-
         swipe = false
 
         when (GestureManager.swipeDetect(event)) {
@@ -174,7 +171,7 @@ class CarSelectionScene() : SurfaceView(Settings.CONTEXT), ILevel {
             GestureTypeEnum.SWIPE_DOWN -> {
                 TextToSpeechManager.speakNow(textsCarsSelection["IDLE"].toString())
                 Settings.globalSounds.playSound(RawResources.swapSound)
-                idleTimeSeconds = 0
+                idleSpeak.resetIdleTimeSeconds()
             }
         }
 
@@ -223,7 +220,8 @@ class CarSelectionScene() : SurfaceView(Settings.CONTEXT), ILevel {
     override fun redrawState(canvas: Canvas) {
         selectionImage.drawImage(canvas)
         textsCarsSelection[carsSelectionData[carIterator].textValue]?.let {
-            optionText.drawText(canvas,
+            optionText.drawText(
+                canvas,
                 it
             )
         }

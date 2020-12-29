@@ -2,7 +2,7 @@
 <resources>
     <dimen name="fontSize">20sp</dimen>
     <dimen name="optionSize">90sp</dimen>
-    <dimen name="selectFontSize">30sp</dimen>
+    <dimen name="selectFontSize">40sp</dimen>
     <dimen name="screenSize">400sp</dimen>
     <dimen name="fullScreenSize">800sp</dimen>
     <dimen name="informationSize">20sp</dimen>

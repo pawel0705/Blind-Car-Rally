@@ -13,12 +13,12 @@ object SharedPreferencesManager {
         mEditor = mPreferences.edit()
     }
 
-    fun saveConfiguration(key: String, value: String){
+    fun saveConfiguration(key: String, value: String) {
         mEditor.putString(key, value)
         mEditor.commit()
     }
 
-    fun loadConfiguration(key: String) : String? {
+    fun loadConfiguration(key: String): String? {
         return mPreferences.getString(key, "")
     }
 }

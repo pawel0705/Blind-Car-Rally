@@ -5,5 +5,5 @@ enum class CarEnum {
     CAR_2,
     CAR_3,
     CAR_4,
-    CAR_5
+    CAR_5,
 }

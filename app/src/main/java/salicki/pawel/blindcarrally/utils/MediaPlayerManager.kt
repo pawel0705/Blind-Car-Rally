@@ -4,7 +4,6 @@ import android.media.MediaPlayer
 import salicki.pawel.blindcarrally.information.Settings
 
 object MediaPlayerManager {
-
     var mediaPlayer: MediaPlayer = MediaPlayer()
 
     fun initMediaPlayer(soundId: Int) {
@@ -17,16 +16,12 @@ object MediaPlayerManager {
         mediaPlayer.start()
     }
 
-    fun isPlaying(): Boolean{
+    fun isPlaying(): Boolean {
         return mediaPlayer.isPlaying
     }
 
     fun loopSound() {
         mediaPlayer.isLooping = true
-    }
-
-    fun unLoopSound() {
-        mediaPlayer.isLooping = false
     }
 
     fun stopSound() {

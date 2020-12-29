@@ -27,6 +27,7 @@ class CalibrationScene : SurfaceView(Settings.CONTEXT), ILevel {
     private var soundManagerEar: SoundManager =
         SoundManager()
     private var text: TextObject = TextObject()
+
     private var time = 0
     private var timeSeconds = 0
 
@@ -49,15 +50,20 @@ class CalibrationScene : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     private fun initSoundManager() {
-        soundManager.initSoundManager()
-        soundManagerEar.initSoundManager()
+        soundManager.initSoundManager(1)
+        soundManagerEar.initSoundManager(1)
 
         soundManager.addSound(RawResources.acceptSound)
-        soundManagerEar.addSound(R.raw.beep)
+        soundManagerEar.addSound(RawResources.beepSound)
     }
 
     private fun readTTSTextFile() {
-        textsCalibration.putAll(OpenerCSV.readData(R.raw.calibration_tts, Settings.languageTtsEnum))
+        textsCalibration.putAll(
+            OpenerCSV.readData(
+                RawResources.calibration_TTS,
+                Settings.languageTtsEnum
+            )
+        )
     }
 
     override fun initState() {
@@ -70,13 +76,13 @@ class CalibrationScene : SurfaceView(Settings.CONTEXT), ILevel {
         if (!TextToSpeechManager.isSpeaking() && !leftEar) {
             TextToSpeechManager.speakNow(textsCalibration["CALIBRATION_LEFT"].toString())
             Timer().schedule(timerTask {
-                soundManagerEar.playSound(R.raw.beep, 0.6F, 0F, 3)
+                soundManagerEar.playSound(RawResources.beepSound, 0.6F, 0F, 3)
             }, 1000)
             leftEar = true
         } else if (!TextToSpeechManager.isSpeaking() && !rightEar) {
             TextToSpeechManager.speakNow(textsCalibration["CALIBRATION_RIGHT"].toString())
             Timer().schedule(timerTask {
-                soundManagerEar.playSound(R.raw.beep, 0F, 0.6F, 3)
+                soundManagerEar.playSound(RawResources.beepSound, 0F, 0.6F, 3)
             }, 1000)
             rightEar = true
         } else if (!TextToSpeechManager.isSpeaking() && leftEar && rightEar && !wheel) {
@@ -84,14 +90,14 @@ class CalibrationScene : SurfaceView(Settings.CONTEXT), ILevel {
             wheel = true
         }
 
-        if(!TextToSpeechManager.isSpeaking()){
+        if (!TextToSpeechManager.isSpeaking()) {
             time++
 
-            if (time % 30 == 0) {
+            if (time % Settings.FPS == 0) {
                 timeSeconds++
             }
 
-            if(timeSeconds >= 10){
+            if (timeSeconds >= Settings.FPS / 3) {
                 rightEar = false
                 leftEar = false
                 wheel = false
@@ -107,8 +113,7 @@ class CalibrationScene : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun respondTouchState(event: MotionEvent) {
-
-        when(GestureManager.swipeDetect(event)) {
+        when (GestureManager.swipeDetect(event)) {
             GestureTypeEnum.SWIPE_UP -> {
                 LevelManager.stackLevel(PauseScene())
                 Settings.globalSounds.playSound(RawResources.swapSound)

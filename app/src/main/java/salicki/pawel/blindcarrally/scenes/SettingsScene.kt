@@ -8,36 +8,30 @@ import salicki.pawel.blindcarrally.datas.OptionSelectionData
 import salicki.pawel.blindcarrally.enums.GestureTypeEnum
 import salicki.pawel.blindcarrally.enums.LevelTypeEnum
 import salicki.pawel.blindcarrally.gameresources.OptionImage
-import salicki.pawel.blindcarrally.gameresources.SelectBoxManager
 import salicki.pawel.blindcarrally.gameresources.TextObject
 import salicki.pawel.blindcarrally.gameresources.TextToSpeechManager
 import salicki.pawel.blindcarrally.information.Settings
+import salicki.pawel.blindcarrally.resources.DrawableResources
 import salicki.pawel.blindcarrally.resources.RawResources
 import salicki.pawel.blindcarrally.scenemanager.ILevel
 import salicki.pawel.blindcarrally.scenemanager.LevelManager
-import salicki.pawel.blindcarrally.utils.GestureManager
-import salicki.pawel.blindcarrally.utils.OpenerCSV
-import salicki.pawel.blindcarrally.utils.SharedPreferencesManager
-import salicki.pawel.blindcarrally.utils.SoundManager
-import java.security.cert.PKIXRevocationChecker
+import salicki.pawel.blindcarrally.utils.*
 
 class SettingsScene : SurfaceView(Settings.CONTEXT), ILevel {
     private var screenTexts: HashMap<String, String> = HashMap()
     private var texts: HashMap<String, String> = HashMap()
-    private var settingsIterator = 0
+    private var settingsSelectionData = arrayListOf<OptionSelectionData>()
+
+    private var optionText = TextObject()
+    private var idleSpeak: IdleSpeakManager = IdleSpeakManager()
     private var settingsImage: OptionImage = OptionImage()
     private var soundManager: SoundManager =
         SoundManager()
-    private var swipe: Boolean = false
-    private var settingsSelectionData = arrayListOf<OptionSelectionData>()
-    private var selectBoxManager: SelectBoxManager =
-        SelectBoxManager()
+
     private var lastOption = -1
-    private var optionText = TextObject()
+    private var settingsIterator = 0
 
-    private var idleTime: Int = 0
-    private var idleTimeSeconds: Int = 0
-
+    private var swipe: Boolean = false
 
     init {
         isFocusable = true
@@ -45,29 +39,24 @@ class SettingsScene : SurfaceView(Settings.CONTEXT), ILevel {
         initSoundManager()
         readTTSTextFile()
         initSettingsOptions()
-        initSelectBoxModel()
         initTextOption()
 
-        settingsImage.setFullScreenImage(R.drawable.settings)
+        settingsImage.setFullScreenImage(DrawableResources.settingsView)
     }
 
-    private fun initSoundManager(){
+    private fun initSoundManager() {
         soundManager.initSoundManager()
 
         soundManager.addSound(RawResources.swapSound)
         soundManager.addSound(RawResources.acceptSound)
     }
 
-    private fun initSelectBoxModel(){
-        selectBoxManager.initSelectBoxModel(6)
-    }
-
     private fun readTTSTextFile() {
-        texts.putAll(OpenerCSV.readData(R.raw.settings_tts, Settings.languageTtsEnum))
-        screenTexts.putAll(OpenerCSV.readData(R.raw.settings_texts, Settings.languageTtsEnum))
+        texts.putAll(OpenerCSV.readData(RawResources.settings_TTS, Settings.languageTtsEnum))
+        screenTexts.putAll(OpenerCSV.readData(RawResources.settings_TXT, Settings.languageTtsEnum))
     }
 
-    private fun initTextOption(){
+    private fun initTextOption() {
         optionText.initText(R.font.hemi, Settings.SCREEN_WIDTH / 2F, Settings.SCREEN_HEIGHT / 3F)
     }
 
@@ -75,24 +64,24 @@ class SettingsScene : SurfaceView(Settings.CONTEXT), ILevel {
         settingsSelectionData.add(
             OptionSelectionData(
                 LevelTypeEnum.VIBRATION,
-                if(Settings.vibrations) "SETTINGS_VIBRATION_ON" else "SETTINGS_VIBRATION_OFF",
-                if(Settings.vibrations) "VIBRATION_ON" else "VIBRATION_OFF",
+                if (Settings.vibrations) "SETTINGS_VIBRATION_ON" else "SETTINGS_VIBRATION_OFF",
+                if (Settings.vibrations) "VIBRATION_ON" else "VIBRATION_OFF",
                 false
             )
         )
         settingsSelectionData.add(
             OptionSelectionData(
                 LevelTypeEnum.DISPLAY,
-                if(Settings.display) "SETTINGS_DISPLAY_ON" else "SETTINGS_DISPLAY_OFF",
-                if(Settings.display) "DISPLAY_ON" else "DISPLAY_OFF",
+                if (Settings.display) "SETTINGS_DISPLAY_ON" else "SETTINGS_DISPLAY_OFF",
+                if (Settings.display) "DISPLAY_ON" else "DISPLAY_OFF",
                 false
             )
         )
         settingsSelectionData.add(
             OptionSelectionData(
                 LevelTypeEnum.INTRODUCTION,
-                if(Settings.introduction) "SETTINGS_INTRODUCTION_ON" else "SETTINGS_INTRODUCTION_OFF",
-                if(Settings.introduction) "INFORMATION_ON" else "INFORMATION_OFF",
+                if (Settings.introduction) "SETTINGS_INTRODUCTION_ON" else "SETTINGS_INTRODUCTION_OFF",
+                if (Settings.introduction) "INFORMATION_ON" else "INFORMATION_OFF",
                 false
             )
         )
@@ -123,13 +112,14 @@ class SettingsScene : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun initState() {
-
         TextToSpeechManager.speakNow(texts["SETTINGS_TUTORIAL"].toString())
         if (Settings.vibrations) {
             TextToSpeechManager.speakQueue(texts["SETTINGS_VIBRATION_ON"].toString())
         } else {
             TextToSpeechManager.speakQueue(texts["SETTINGS_VIBRATION_OFF"].toString())
         }
+
+        idleSpeak.initIdleString(texts["IDLE"].toString())
     }
 
     override fun updateState() {
@@ -143,21 +133,7 @@ class SettingsScene : SurfaceView(Settings.CONTEXT), ILevel {
             lastOption = settingsIterator
         }
 
-        selectBoxManager.updateSelectBoxPosition(settingsIterator)
-
-        if(!TextToSpeechManager.isSpeaking()){
-            idleTime++
-
-            if(idleTime % 30 == 0){
-                idleTimeSeconds++
-            }
-        }
-
-        if(idleTimeSeconds > 10){
-            TextToSpeechManager.speakNow(texts["IDLE"].toString())
-
-            idleTimeSeconds = 0
-        }
+        idleSpeak.updateIdleStatus()
     }
 
     override fun destroyState() {
@@ -167,11 +143,9 @@ class SettingsScene : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun respondTouchState(event: MotionEvent) {
-
         swipe = false
 
-        when(GestureManager.swipeDetect(event))
-        {
+        when (GestureManager.swipeDetect(event)) {
             GestureTypeEnum.SWIPE_RIGHT -> {
                 soundManager.playSound(RawResources.swapSound)
                 settingsIterator++
@@ -181,7 +155,7 @@ class SettingsScene : SurfaceView(Settings.CONTEXT), ILevel {
                 }
 
                 swipe = true
-                idleTimeSeconds = 0
+                idleSpeak.resetIdleTimeSeconds()
             }
             GestureTypeEnum.SWIPE_LEFT -> {
                 soundManager.playSound(RawResources.swapSound)
@@ -191,7 +165,7 @@ class SettingsScene : SurfaceView(Settings.CONTEXT), ILevel {
                 }
 
                 swipe = true
-                idleTimeSeconds = 0
+                idleSpeak.resetIdleTimeSeconds()
             }
             GestureTypeEnum.SWIPE_UP -> {
                 LevelManager.changeLevel(MenuScene())
@@ -201,7 +175,7 @@ class SettingsScene : SurfaceView(Settings.CONTEXT), ILevel {
             GestureTypeEnum.SWIPE_DOWN -> {
                 TextToSpeechManager.speakNow(texts["IDLE"].toString())
                 Settings.globalSounds.playSound(RawResources.swapSound)
-                idleTimeSeconds = 0
+                idleSpeak.resetIdleTimeSeconds()
                 swipe = true
             }
         }
@@ -215,7 +189,7 @@ class SettingsScene : SurfaceView(Settings.CONTEXT), ILevel {
                         Settings.vibrations = !Settings.vibrations
 
                         var saveOption = "0"
-                        if(Settings.display){
+                        if (Settings.display) {
                             saveOption = "1"
                         }
 
@@ -234,7 +208,7 @@ class SettingsScene : SurfaceView(Settings.CONTEXT), ILevel {
                         Settings.display = !Settings.display
 
                         var saveOption = "0"
-                        if(Settings.display){
+                        if (Settings.display) {
                             saveOption = "1"
                         }
 
@@ -248,11 +222,11 @@ class SettingsScene : SurfaceView(Settings.CONTEXT), ILevel {
                             settingsSelectionData[settingsIterator].textValue = "DISPLAY_OFF"
                         }
                     }
-                    2->{
+                    2 -> {
                         Settings.introduction = !Settings.introduction
 
                         var saveOption = "0"
-                        if(Settings.introduction){
+                        if (Settings.introduction) {
                             saveOption = "1"
                         }
 
@@ -277,7 +251,7 @@ class SettingsScene : SurfaceView(Settings.CONTEXT), ILevel {
                     }
                 }
 
-                idleTimeSeconds = 0
+                idleSpeak.resetIdleTimeSeconds()
             }
         }
 
@@ -304,7 +278,7 @@ class SettingsScene : SurfaceView(Settings.CONTEXT), ILevel {
                 }
             }
 
-            idleTimeSeconds = 0
+            idleSpeak.resetIdleTimeSeconds()
         }
 
         settingsSelectionData.forEach {
@@ -317,7 +291,8 @@ class SettingsScene : SurfaceView(Settings.CONTEXT), ILevel {
     override fun redrawState(canvas: Canvas) {
         settingsImage.drawImage(canvas)
         screenTexts[settingsSelectionData[settingsIterator].textValue]?.let {
-            optionText.drawText(canvas,
+            optionText.drawText(
+                canvas,
                 it
             )
         }

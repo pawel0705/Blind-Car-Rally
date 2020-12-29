@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity() {
         return getSystemService(VIBRATOR_SERVICE) as Vibrator
     }
 
-    fun getOrientation(): Int{
+    fun getOrientation(): Int {
         val display =
             (getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay
 

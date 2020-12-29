@@ -6,25 +6,22 @@ import android.media.SoundPool
 import android.os.Build
 import salicki.pawel.blindcarrally.information.Settings
 
-
 class SoundManager {
     private var soundPool: SoundPool? = null
-    private val maxStrams = 10
-
     private var sounds: MutableMap<Int, Int> = mutableMapOf<Int, Int>()
 
-    fun initSoundManager() {
+    fun initSoundManager(maxStreams: Int = 5) {
         soundPool = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             val audioAttributes = AudioAttributes.Builder()
                 .setUsage(AudioAttributes.USAGE_ASSISTANCE_ACCESSIBILITY)
                 .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
                 .build()
             SoundPool.Builder()
-                .setMaxStreams(maxStrams)
+                .setMaxStreams(maxStreams)
                 .setAudioAttributes(audioAttributes)
                 .build()
         } else {
-            SoundPool(maxStrams, AudioManager.STREAM_ACCESSIBILITY, 0)
+            SoundPool(maxStreams, AudioManager.STREAM_ACCESSIBILITY, 0)
         }
     }
 
@@ -32,7 +29,13 @@ class SoundManager {
         sounds?.set(soundId, soundPool?.load(Settings.CONTEXT, soundId, 1)!!)
     }
 
-    fun playSound(soundId: Int, leftVolume: Float = 1F, rightVolume: Float = 1F, loop: Int = 0, rate: Float = 1F) {
+    fun playSound(
+        soundId: Int,
+        leftVolume: Float = 1F,
+        rightVolume: Float = 1F,
+        loop: Int = 0,
+        rate: Float = 1F
+    ) {
         if (soundPool != null) {
             sounds?.get(soundId)?.let {
                 soundPool!!.play(

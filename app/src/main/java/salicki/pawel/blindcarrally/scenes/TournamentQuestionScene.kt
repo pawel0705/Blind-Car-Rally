@@ -9,29 +9,28 @@ import salicki.pawel.blindcarrally.gameresources.OptionImage
 import salicki.pawel.blindcarrally.gameresources.TextObject
 import salicki.pawel.blindcarrally.gameresources.TextToSpeechManager
 import salicki.pawel.blindcarrally.information.Settings
+import salicki.pawel.blindcarrally.resources.DrawableResources
 import salicki.pawel.blindcarrally.resources.RawResources
 import salicki.pawel.blindcarrally.scenemanager.ILevel
 import salicki.pawel.blindcarrally.scenemanager.LevelManager
-import salicki.pawel.blindcarrally.utils.GestureManager
-import salicki.pawel.blindcarrally.utils.OpenerCSV
-import salicki.pawel.blindcarrally.utils.SharedPreferencesManager
-import salicki.pawel.blindcarrally.utils.SoundManager
+import salicki.pawel.blindcarrally.utils.*
 import java.security.cert.PKIXRevocationChecker
 
 class TournamentQuestionScene : SurfaceView(Settings.CONTEXT), ILevel {
-
-    private var texts: HashMap<String, String> = HashMap()
-    private var newTournament: Boolean = true
-    private var tournamentQuestionImage: OptionImage = OptionImage()
     private var screenTexts: HashMap<String, String> = HashMap()
+    private var texts: HashMap<String, String> = HashMap()
+
+    private var idleSpeak: IdleSpeakManager = IdleSpeakManager()
     private var optionText: TextObject = TextObject()
     private var soundManager: SoundManager =
         SoundManager()
+    private var tournamentQuestionImage: OptionImage = OptionImage()
+
     private var tournamentQuestionIterator: Int = 0
     private var lastOption: Int = 0
+
     private var swipe: Boolean = false
-    private var idleTime: Int = 0
-    private var idleTimeSeconds: Int = 0
+    private var newTournament: Boolean = true
 
     init{
         isFocusable = true
@@ -39,13 +38,15 @@ class TournamentQuestionScene : SurfaceView(Settings.CONTEXT), ILevel {
         initSoundManager()
         readTTSTextFile()
 
-        tournamentQuestionImage.setFullScreenImage(R.drawable.yes_no)
+        tournamentQuestionImage.setFullScreenImage(DrawableResources.yesNoView)
         optionText.initText(R.font.hemi, Settings.SCREEN_WIDTH / 2F, Settings.SCREEN_HEIGHT / 3F)
     }
 
     override fun initState() {
         TextToSpeechManager.speakNow(texts["TOURNAMENT_QUESTION"].toString())
         TextToSpeechManager.speakQueue(texts["NO"].toString())
+
+        idleSpeak.initIdleString(texts["IDLE"].toString())
     }
 
     private fun initSoundManager(){
@@ -56,11 +57,11 @@ class TournamentQuestionScene : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     private fun readTTSTextFile() {
-        texts.putAll(OpenerCSV.readData(R.raw.tournament_question_tts, Settings.languageTtsEnum))
+        texts.putAll(OpenerCSV.readData(RawResources.tournamentQuestion_TTS, Settings.languageTtsEnum))
 
         screenTexts.putAll(
             OpenerCSV.readData(
-                R.raw.tournament_question_texts,
+            RawResources.tournamentQuestion_TXT,
                 Settings.languageTtsEnum
             )
         )
@@ -77,19 +78,7 @@ class TournamentQuestionScene : SurfaceView(Settings.CONTEXT), ILevel {
             lastOption = tournamentQuestionIterator
         }
 
-        if(!TextToSpeechManager.isSpeaking()){
-            idleTime++
-
-            if(idleTime % 30 == 0){
-                idleTimeSeconds++
-            }
-        }
-
-        if(idleTimeSeconds > 10){
-            TextToSpeechManager.speakNow(texts["IDLE"].toString())
-
-            idleTimeSeconds = 0
-        }
+        idleSpeak.updateIdleStatus()
     }
 
     override fun destroyState() {
@@ -99,7 +88,6 @@ class TournamentQuestionScene : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun respondTouchState(event: MotionEvent) {
-
         swipe = false
 
         when (GestureManager.swipeDetect(event)) {
@@ -113,7 +101,7 @@ class TournamentQuestionScene : SurfaceView(Settings.CONTEXT), ILevel {
                 }
 
                 swipe = true
-                idleTimeSeconds = 0
+                idleSpeak.resetIdleTimeSeconds()
             }
             GestureTypeEnum.SWIPE_UP -> {
                 LevelManager.changeLevel(TournamentScene())
@@ -123,7 +111,7 @@ class TournamentQuestionScene : SurfaceView(Settings.CONTEXT), ILevel {
             GestureTypeEnum.SWIPE_DOWN -> {
                 TextToSpeechManager.speakNow(texts["IDLE"].toString())
                 Settings.globalSounds.playSound(RawResources.swapSound)
-                idleTimeSeconds = 0
+                idleSpeak.resetIdleTimeSeconds()
                 swipe = true
             }
         }
@@ -154,7 +142,7 @@ class TournamentQuestionScene : SurfaceView(Settings.CONTEXT), ILevel {
                 }
             }
 
-            idleTimeSeconds = 0
+            idleSpeak.resetIdleTimeSeconds()
         }
     }
 

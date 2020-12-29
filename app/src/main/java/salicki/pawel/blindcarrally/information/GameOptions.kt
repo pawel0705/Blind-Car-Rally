@@ -6,15 +6,15 @@ import salicki.pawel.blindcarrally.enums.RacingModeEnum
 import salicki.pawel.blindcarrally.enums.StageEnum
 
 object GameOptions {
-    lateinit var gamemode: RacingModeEnum
     lateinit var car: CarEnum
 
     var carTopSpeed: Float = 0.0F
     var carAcceleration: Float = 0.0F
     var carManeuverability: Float = 0.0F
 
-    lateinit var nation: NationEnum
-    lateinit var stage: StageEnum
+    var gamemode: RacingModeEnum = RacingModeEnum.SINGLE_RACE
+    var nation: NationEnum = NationEnum.ARGENTINA
+    var stage: StageEnum = StageEnum.STAGE_1
 
     var stageNumber: Int = 0
 }

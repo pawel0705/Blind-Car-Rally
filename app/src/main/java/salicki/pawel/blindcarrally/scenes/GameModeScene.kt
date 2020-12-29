@@ -14,28 +14,32 @@ import salicki.pawel.blindcarrally.gameresources.TextObject
 import salicki.pawel.blindcarrally.gameresources.TextToSpeechManager
 import salicki.pawel.blindcarrally.information.GameOptions
 import salicki.pawel.blindcarrally.information.Settings
+import salicki.pawel.blindcarrally.resources.DrawableResources
 import salicki.pawel.blindcarrally.resources.RawResources
 import salicki.pawel.blindcarrally.scenemanager.ILevel
 import salicki.pawel.blindcarrally.scenemanager.LevelManager
 import salicki.pawel.blindcarrally.utils.GestureManager
+import salicki.pawel.blindcarrally.utils.IdleSpeakManager
 import salicki.pawel.blindcarrally.utils.OpenerCSV
 import salicki.pawel.blindcarrally.utils.SoundManager
 
 class GameModeScene : SurfaceView(Settings.CONTEXT), ILevel {
     private var texts: HashMap<String, String> = HashMap()
-    private var descriptionText: TextObject = TextObject()
     private var screenTexts: HashMap<String, String> = HashMap()
+    private var modeSelectionData = arrayListOf<OptionSelectionData>()
+
+    private var descriptionText: TextObject = TextObject()
     private var optionText: TextObject = TextObject()
     private var gameModeImage: OptionImage = OptionImage()
-    private var modeSelectionData = arrayListOf<OptionSelectionData>()
-    private var modeIterator: Int = 0
-    private var swipe: Boolean = false
     private var soundManager: SoundManager =
         SoundManager()
-    private var lastOption: Int = -1
+    private var idleSpeak: IdleSpeakManager = IdleSpeakManager()
+
+    private var swipe: Boolean = false
     private var drawDescription: Boolean = false
-    private var idleTime: Int = 0
-    private var idleTimeSeconds: Int = 0
+
+    private var lastOption: Int = -1
+    private var modeIterator: Int = 0
 
     init {
         isFocusable = true
@@ -44,8 +48,8 @@ class GameModeScene : SurfaceView(Settings.CONTEXT), ILevel {
         initModeOptions()
         initSoundManager()
 
-        screenTexts.putAll(OpenerCSV.readData(R.raw.gamemode_texts, Settings.languageTtsEnum))
-        gameModeImage.setFullScreenImage(R.drawable.select_mode)
+        screenTexts.putAll(OpenerCSV.readData(RawResources.gamemode_TXT, Settings.languageTtsEnum))
+        gameModeImage.setFullScreenImage(DrawableResources.selectModeView)
         optionText.initText(R.font.hemi, Settings.SCREEN_WIDTH / 2F, Settings.SCREEN_HEIGHT / 3F)
         screenTexts["MODE_DESCRIPTION_CLICKED"]?.let {
             descriptionText.initMultiLineText(
@@ -101,13 +105,14 @@ class GameModeScene : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     private fun readTTSTextFile() {
-        texts.putAll(OpenerCSV.readData(R.raw.gamemode_tts, Settings.languageTtsEnum))
-
+        texts.putAll(OpenerCSV.readData(RawResources.gamemode_TTS, Settings.languageTtsEnum))
     }
 
     override fun initState() {
         TextToSpeechManager.speakNow(texts["MODE_TUTORIAL"].toString())
         TextToSpeechManager.speakQueue(texts["MODE_SINGLE"].toString())
+
+        idleSpeak.initIdleString(texts["IDLE"].toString())
     }
 
     override fun updateState() {
@@ -122,19 +127,7 @@ class GameModeScene : SurfaceView(Settings.CONTEXT), ILevel {
             lastOption = modeIterator
         }
 
-        if (!TextToSpeechManager.isSpeaking()) {
-            idleTime++
-
-            if (idleTime % 30 == 0) {
-                idleTimeSeconds++
-            }
-        }
-
-        if (idleTimeSeconds > 10) {
-            TextToSpeechManager.speakNow(texts["IDLE"].toString())
-
-            idleTimeSeconds = 0
-        }
+        idleSpeak.updateIdleStatus()
     }
 
     override fun destroyState() {
@@ -156,7 +149,7 @@ class GameModeScene : SurfaceView(Settings.CONTEXT), ILevel {
                 }
 
                 swipe = true
-                idleTimeSeconds = 0
+                idleSpeak.resetIdleTimeSeconds()
             }
             GestureTypeEnum.SWIPE_LEFT -> {
                 soundManager.playSound(RawResources.swapSound)
@@ -166,7 +159,7 @@ class GameModeScene : SurfaceView(Settings.CONTEXT), ILevel {
                 }
 
                 swipe = true
-                idleTimeSeconds = 0
+                idleSpeak.resetIdleTimeSeconds()
             }
             GestureTypeEnum.SWIPE_UP -> {
                 LevelManager.changeLevel(MenuScene())
@@ -176,7 +169,7 @@ class GameModeScene : SurfaceView(Settings.CONTEXT), ILevel {
             GestureTypeEnum.SWIPE_DOWN -> {
                 TextToSpeechManager.speakNow(texts["IDLE"].toString())
                 Settings.globalSounds.playSound(RawResources.swapSound)
-                idleTimeSeconds = 0
+                idleSpeak.resetIdleTimeSeconds()
             }
         }
 
@@ -186,7 +179,7 @@ class GameModeScene : SurfaceView(Settings.CONTEXT), ILevel {
                 Settings.globalSounds.playSound(RawResources.acceptSound)
                 changeLevel(modeIterator)
 
-                idleTimeSeconds = 0
+                idleSpeak.resetIdleTimeSeconds()
             }
         }
 
@@ -207,7 +200,7 @@ class GameModeScene : SurfaceView(Settings.CONTEXT), ILevel {
                 }
             }
 
-            idleTimeSeconds = 0
+            idleSpeak.resetIdleTimeSeconds()
         }
 
         modeSelectionData.forEach {
@@ -240,7 +233,7 @@ class GameModeScene : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun redrawState(canvas: Canvas) {
-        if(!drawDescription){
+        if (!drawDescription) {
             gameModeImage.drawImage(canvas)
             screenTexts[modeSelectionData[modeIterator].textValue]?.let {
                 optionText.drawText(
@@ -251,7 +244,5 @@ class GameModeScene : SurfaceView(Settings.CONTEXT), ILevel {
         } else {
             descriptionText.drawMultilineText(canvas)
         }
-
     }
-
 }

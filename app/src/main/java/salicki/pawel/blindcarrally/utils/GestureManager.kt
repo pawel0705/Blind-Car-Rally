@@ -6,7 +6,6 @@ import salicki.pawel.blindcarrally.enums.GestureTypeEnum
 import kotlin.math.abs
 
 object GestureManager {
-
     private var swipe: Boolean = false
 
     // swipe
@@ -32,25 +31,19 @@ object GestureManager {
 
     fun swipeDetect(event: MotionEvent): GestureTypeEnum {
         swipe = false
-
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
                 x1 = event.x
                 y1 = event.y
-
                 swipeStartTime = System.currentTimeMillis()
             }
             MotionEvent.ACTION_UP -> {
                 x2 = event.x
                 y2 = event.y
-
                 val deltaX = x2 - x1
                 val deltaY = y2 - y1
-
                 val time: Long = System.currentTimeMillis() - swipeStartTime
                 swipeDuration += time
-
-           //     Log.d("SWIPE", swipeDuration.toString())
 
                 if (swipeDuration < MAX_SWIPE_DURATION) {
                     when {
@@ -62,12 +55,10 @@ object GestureManager {
                             } else {
                                 GestureTypeEnum.SWIPE_LEFT
                             }
-
                             duration = 0
                         }
                         abs(deltaY) > MIN_DISTANCE -> {
                             swipe = true
-
                             return if (y2 > y1) {
                                 GestureTypeEnum.SWIPE_DOWN
                             } else {
@@ -85,24 +76,18 @@ object GestureManager {
                 }
             }
         }
-
-
-
         return GestureTypeEnum.NONE
     }
 
     fun doubleTapDetect(event: MotionEvent): GestureTypeEnum {
-
         when (event.action and MotionEvent.ACTION_MASK) {
             MotionEvent.ACTION_DOWN -> {
                 startTime = System.currentTimeMillis()
                 clickCount++
-
             }
             MotionEvent.ACTION_UP -> {
                 val time: Long = System.currentTimeMillis() - startTime
                 duration += time
-
                 if (clickCount >= 2) {
                     if (duration <= MAX_DURATION) {
                         return GestureTypeEnum.DOUBLE_TAP
@@ -112,7 +97,6 @@ object GestureManager {
                 }
             }
         }
-
         return GestureTypeEnum.NONE
     }
 
@@ -120,7 +104,6 @@ object GestureManager {
     fun tapPositionDetect(event: MotionEvent): GestureTypeEnum {
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
-
                 x1 = event.x
             }
             MotionEvent.ACTION_UP -> {
@@ -131,7 +114,6 @@ object GestureManager {
                 }
             }
         }
-
         return GestureTypeEnum.NONE
     }
 
@@ -139,16 +121,10 @@ object GestureManager {
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
                 x1 = event.x
-
                 holdStartTime = System.currentTimeMillis()
             }
             MotionEvent.ACTION_MOVE -> {
-
                 holdDuration = System.currentTimeMillis() - holdStartTime
-
-
-          //      Log.d("HOLD", holdDuration.toString())
-
                 return if(holdDuration > HOLD_MAX_DURATION){
                     Pair(event.x, event.y)
                 } else {
@@ -159,7 +135,6 @@ object GestureManager {
                 holdDuration = 0
             }
         }
-
         return Pair(-1F, -1F);
     }
 }

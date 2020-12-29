@@ -13,6 +13,7 @@ import salicki.pawel.blindcarrally.resources.RawResources
 import salicki.pawel.blindcarrally.scenemanager.ILevel
 import salicki.pawel.blindcarrally.scenemanager.LevelManager
 import salicki.pawel.blindcarrally.utils.GestureManager
+import salicki.pawel.blindcarrally.utils.IdleSpeakManager
 import salicki.pawel.blindcarrally.utils.OpenerCSV
 import salicki.pawel.blindcarrally.utils.SoundManager
 
@@ -22,9 +23,7 @@ class CreditsScene : SurfaceView(Settings.CONTEXT), ILevel {
     private var optionText: TextObject = TextObject()
     private var soundManager: SoundManager =
         SoundManager()
-
-    private var idleTime: Int = 0
-    private var idleTimeSeconds: Int = 0
+    private var idleSpeak: IdleSpeakManager = IdleSpeakManager()
 
     init {
         isFocusable = true
@@ -49,28 +48,17 @@ class CreditsScene : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     private fun readTTSTextFile() {
-        texts.putAll(OpenerCSV.readData(R.raw.credits_tts, Settings.languageTtsEnum))
+        texts.putAll(OpenerCSV.readData(RawResources.credits_TTS, Settings.languageTtsEnum))
     }
 
     override fun initState() {
         TextToSpeechManager.speakNow(texts["INSTRUCTION"].toString())
+
+        idleSpeak.initIdleString(texts["INSTRUCTION"].toString())
     }
 
     override fun updateState() {
-        if(TextToSpeechManager.isSpeaking()){
-            idleTime = 0
-        }
-
-        idleTime++
-
-        if(idleTime % 30 == 0){
-            idleTimeSeconds++
-        }
-
-        if(idleTimeSeconds > 10 && !TextToSpeechManager.isSpeaking()){
-            TextToSpeechManager.speakNow(texts["INSTRUCTION"].toString())
-            idleTimeSeconds = 0
-        }
+        idleSpeak.updateIdleStatus()
     }
 
     override fun destroyState() {
@@ -87,14 +75,14 @@ class CreditsScene : SurfaceView(Settings.CONTEXT), ILevel {
             }
         }
 
-        when(GestureManager.swipeDetect(event)){
+        when (GestureManager.swipeDetect(event)) {
             GestureTypeEnum.SWIPE_UP -> {
                 LevelManager.changeLevel(MenuScene())
                 Settings.globalSounds.playSound(RawResources.swapSound)
             }
             GestureTypeEnum.SWIPE_DOWN -> {
                 TextToSpeechManager.speakNow(texts["INSTRUCTION"].toString())
-                idleTimeSeconds = 0
+                idleSpeak.resetIdleTimeSeconds()
                 Settings.globalSounds.playSound(RawResources.swapSound)
             }
         }

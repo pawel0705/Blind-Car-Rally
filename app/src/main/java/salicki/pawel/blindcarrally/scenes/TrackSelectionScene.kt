@@ -12,10 +12,12 @@ import salicki.pawel.blindcarrally.gameresources.TextObject
 import salicki.pawel.blindcarrally.gameresources.TextToSpeechManager
 import salicki.pawel.blindcarrally.information.GameOptions
 import salicki.pawel.blindcarrally.information.Settings
+import salicki.pawel.blindcarrally.resources.DrawableResources
 import salicki.pawel.blindcarrally.resources.RawResources
 import salicki.pawel.blindcarrally.scenemanager.ILevel
 import salicki.pawel.blindcarrally.scenemanager.LevelManager
 import salicki.pawel.blindcarrally.utils.GestureManager
+import salicki.pawel.blindcarrally.utils.IdleSpeakManager
 import salicki.pawel.blindcarrally.utils.OpenerCSV
 import salicki.pawel.blindcarrally.utils.SoundManager
 
@@ -23,17 +25,18 @@ class TrackSelectionScene : SurfaceView(Settings.CONTEXT), ILevel {
     private var textsTrackSelection: HashMap<String, String> = HashMap()
     private var textsNations: HashMap<String, String> = HashMap()
     private var screenTexts: HashMap<String, String> = HashMap()
+    private var trackSelectionData = arrayListOf<OptionSelectionData>()
+
     private var optionText: TextObject = TextObject()
     private var trackSelectionImage: OptionImage = OptionImage()
+    private var idleSpeak: IdleSpeakManager = IdleSpeakManager()
     private var soundManager: SoundManager =
         SoundManager()
-    private var swipe: Boolean = false
-    private var trackSelectionData = arrayListOf<OptionSelectionData>()
+
     private var trackIterator: Int = 0
     private var lastOption: Int = -1
 
-    private var idleTime: Int = 0
-    private var idleTimeSeconds: Int = 0
+    private var swipe: Boolean = false
 
     init {
         isFocusable = true
@@ -42,7 +45,7 @@ class TrackSelectionScene : SurfaceView(Settings.CONTEXT), ILevel {
         readTTSTextFile()
         initTrackSelectionOptions()
 
-        trackSelectionImage.setFullScreenImage(R.drawable.select_nation)
+        trackSelectionImage.setFullScreenImage(DrawableResources.selectNationView)
     }
 
     private fun initTrackSelectionOptions() {
@@ -98,13 +101,13 @@ class TrackSelectionScene : SurfaceView(Settings.CONTEXT), ILevel {
     private fun readTTSTextFile() {
         textsTrackSelection.putAll(
             OpenerCSV.readData(
-                R.raw.track_selection_tts,
+                RawResources.track_selection_TTS,
                 Settings.languageTtsEnum
             )
         )
-        textsNations.putAll(OpenerCSV.readData(R.raw.tracks_tts, Settings.languageTtsEnum))
+        textsNations.putAll(OpenerCSV.readData(RawResources.tracks_TTS, Settings.languageTtsEnum))
 
-        screenTexts.putAll(OpenerCSV.readData(R.raw.tracks_texts, Settings.languageTtsEnum))
+        screenTexts.putAll(OpenerCSV.readData(RawResources.tracks_TXT, Settings.languageTtsEnum))
     }
 
     override fun initState() {
@@ -112,8 +115,14 @@ class TrackSelectionScene : SurfaceView(Settings.CONTEXT), ILevel {
         TextToSpeechManager.speakQueue(textsNations["ARGENTINA"].toString())
 
         screenTexts[trackSelectionData[trackIterator].textValue]?.let {
-            optionText.initText(R.font.hemi, Settings.SCREEN_WIDTH / 2F, Settings.SCREEN_HEIGHT / 3F)
+            optionText.initText(
+                R.font.hemi,
+                Settings.SCREEN_WIDTH / 2F,
+                Settings.SCREEN_HEIGHT / 3F
+            )
         }
+
+        idleSpeak.initIdleString(textsNations["IDLE"].toString())
     }
 
     override fun updateState() {
@@ -127,19 +136,7 @@ class TrackSelectionScene : SurfaceView(Settings.CONTEXT), ILevel {
             lastOption = trackIterator
         }
 
-        if (!TextToSpeechManager.isSpeaking()) {
-            idleTime++
-
-            if (idleTime % 30 == 0) {
-                idleTimeSeconds++
-            }
-        }
-
-        if (idleTimeSeconds > 10) {
-            TextToSpeechManager.speakNow(textsTrackSelection["IDLE"].toString())
-
-            idleTimeSeconds = 0
-        }
+        idleSpeak.updateIdleStatus()
     }
 
     override fun destroyState() {
@@ -149,7 +146,6 @@ class TrackSelectionScene : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun respondTouchState(event: MotionEvent) {
-
         swipe = false
 
         when (GestureManager.swipeDetect(event)) {
@@ -180,13 +176,12 @@ class TrackSelectionScene : SurfaceView(Settings.CONTEXT), ILevel {
             GestureTypeEnum.SWIPE_DOWN -> {
                 TextToSpeechManager.speakNow(textsTrackSelection["IDLE"].toString())
                 Settings.globalSounds.playSound(RawResources.swapSound)
-                idleTimeSeconds = 0
+                idleSpeak.resetIdleTimeSeconds()
                 swipe = true
             }
         }
 
         when (GestureManager.doubleTapDetect(event)) {
-
             GestureTypeEnum.DOUBLE_TAP -> {
                 TextToSpeechManager.stop()
                 Settings.globalSounds.playSound(RawResources.acceptSound)
@@ -252,7 +247,8 @@ class TrackSelectionScene : SurfaceView(Settings.CONTEXT), ILevel {
         trackSelectionImage.drawImage(canvas)
 
         screenTexts[trackSelectionData[trackIterator].textValue]?.let {
-            optionText.drawText(canvas,
+            optionText.drawText(
+                canvas,
                 it
             )
         }

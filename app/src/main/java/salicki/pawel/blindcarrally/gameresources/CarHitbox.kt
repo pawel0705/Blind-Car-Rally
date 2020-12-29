@@ -10,7 +10,7 @@ class CarHitbox {
     private var carCoordinatesData: CarCoordinatesData = CarCoordinatesData()
     private var hitboxPaint: Paint = Paint()
 
-    fun initHitbox(posX: Float, posY: Float, carHalfWidth: Float, carHalfHeight: Float){
+    fun initHitbox(){
         hitboxPaint.color = Color.GREEN
     }
 
@@ -29,42 +29,7 @@ class CarHitbox {
 
     }
 
-    fun drawHitbox(canvas: Canvas,
-                   coordinateDisplayManager: CoordinateDisplayManager
-    )
-    {
-        canvas.drawLine(
-            coordinateDisplayManager.convertToEnvironmentX(carCoordinatesData.posX01),
-            coordinateDisplayManager.convertToEnvironmentY(carCoordinatesData.posY01),
-            coordinateDisplayManager.convertToEnvironmentX(carCoordinatesData.posX02),
-            coordinateDisplayManager.convertToEnvironmentY(carCoordinatesData.posY02),
-            hitboxPaint
-        )
-        canvas.drawLine(
-            coordinateDisplayManager.convertToEnvironmentX(carCoordinatesData.posX01),
-            coordinateDisplayManager.convertToEnvironmentY(carCoordinatesData.posY01),
-            coordinateDisplayManager.convertToEnvironmentX(carCoordinatesData.posX03),
-            coordinateDisplayManager.convertToEnvironmentY(carCoordinatesData.posY03),
-            hitboxPaint
-        )
-        canvas.drawLine(
-            coordinateDisplayManager.convertToEnvironmentX(carCoordinatesData.posX02),
-            coordinateDisplayManager.convertToEnvironmentY(carCoordinatesData.posY02),
-            coordinateDisplayManager.convertToEnvironmentX(carCoordinatesData.posX04),
-            coordinateDisplayManager.convertToEnvironmentY(carCoordinatesData.posY04),
-            hitboxPaint
-        )
-        canvas.drawLine(
-            coordinateDisplayManager.convertToEnvironmentX(carCoordinatesData.posX03),
-            coordinateDisplayManager.convertToEnvironmentY(carCoordinatesData.posY03),
-            coordinateDisplayManager.convertToEnvironmentX(carCoordinatesData.posX04),
-            coordinateDisplayManager.convertToEnvironmentY(carCoordinatesData.posY04),
-            hitboxPaint
-        )
-    }
-
     fun collisionCheck(x1: Float, y1: Float, x2: Float, y2: Float): Boolean {
-
         val left: Boolean = Mathematics.collisionLineToLine(
             x1,
             y1,
@@ -112,4 +77,41 @@ class CarHitbox {
 
         return false
     }
+
+    /*
+    // for testing purposes
+    fun drawHitbox(canvas: Canvas,
+                   coordinateDisplayManager: CoordinateDisplayManager
+    )
+    {
+        canvas.drawLine(
+            coordinateDisplayManager.convertToEnvironmentX(carCoordinatesData.posX01),
+            coordinateDisplayManager.convertToEnvironmentY(carCoordinatesData.posY01),
+            coordinateDisplayManager.convertToEnvironmentX(carCoordinatesData.posX02),
+            coordinateDisplayManager.convertToEnvironmentY(carCoordinatesData.posY02),
+            hitboxPaint
+        )
+        canvas.drawLine(
+            coordinateDisplayManager.convertToEnvironmentX(carCoordinatesData.posX01),
+            coordinateDisplayManager.convertToEnvironmentY(carCoordinatesData.posY01),
+            coordinateDisplayManager.convertToEnvironmentX(carCoordinatesData.posX03),
+            coordinateDisplayManager.convertToEnvironmentY(carCoordinatesData.posY03),
+            hitboxPaint
+        )
+        canvas.drawLine(
+            coordinateDisplayManager.convertToEnvironmentX(carCoordinatesData.posX02),
+            coordinateDisplayManager.convertToEnvironmentY(carCoordinatesData.posY02),
+            coordinateDisplayManager.convertToEnvironmentX(carCoordinatesData.posX04),
+            coordinateDisplayManager.convertToEnvironmentY(carCoordinatesData.posY04),
+            hitboxPaint
+        )
+        canvas.drawLine(
+            coordinateDisplayManager.convertToEnvironmentX(carCoordinatesData.posX03),
+            coordinateDisplayManager.convertToEnvironmentY(carCoordinatesData.posY03),
+            coordinateDisplayManager.convertToEnvironmentX(carCoordinatesData.posX04),
+            coordinateDisplayManager.convertToEnvironmentY(carCoordinatesData.posY04),
+            hitboxPaint
+        )
+    }
+     */
 }

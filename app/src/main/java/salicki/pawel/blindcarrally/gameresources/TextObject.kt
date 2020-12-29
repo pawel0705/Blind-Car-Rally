@@ -11,13 +11,13 @@ import salicki.pawel.blindcarrally.R
 import salicki.pawel.blindcarrally.information.Settings
 
 class TextObject {
-
     private var textPaint: Paint = Paint()
     private var infoTextPaint = TextPaint()
-    private var posX: Float = 0F
-    private var posY: Float = 0F
+
     private lateinit var textLayout: StaticLayout
 
+    private var posX: Float = 0F
+    private var posY: Float = 0F
 
     fun initMultiLineText(
         fontId: Int,
@@ -52,7 +52,12 @@ class TextObject {
         );
     }
 
-    fun initText(fontId: Int, positionX: Float, positionY: Float, fontSizeId: Int = R.dimen.selectFontSize) {
+    fun initText(
+        fontId: Int,
+        positionX: Float,
+        positionY: Float,
+        fontSizeId: Int = R.dimen.selectFontSize
+    ) {
 
         textPaint.textAlign = Paint.Align.CENTER
         textPaint.color = Color.WHITE

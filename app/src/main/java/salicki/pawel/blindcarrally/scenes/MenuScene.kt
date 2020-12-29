@@ -9,39 +9,35 @@ import salicki.pawel.blindcarrally.enums.GestureTypeEnum
 import salicki.pawel.blindcarrally.enums.LanguageLevelFlowEnum
 import salicki.pawel.blindcarrally.enums.LevelTypeEnum
 import salicki.pawel.blindcarrally.gameresources.OptionImage
-import salicki.pawel.blindcarrally.gameresources.SelectBoxManager
 import salicki.pawel.blindcarrally.gameresources.TextObject
 import salicki.pawel.blindcarrally.gameresources.TextToSpeechManager
 import salicki.pawel.blindcarrally.information.Settings
+import salicki.pawel.blindcarrally.resources.DrawableResources
 import salicki.pawel.blindcarrally.resources.RawResources
 import salicki.pawel.blindcarrally.scenemanager.ILevel
 import salicki.pawel.blindcarrally.scenemanager.LevelManager
 import salicki.pawel.blindcarrally.utils.GestureManager
+import salicki.pawel.blindcarrally.utils.IdleSpeakManager
 import salicki.pawel.blindcarrally.utils.OpenerCSV
 import salicki.pawel.blindcarrally.utils.SoundManager
 
 class MenuScene : SurfaceView(Settings.CONTEXT), ILevel {
-
     private var texts: HashMap<String, String> = HashMap()
     private var screenTexts:HashMap<String, String> = HashMap()
-    private var soundManager: SoundManager =
-        SoundManager()
     private var menuSelectionData = arrayListOf<OptionSelectionData>()
-    private var menuIterator: Int = 0
+
+    private var idleSpeak: IdleSpeakManager = IdleSpeakManager()
     private var menuImage =
         OptionImage()
-    private var selectBoxManager: SelectBoxManager =
-        SelectBoxManager()
-
-    private var swipe: Boolean = false
-
+    private var soundManager: SoundManager =
+        SoundManager()
     private var optionText =
         TextObject()
 
+    private var menuIterator: Int = 0
     private var lastOption = -1
 
-    private var idleTime: Int = 0
-    private var idleTimeSeconds: Int = 0
+    private var swipe: Boolean = false
 
     init {
         isFocusable = true
@@ -49,23 +45,17 @@ class MenuScene : SurfaceView(Settings.CONTEXT), ILevel {
         initSoundManager()
         initMenuOptions()
         readTTSTextFile()
-        initSelectBoxModel()
         initTextOption()
         initMenuScreen()
     }
 
     private fun initMenuScreen() {
-        menuImage.setFullScreenImage(R.drawable.main_menu)
+        menuImage.setFullScreenImage(DrawableResources.mainMenuView)
     }
 
     private fun initTextOption(){
          optionText.initText(R.font.hemi, Settings.SCREEN_WIDTH / 2F, Settings.SCREEN_HEIGHT / 3F)
     }
-
-    private fun initSelectBoxModel(){
-        selectBoxManager.initSelectBoxModel(5)
-    }
-
 
     private fun initMenuOptions() {
         menuSelectionData.add(
@@ -118,13 +108,15 @@ class MenuScene : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     private fun readTTSTextFile() {
-        texts.putAll(OpenerCSV.readData(R.raw.menu_tts, Settings.languageTtsEnum))
-        screenTexts.putAll(OpenerCSV.readData(R.raw.menu_texts, Settings.languageTtsEnum))
+        texts.putAll(OpenerCSV.readData(RawResources.menu_TTS, Settings.languageTtsEnum))
+        screenTexts.putAll(OpenerCSV.readData(RawResources.menu_TXT, Settings.languageTtsEnum))
     }
 
     override fun initState() {
         TextToSpeechManager.speakNow(texts["MENU_TUTORIAL"].toString())
         TextToSpeechManager.speakQueue(texts["MENU_PLAY"].toString())
+
+        idleSpeak.initIdleString(texts["IDLE"].toString())
     }
 
     override fun updateState() {
@@ -138,22 +130,7 @@ class MenuScene : SurfaceView(Settings.CONTEXT), ILevel {
             lastOption = menuIterator
         }
 
-        selectBoxManager.updateSelectBoxPosition(menuIterator)
-
-        if(!TextToSpeechManager.isSpeaking()){
-            idleTime++
-
-            if(idleTime % 30 == 0){
-                idleTimeSeconds++
-            }
-        }
-
-        if(idleTimeSeconds > 10){
-            TextToSpeechManager.speakNow(texts["IDLE"].toString())
-
-            idleTimeSeconds = 0
-        }
-
+        idleSpeak.updateIdleStatus()
     }
 
     override fun destroyState() {
@@ -163,7 +140,6 @@ class MenuScene : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun respondTouchState(event: MotionEvent) {
-
         swipe = false
 
         when (GestureManager.swipeDetect(event)) {
@@ -176,7 +152,7 @@ class MenuScene : SurfaceView(Settings.CONTEXT), ILevel {
                 }
 
                 swipe = true
-                idleTimeSeconds = 0
+                idleSpeak.resetIdleTimeSeconds()
             }
             GestureTypeEnum.SWIPE_LEFT -> {
                 soundManager.playSound(RawResources.swapSound)
@@ -186,12 +162,12 @@ class MenuScene : SurfaceView(Settings.CONTEXT), ILevel {
                 }
 
                 swipe = true
-                idleTimeSeconds = 0
+                idleSpeak.resetIdleTimeSeconds()
             }
             GestureTypeEnum.SWIPE_DOWN -> {
                 TextToSpeechManager.speakNow(texts["IDLE"].toString())
                 Settings.globalSounds.playSound(RawResources.swapSound)
-                idleTimeSeconds = 0
+                idleSpeak.resetIdleTimeSeconds()
                 swipe = true
             }
         }
@@ -225,7 +201,7 @@ class MenuScene : SurfaceView(Settings.CONTEXT), ILevel {
                 }
             }
 
-            idleTimeSeconds = 0
+            idleSpeak.resetIdleTimeSeconds()
         }
 
         menuSelectionData.forEach {

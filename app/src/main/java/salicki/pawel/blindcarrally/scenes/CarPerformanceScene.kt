@@ -3,6 +3,7 @@ package salicki.pawel.blindcarrally.scenes
 import android.graphics.Canvas
 import android.view.MotionEvent
 import android.view.SurfaceView
+import androidx.annotation.RawRes
 import salicki.pawel.blindcarrally.*
 import salicki.pawel.blindcarrally.datas.OptionSelectionData
 import salicki.pawel.blindcarrally.enums.CarEnum
@@ -14,30 +15,30 @@ import salicki.pawel.blindcarrally.gameresources.TextObject
 import salicki.pawel.blindcarrally.gameresources.TextToSpeechManager
 import salicki.pawel.blindcarrally.information.GameOptions
 import salicki.pawel.blindcarrally.information.Settings
+import salicki.pawel.blindcarrally.resources.DrawableResources
 import salicki.pawel.blindcarrally.resources.RawResources
 import salicki.pawel.blindcarrally.scenemanager.ILevel
 import salicki.pawel.blindcarrally.scenemanager.LevelManager
-import salicki.pawel.blindcarrally.utils.GestureManager
-import salicki.pawel.blindcarrally.utils.OpenerCSV
-import salicki.pawel.blindcarrally.utils.SharedPreferencesManager
-import salicki.pawel.blindcarrally.utils.SoundManager
+import salicki.pawel.blindcarrally.utils.*
 
 class CarPerformanceScene : SurfaceView(Settings.CONTEXT), ILevel {
     private var textsPerformanceSelection: HashMap<String, String> = HashMap()
     private var screenTexts: HashMap<String, String> = HashMap()
+    private var performanceSelectionData = arrayListOf<OptionSelectionData>()
+
     private var optionText: TextObject = TextObject()
     private var optionCarDescription: TextObject = TextObject()
     private var soundManager: SoundManager =
         SoundManager()
-    private var swipe: Boolean = false
     private var selectionImage: OptionImage = OptionImage()
-    private var performanceSelectionData = arrayListOf<OptionSelectionData>()
+    private var idleSpeak: IdleSpeakManager = IdleSpeakManager()
+
+    private var swipe: Boolean = false
+    private var drawDescription: Boolean = false
+
     private var performanceIterator: Int = 0
     private var lastOption: Int = -1
     private var carNumber: Int = 1
-    private var idleTime: Int = 0
-    private var idleTimeSeconds: Int = 0
-    private var drawDescription: Boolean = false
     private var carDescription: String = ""
 
     init {
@@ -47,7 +48,7 @@ class CarPerformanceScene : SurfaceView(Settings.CONTEXT), ILevel {
         readTTSTextFile()
         initPerformanceSelectionOptions()
         initCarDescription()
-        selectionImage.setFullScreenImage(R.drawable.car_performance)
+        selectionImage.setFullScreenImage(DrawableResources.carPerformanceView)
         optionText.initText(R.font.hemi, Settings.SCREEN_WIDTH / 2F, Settings.SCREEN_HEIGHT / 3F)
         screenTexts["CAR_" + (GameOptions.car.ordinal + 1)]?.let {
             optionCarDescription.initMultiLineText(
@@ -137,14 +138,14 @@ class CarPerformanceScene : SurfaceView(Settings.CONTEXT), ILevel {
     private fun readTTSTextFile() {
         textsPerformanceSelection.putAll(
             OpenerCSV.readData(
-                R.raw.car_performance_tts,
+              RawResources.carPerformance_TTS,
                 Settings.languageTtsEnum
             )
         )
 
         screenTexts.putAll(
             OpenerCSV.readData(
-                R.raw.car_performance_texts,
+              RawResources.carPerformance_TXT,
                 Settings.languageTtsEnum
             )
         )
@@ -167,19 +168,7 @@ class CarPerformanceScene : SurfaceView(Settings.CONTEXT), ILevel {
             drawDescription = false
         }
 
-        if (!TextToSpeechManager.isSpeaking()) {
-            idleTime++
-
-            if (idleTime % 30 == 0) {
-                idleTimeSeconds++
-            }
-        }
-
-        if (idleTimeSeconds > 10) {
-            TextToSpeechManager.speakNow(textsPerformanceSelection["IDLE"].toString())
-
-            idleTimeSeconds = 0
-        }
+        idleSpeak.updateIdleStatus()
     }
 
     override fun destroyState() {
@@ -189,7 +178,6 @@ class CarPerformanceScene : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun respondTouchState(event: MotionEvent) {
-
         swipe = false
 
         when (GestureManager.swipeDetect(event)) {
@@ -220,7 +208,7 @@ class CarPerformanceScene : SurfaceView(Settings.CONTEXT), ILevel {
             GestureTypeEnum.SWIPE_DOWN -> {
                 TextToSpeechManager.speakNow(textsPerformanceSelection["IDLE"].toString())
                 Settings.globalSounds.playSound(RawResources.swapSound)
-                idleTimeSeconds = 0
+                idleSpeak.resetIdleTimeSeconds()
                 swipe = true
             }
         }

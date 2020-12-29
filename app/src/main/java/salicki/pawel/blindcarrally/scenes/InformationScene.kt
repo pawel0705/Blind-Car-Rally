@@ -18,16 +18,14 @@ import salicki.pawel.blindcarrally.resources.RawResources
 import salicki.pawel.blindcarrally.scenemanager.ILevel
 import salicki.pawel.blindcarrally.scenemanager.LevelManager
 import salicki.pawel.blindcarrally.utils.GestureManager
+import salicki.pawel.blindcarrally.utils.IdleSpeakManager
 import salicki.pawel.blindcarrally.utils.OpenerCSV
 
 class InformationScene : SurfaceView(Settings.CONTEXT), ILevel {
 
     private var texts: HashMap<String, String> = HashMap()
-
     private var text: TextObject = TextObject()
-
-    private var idleTime: Int = 0
-    private var idleTimeSeconds: Int = 0
+    private var idleSpeak: IdleSpeakManager = IdleSpeakManager()
 
     init {
         isFocusable = true
@@ -47,28 +45,17 @@ class InformationScene : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     private fun readTTSTextFile() {
-        texts.putAll(OpenerCSV.readData(R.raw.introduction_tts, Settings.languageTtsEnum))
+        texts.putAll(OpenerCSV.readData(RawResources.introduction_TTS, Settings.languageTtsEnum))
     }
 
     override fun initState() {
         TextToSpeechManager.speakNow(texts["INTRODUCTION_TUTORIAL"].toString())
+
+        idleSpeak.initIdleString(texts["INTRODUCTION_TUTORIAL"].toString())
     }
 
     override fun updateState() {
-        if (TextToSpeechManager.isSpeaking()) {
-            idleTime = 0
-        }
-
-        idleTime++
-
-        if (idleTime % 30 == 0) {
-            idleTimeSeconds++
-        }
-
-        if (idleTimeSeconds > 10 && !TextToSpeechManager.isSpeaking()) {
-            TextToSpeechManager.speakNow(texts["INTRODUCTION_TUTORIAL"].toString())
-            idleTimeSeconds = 0
-        }
+        idleSpeak.updateIdleStatus()
     }
 
     override fun destroyState() {
@@ -76,10 +63,10 @@ class InformationScene : SurfaceView(Settings.CONTEXT), ILevel {
     }
 
     override fun respondTouchState(event: MotionEvent) {
-        when(GestureManager.swipeDetect(event)){
+        when (GestureManager.swipeDetect(event)) {
             GestureTypeEnum.SWIPE_DOWN -> {
                 TextToSpeechManager.speakNow(texts["INTRODUCTION_TUTORIAL"].toString())
-                idleTimeSeconds = 0
+                idleSpeak.resetIdleTimeSeconds()
                 Settings.globalSounds.playSound(RawResources.swapSound)
             }
         }
@@ -95,5 +82,4 @@ class InformationScene : SurfaceView(Settings.CONTEXT), ILevel {
     override fun redrawState(canvas: Canvas) {
         text.drawMultilineText(canvas)
     }
-
 }

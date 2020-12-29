@@ -65,61 +65,8 @@ class CarSensors {
         carPositionSensorsData.sensorY12 = posY - obstacleSensorLength * 0.6F
     }
 
-    fun drawSensors(
-        canvas: Canvas,
-        coordinateDisplayManager: CoordinateDisplayManager
-    ) {
 
-        canvas.drawLine(
-            coordinateDisplayManager.convertToEnvironmentX(carPositionSensorsData.sensorX01),
-            coordinateDisplayManager.convertToEnvironmentY(carPositionSensorsData.sensorY01),
-            coordinateDisplayManager.convertToEnvironmentX(carPositionSensorsData.sensorX02),
-            coordinateDisplayManager.convertToEnvironmentY(carPositionSensorsData.sensorY02),
-            sensorPaint
-        )
-
-        canvas.drawLine(
-            coordinateDisplayManager.convertToEnvironmentX(carPositionSensorsData.sensorX03),
-            coordinateDisplayManager.convertToEnvironmentY(carPositionSensorsData.sensorY03),
-            coordinateDisplayManager.convertToEnvironmentX(carPositionSensorsData.sensorX04),
-            coordinateDisplayManager.convertToEnvironmentY(carPositionSensorsData.sensorY04),
-            sensorPaint
-        )
-
-        canvas.drawLine(
-            coordinateDisplayManager.convertToEnvironmentX(carPositionSensorsData.sensorX05),
-            coordinateDisplayManager.convertToEnvironmentY(carPositionSensorsData.sensorY05),
-            coordinateDisplayManager.convertToEnvironmentX(carPositionSensorsData.sensorX06),
-            coordinateDisplayManager.convertToEnvironmentY(carPositionSensorsData.sensorY06),
-            sensorPaint
-        )
-
-        canvas.drawLine(
-            coordinateDisplayManager.convertToEnvironmentX(carPositionSensorsData.sensorX07),
-            coordinateDisplayManager.convertToEnvironmentY(carPositionSensorsData.sensorY07),
-            coordinateDisplayManager.convertToEnvironmentX(carPositionSensorsData.sensorX08),
-            coordinateDisplayManager.convertToEnvironmentY(carPositionSensorsData.sensorY08),
-            sensorPaint
-        )
-
-        canvas.drawLine(
-            coordinateDisplayManager.convertToEnvironmentX(carPositionSensorsData.sensorX09),
-            coordinateDisplayManager.convertToEnvironmentY(carPositionSensorsData.sensorY09),
-            coordinateDisplayManager.convertToEnvironmentX(carPositionSensorsData.sensorX10),
-            coordinateDisplayManager.convertToEnvironmentY(carPositionSensorsData.sensorY10),
-            sensorPaint
-        )
-
-        canvas.drawLine(
-            coordinateDisplayManager.convertToEnvironmentX(carPositionSensorsData.sensorX11),
-            coordinateDisplayManager.convertToEnvironmentY(carPositionSensorsData.sensorY11),
-            coordinateDisplayManager.convertToEnvironmentX(carPositionSensorsData.sensorX12),
-            coordinateDisplayManager.convertToEnvironmentY(carPositionSensorsData.sensorY12),
-            sensorPaint
-        )
-    }
-
-    fun sensorDistance(x1: Float, y1: Float, x2: Float, y2: Float) : SensorDetectData{
+    fun sensorDistance(x1: Float, y1: Float, x2: Float, y2: Float): SensorDetectData {
 
         var sensorLeft1: Boolean = false
         var sensorLeft2: Boolean = false
@@ -248,22 +195,81 @@ class CarSensors {
 
         var sensorDetectData: SensorDetectData = SensorDetectData()
 
-        if(sensorLeft1 || sensorLeft2 || sensorLeft3){
+        if (sensorLeft1 || sensorLeft2 || sensorLeft3) {
             sensorDetectData.left = true
 
             var leftArray = arrayOf(sensorDistanceLeft1, sensorDistanceLeft2, sensorDistanceLeft3)
-           leftArray.sort()
+            leftArray.sort()
             sensorDetectData.leftLength = leftArray.first()
         }
 
-        if(sensorRight1 || sensorRight2 || sensorRight3){
+        if (sensorRight1 || sensorRight2 || sensorRight3) {
             sensorDetectData.right = true
 
-            var rightArray = arrayOf(sensorDistanceRight1, sensorDistanceRight2, sensorDistanceRight3)
-           rightArray.sort()
+            var rightArray =
+                arrayOf(sensorDistanceRight1, sensorDistanceRight2, sensorDistanceRight3)
+            rightArray.sort()
             sensorDetectData.rightLength = rightArray.first()
         }
 
         return sensorDetectData
     }
+
+    // for testing purposes
+    /*
+    fun drawSensors(
+        canvas: Canvas,
+        coordinateDisplayManager: CoordinateDisplayManager
+    ) {
+
+        canvas.drawLine(
+            coordinateDisplayManager.convertToEnvironmentX(carPositionSensorsData.sensorX01),
+            coordinateDisplayManager.convertToEnvironmentY(carPositionSensorsData.sensorY01),
+            coordinateDisplayManager.convertToEnvironmentX(carPositionSensorsData.sensorX02),
+            coordinateDisplayManager.convertToEnvironmentY(carPositionSensorsData.sensorY02),
+            sensorPaint
+        )
+
+        canvas.drawLine(
+            coordinateDisplayManager.convertToEnvironmentX(carPositionSensorsData.sensorX03),
+            coordinateDisplayManager.convertToEnvironmentY(carPositionSensorsData.sensorY03),
+            coordinateDisplayManager.convertToEnvironmentX(carPositionSensorsData.sensorX04),
+            coordinateDisplayManager.convertToEnvironmentY(carPositionSensorsData.sensorY04),
+            sensorPaint
+        )
+
+        canvas.drawLine(
+            coordinateDisplayManager.convertToEnvironmentX(carPositionSensorsData.sensorX05),
+            coordinateDisplayManager.convertToEnvironmentY(carPositionSensorsData.sensorY05),
+            coordinateDisplayManager.convertToEnvironmentX(carPositionSensorsData.sensorX06),
+            coordinateDisplayManager.convertToEnvironmentY(carPositionSensorsData.sensorY06),
+            sensorPaint
+        )
+
+        canvas.drawLine(
+            coordinateDisplayManager.convertToEnvironmentX(carPositionSensorsData.sensorX07),
+            coordinateDisplayManager.convertToEnvironmentY(carPositionSensorsData.sensorY07),
+            coordinateDisplayManager.convertToEnvironmentX(carPositionSensorsData.sensorX08),
+            coordinateDisplayManager.convertToEnvironmentY(carPositionSensorsData.sensorY08),
+            sensorPaint
+        )
+
+        canvas.drawLine(
+            coordinateDisplayManager.convertToEnvironmentX(carPositionSensorsData.sensorX09),
+            coordinateDisplayManager.convertToEnvironmentY(carPositionSensorsData.sensorY09),
+            coordinateDisplayManager.convertToEnvironmentX(carPositionSensorsData.sensorX10),
+            coordinateDisplayManager.convertToEnvironmentY(carPositionSensorsData.sensorY10),
+            sensorPaint
+        )
+
+        canvas.drawLine(
+            coordinateDisplayManager.convertToEnvironmentX(carPositionSensorsData.sensorX11),
+            coordinateDisplayManager.convertToEnvironmentY(carPositionSensorsData.sensorY11),
+            coordinateDisplayManager.convertToEnvironmentX(carPositionSensorsData.sensorX12),
+            coordinateDisplayManager.convertToEnvironmentY(carPositionSensorsData.sensorY12),
+            sensorPaint
+        )
+    }
+
+     */
 }
